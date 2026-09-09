@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from pydantic import Field, model_validator
 
+from app.schemas.blast_radius import BlastRadiusScoreBreakdown
 from app.schemas.common import APIModel
+from app.schemas.mitigation import MitigationResponse
 
 
 class SimulatedFailedService(APIModel):
@@ -51,6 +53,8 @@ class SimulationResponse(APIModel):
     predicted_circuit_transitions: list[PredictedCircuitTransition]
     explanation: str
     created_at: str
+    score_breakdown: BlastRadiusScoreBreakdown | None = None
+    mitigation: MitigationResponse | None = None
 
     @model_validator(mode="after")
     def fill_failed_services(self) -> "SimulationResponse":

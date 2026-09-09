@@ -41,3 +41,16 @@ critical_edge:
 latency:
   high_latency_ms: 200.0
   very_high_latency_ms: 500.0
+root_cause:
+  error_rate_points: 30
+  latency_points: 20
+  baseline_deviation_points: 25
+  upstream_origin_points: 15
+  unhealthy_dependency_points: 10
+  high_confidence_min_score: 70
+  medium_confidence_min_score: 40
+  high_confidence_min_factors: 2
+  min_upstream_callers: 2
+  min_baseline_windows: 2
+mitigation:
+  fallback_edge_weight: 0.10

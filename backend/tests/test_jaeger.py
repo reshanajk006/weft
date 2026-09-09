@@ -316,14 +316,19 @@ def test_live_ingest_then_simulation_still_safe(client):
     analysis = client.get(f"/api/simulations/{sim.json()['simulation_id']}/analysis")
     assert analysis.status_code == 200
     body = analysis.json()
-    assert body["root_cause"]["likely_root_cause"]["service"] == "payment-gateway"
+    assert body["root_cause"]["likely_root_cause"] is None
+    assert body["root_cause"]["mode"] == "HYPOTHETICAL"
+    assert body["root_cause"]["root_cause_status"] == "NOT_DETERMINED"
+    assert "simulation target" in body["root_cause"]["message"].lower()
     assert body["recommendations"]
     report = client.post(
         "/api/reports/generate",
         json={"simulation_id": sim.json()["simulation_id"], "format": "markdown"},
     )
     assert report.status_code == 201
-    assert "## Root Cause" in report.json()["content"]
+    content = report.json()["content"]
+    assert "## 6. Root-Cause Analysis" in content
+    assert "Likely root cause: payment-gateway" not in content
 
 
 def test_manual_import_replaces_live_dataset(client, ingest):

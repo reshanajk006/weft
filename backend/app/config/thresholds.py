@@ -127,6 +127,23 @@ class LatencyThresholds(BaseModel):
         return self
 
 
+class RootCauseThresholds(BaseModel):
+    error_rate_points: int = Field(default=30, ge=0)
+    latency_points: int = Field(default=20, ge=0)
+    baseline_deviation_points: int = Field(default=25, ge=0)
+    upstream_origin_points: int = Field(default=15, ge=0)
+    unhealthy_dependency_points: int = Field(default=10, ge=0)
+    high_confidence_min_score: float = Field(default=70.0, ge=0.0, le=100.0)
+    medium_confidence_min_score: float = Field(default=40.0, ge=0.0, le=100.0)
+    high_confidence_min_factors: int = Field(default=2, ge=1)
+    min_upstream_callers: int = Field(default=2, ge=1)
+    min_baseline_windows: int = Field(default=2, ge=1)
+
+
+class MitigationThresholds(BaseModel):
+    fallback_edge_weight: float = Field(default=0.10, ge=0.0, le=1.0)
+
+
 class ThresholdsConfig(BaseModel):
     health: HealthThresholds = Field(default_factory=HealthThresholds)
     blast_radius: BlastRadiusThresholds = Field(default_factory=BlastRadiusThresholds)
@@ -138,6 +155,8 @@ class ThresholdsConfig(BaseModel):
     critical_service: CriticalServiceThresholds = Field(default_factory=CriticalServiceThresholds)
     critical_edge: CriticalEdgeThresholds = Field(default_factory=CriticalEdgeThresholds)
     latency: LatencyThresholds = Field(default_factory=LatencyThresholds)
+    root_cause: RootCauseThresholds = Field(default_factory=RootCauseThresholds)
+    mitigation: MitigationThresholds = Field(default_factory=MitigationThresholds)
 
     @field_validator("health", mode="before")
     @classmethod

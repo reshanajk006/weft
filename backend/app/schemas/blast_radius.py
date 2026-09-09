@@ -21,6 +21,8 @@ class BlastRadiusScoreBreakdown(APIModel):
     weighted_impact: float
     critical_service_factor: float
     formula: str
+    mean_impact_probability: float | None = None
+    affected_criticality_ratio: float | None = None
 
 
 class BlastRadiusScore(APIModel):
