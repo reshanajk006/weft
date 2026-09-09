@@ -7,9 +7,12 @@ const morgan = require('morgan');
 const app = express();
 const PORT = process.env.PORT || 3008;
 
+const { chaosMiddleware } = require('../../shared/chaos');
+
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(chaosMiddleware('asset-service'));
 
 const assets = [
   { id: 'ast-001', name: 'Mainframe Rack #04', location: 'DC-East-1', status: 'OPERATIONAL' },

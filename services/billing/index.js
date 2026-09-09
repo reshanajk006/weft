@@ -10,9 +10,12 @@ const app = express();
 const PORT = process.env.PORT || 3005;
 const NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3006';
 
+const { chaosMiddleware } = require('../../shared/chaos');
+
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(chaosMiddleware('billing-service'));
 
 const invoices = [];
 

@@ -10,6 +10,8 @@
     "traffic": "node traffic-generator.js",
     "export-traces": "node export-traces.js",
     "export": "node export-traces.js",
+    "generate-traces": "node generate-weft-traces.js",
+    "generate-errors": "node generate-weft-traces.js --fail-service billing-service --error-rate 1.0 --output traces-with-errors.json",
     "dev": "concurrently --names \"JAEGER,GW,AUTH,USER,CAT,ORD,BILL,NOTIF,ANA,ASSET,SUPP,FRONT\" --prefix-colors \"bgBlue,cyan,green,yellow,blue,magenta,red,white,gray,brightCyan,brightGreen,brightMagenta\" \"nodemon embedded-jaeger.js\" \"nodemon services/gateway/index.js\" \"nodemon services/auth/index.js\" \"nodemon services/user/index.js\" \"nodemon services/catalog/index.js\" \"nodemon services/order/index.js\" \"nodemon services/billing/index.js\" \"nodemon services/notification/index.js\" \"nodemon services/analytics/index.js\" \"nodemon services/asset/index.js\" \"nodemon services/support/index.js\" \"nodemon frontend-server.js\""
   },
   "dependencies": {
