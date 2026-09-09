@@ -181,7 +181,7 @@ void main() {
             <button
               type="button"
               className="hero-cta-btn"
-              onClick={() => navigate("/overview")}
+              onClick={() => navigate("/graph")}
             >
               See it in action
             </button>

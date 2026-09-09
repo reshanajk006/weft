@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { api } from "../api";
 import { StatusPill } from "../components/StatusPill";
 import { Threads } from "../components/Threads";
@@ -96,16 +95,6 @@ export function OverviewPage() {
               &gt; Investigation happens on the dependency map. This page only summarizes imported telemetry.
             </p>
           </div>
-          <div>
-            <button
-              className="overview-back-btn"
-              type="button"
-              onClick={() => navigate("/landing")}
-            >
-              <ArrowLeft size={12} className="text-[#9cafc4]" />
-              <span>Back to Landing Page</span>
-            </button>
-          </div>
         </section>
 
         {error ? <div className="error-banner text-xs py-2 px-3">{error}</div> : null}
@@ -166,14 +155,14 @@ export function OverviewPage() {
             }`}
           >
             <div className="stat-tile-header">
-              <span className="stat-tile-label" style={{ color: "#f87171" }}>
+              <span className="stat-tile-label" style={{ color: "#fda4af" }}>
                 UNHEALTHY
               </span>
               <span
-                className={`w-2 h-2 bg-[#ef4444] ${
+                className={`w-2 h-2 bg-[#9f1239] ${
                   (overview?.unhealthy_count || 0) > 0 ? "pixel-blink" : ""
                 }`}
-                style={{ boxShadow: "0 0 4px #ef4444" }}
+                style={{ boxShadow: "0 0 4px #9f1239" }}
               />
             </div>
             <div className="stat-tile-footer">
@@ -238,7 +227,7 @@ export function OverviewPage() {
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      backgroundColor: "#dc2626",
+                      backgroundColor: "#881337",
                       color: "#ffffff",
                       fontFamily: "'Space Mono', monospace",
                       fontWeight: 700,
@@ -344,7 +333,7 @@ export function OverviewPage() {
                         <div className="service-row-left">
                           <span
                             className="service-row-rank"
-                            style={{ color: isUnhealthy ? "#f87171" : "#6b7280" }}
+                            style={{ color: isUnhealthy ? "#fda4af" : "#6b7280" }}
                           >
                             {String(idx + 1).padStart(2, "0")}.
                           </span>
@@ -358,7 +347,7 @@ export function OverviewPage() {
                                   ? "#22c55e"
                                   : item.health === "DEGRADED"
                                   ? "#f59e0b"
-                                  : "#ef4444",
+                                  : "#9f1239",
                             }}
                             className={
                               item.health === "UNHEALTHY" ? "pixel-blink" : undefined

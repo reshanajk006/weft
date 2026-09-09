@@ -63,7 +63,7 @@ function layout(graph: GraphResponse, dimmed: Set<string> | null) {
   const flowEdges: Edge[] = graph.edges.map((edge) => {
     const impacted = edge.status === "IMPACTED";
     const critical = edge.critical_weight >= 0.9;
-    const color = impacted ? "#e24b4a" : critical ? "#9aa3b0" : "#3a4250";
+    const color = impacted ? "#ef4444" : critical ? "#9CAFC4" : "#6B7280";
     return {
       id: edge.id,
       source: edge.source,
@@ -72,12 +72,13 @@ function layout(graph: GraphResponse, dimmed: Set<string> | null) {
       type: "smoothstep",
       style: {
         stroke: color,
-        strokeWidth: impacted ? 2 : critical ? 1.6 : 1.1,
+        strokeWidth: impacted ? 2.5 : critical ? 2 : 1.8,
+        strokeDasharray: impacted ? "4 4" : undefined,
       },
       markerEnd: {
         type: MarkerType.ArrowClosed,
-        width: 14,
-        height: 14,
+        width: 12,
+        height: 12,
         color,
       },
     };
@@ -142,7 +143,7 @@ function GraphInner({
       edges={flowEdges}
       nodeTypes={nodeTypes}
       fitView
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "100%", backgroundColor: "transparent" }}
       onInit={(instance) => {
         void instance.fitView({ padding: 0.24 });
       }}
@@ -153,18 +154,18 @@ function GraphInner({
       maxZoom={1.8}
       proOptions={{ hideAttribution: true }}
     >
-      <Background color="#243042" gap={22} />
+      <Background color="#1F2937" gap={24} size={1} />
       <Controls showInteractive={false} />
       <MiniMap
         pannable
         zoomable
-        maskColor="rgba(8, 10, 14, 0.72)"
+        maskColor="rgba(11, 15, 20, 0.75)"
         nodeColor={(node) => {
           const status = (node.data as ServiceNodeData).status;
-          if (status === "FAILED") return "#e24b4a";
-          if (status === "DIRECTLY_AFFECTED") return "#e08a3a";
+          if (status === "FAILED") return "#ef4444";
+          if (status === "DIRECTLY_AFFECTED") return "#f59e0b";
           if (status === "INDIRECTLY_AFFECTED") return "#d4b44a";
-          return "#4b5563";
+          return "#9CAFC4";
         }}
       />
       <BlastRings failedId={failedId} />

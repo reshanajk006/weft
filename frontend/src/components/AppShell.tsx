@@ -6,11 +6,10 @@ import { JaegerConnectModal } from "./JaegerConnectModal";
 import { useWorkspace } from "../state/workspace";
 
 const TABS: { to: string; label: string; end?: boolean }[] = [
-  { to: "/overview", label: "Overview" },
   { to: "/graph", label: "Dependency Map" },
+  { to: "/overview", label: "Overview" },
   { to: "/simulations", label: "Simulations" },
-  { to: "/incidents", label: "Incidents" },
-  { to: "/reports", label: "Reports" },
+  { to: "/reports", label: "Incident Reports" },
 ];
 
 function LiveStatus() {
@@ -56,7 +55,7 @@ export function AppShell() {
   return (
     <div className="app-root">
       <header className="topbar">
-        <button className="brand" type="button" onClick={() => navigate("/landing")}>
+        <button className="brand" type="button" onClick={() => navigate("/")}>
           <span className="brand-icon">W</span>
           <span>Weft</span>
         </button>
