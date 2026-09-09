@@ -22,9 +22,311 @@ function SegmentedMeter({ score, isUnhealthy }: { score: number; isUnhealthy: bo
   );
 }
 
+function TelemetryBarRow({
+  item,
+  idx,
+  maxScore,
+  onClick,
+}: {
+  item: RankingItem;
+  idx: number;
+  maxScore: number;
+  onClick: () => void;
+}) {
+  const isUnhealthy = item.health === "UNHEALTHY" || item.health === "DEGRADED";
+  const totalBlocks = 20;
+  const activeBlocks = Math.max(1, Math.min(totalBlocks, Math.round((item.score / maxScore) * totalBlocks)));
+
+  return (
+    <div
+      className={`telemetry-bar-row ${isUnhealthy ? "unhealthy" : ""}`}
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-3 min-w-[140px] sm:min-w-[180px]">
+        <span
+          className="service-row-rank"
+          style={{ color: isUnhealthy ? "#fda4af" : "#6b7280" }}
+        >
+          {String(idx + 1).padStart(2, "0")}.
+        </span>
+        <span
+          style={{
+            width: "10px",
+            height: "10px",
+            display: "inline-block",
+            backgroundColor:
+              item.health === "HEALTHY"
+                ? "#22c55e"
+                : item.health === "DEGRADED"
+                ? "#f59e0b"
+                : "#9f1239",
+          }}
+          className={item.health === "UNHEALTHY" ? "pixel-blink" : undefined}
+        />
+        <span className="service-row-name truncate">{item.service}</span>
+      </div>
+
+      {/* Proportional Segmented Capsule Bar */}
+      <div
+        className="telemetry-capsule flex-1 mx-3 sm:mx-4"
+        style={{
+          border: `1px solid ${
+            isUnhealthy ? "rgba(159, 18, 57, 0.65)" : "rgba(34, 197, 94, 0.45)"
+          }`,
+          boxShadow: isUnhealthy
+            ? "0 0 10px rgba(159, 18, 57, 0.25)"
+            : "0 0 10px rgba(34, 197, 94, 0.2)",
+        }}
+      >
+        {Array.from({ length: totalBlocks }).map((_, i) => (
+          <span
+            key={i}
+            className={`telemetry-pill-block ${
+              i < activeBlocks
+                ? isUnhealthy
+                  ? "active-unhealthy"
+                  : "active-healthy"
+                : "inactive"
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Score Badge */}
+      <span
+        className="service-score-badge flex-shrink-0"
+        style={{
+          color: isUnhealthy ? "#fda4af" : "#4ade80",
+          backgroundColor: isUnhealthy ? "rgba(136, 19, 55, 0.25)" : "rgba(34, 197, 94, 0.12)",
+          borderColor: isUnhealthy ? "rgba(159, 18, 57, 0.5)" : "rgba(34, 197, 94, 0.35)",
+        }}
+      >
+        {item.score.toFixed(1)}
+      </span>
+    </div>
+  );
+}
+
+function MiniTopologySvg({
+  top5,
+  graphEdges,
+  onSelectService,
+}: {
+  top5: RankingItem[];
+  graphEdges: { source: string; target: string; call_count?: number }[];
+  onSelectService: (id: string) => void;
+}) {
+  const positions = [
+    { x: 170, y: 46 },
+    { x: 82, y: 130 },
+    { x: 258, y: 130 },
+    { x: 78, y: 226 },
+    { x: 236, y: 226 },
+  ];
+
+  const edgeList: { from: number; to: number; isUnhealthy: boolean }[] = [];
+  top5.forEach((source, sIdx) => {
+    top5.forEach((target, tIdx) => {
+      if (sIdx !== tIdx) {
+        const hasEdge = graphEdges.some(
+          (e) =>
+            (e.source === source.service_id && e.target === target.service_id) ||
+            (e.source === source.service && e.target === target.service)
+        );
+        if (hasEdge) {
+          edgeList.push({
+            from: sIdx,
+            to: tIdx,
+            isUnhealthy: target.health !== "HEALTHY" || source.health !== "HEALTHY",
+          });
+        }
+      }
+    });
+  });
+
+  const finalEdges =
+    edgeList.length > 0
+      ? edgeList
+      : [
+          { from: 0, to: 1, isUnhealthy: top5[1]?.health !== "HEALTHY" },
+          { from: 0, to: 2, isUnhealthy: top5[2]?.health !== "HEALTHY" },
+          { from: 1, to: 3, isUnhealthy: top5[3]?.health !== "HEALTHY" },
+          { from: 1, to: 4, isUnhealthy: top5[4]?.health !== "HEALTHY" },
+          { from: 2, to: 4, isUnhealthy: top5[4]?.health !== "HEALTHY" },
+        ];
+
+  return (
+    <div
+      style={{
+        background: "#080d14",
+        border: "1px solid #1f2937",
+        boxShadow: "inset 1px 1px 0 rgba(255, 255, 255, 0.03)",
+        position: "relative",
+        height: "100%",
+        minHeight: "290px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+    >
+      <svg
+        viewBox="0 0 340 290"
+        className="w-full h-full"
+        style={{ maxHeight: "360px" }}
+      >
+        <defs>
+          <pattern id="topo-grid" width="22" height="22" patternUnits="userSpaceOnUse">
+            <path
+              d="M 22 0 L 0 0 0 22"
+              fill="none"
+              stroke="rgba(255, 255, 255, 0.035)"
+              strokeWidth="1"
+            />
+          </pattern>
+          <filter id="topo-glow-green" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="topo-glow-burgundy" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <marker id="topo-arrow-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 1, 5 3, 0 5" fill="#10b981" />
+          </marker>
+          <marker id="topo-arrow-burgundy" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <polygon points="0 1, 5 3, 0 5" fill="#9f1239" />
+          </marker>
+        </defs>
+
+        <rect width="100%" height="100%" fill="url(#topo-grid)" />
+
+        {/* Directed Edges */}
+        {finalEdges.map((edge, idx) => {
+          const fromPos = positions[edge.from];
+          const toPos = positions[edge.to];
+          if (!fromPos || !toPos) return null;
+
+          const dx = toPos.x - fromPos.x;
+          const dy = toPos.y - fromPos.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist === 0) return null;
+          const offset = 22;
+          const x1 = fromPos.x + (dx / dist) * offset;
+          const y1 = fromPos.y + (dy / dist) * offset;
+          const x2 = toPos.x - (dx / dist) * (offset + 4);
+          const y2 = toPos.y - (dy / dist) * (offset + 4);
+
+          const midX = (x1 + x2) / 2;
+          const midY = (y1 + y2) / 2;
+
+          return (
+            <g key={idx}>
+              <line
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                stroke={edge.isUnhealthy ? "#9f1239" : "#38bdf8"}
+                strokeWidth={edge.isUnhealthy ? "1.5" : "1.2"}
+                strokeDasharray={edge.isUnhealthy ? "none" : "3 3"}
+                markerEnd={
+                  edge.isUnhealthy
+                    ? "url(#topo-arrow-burgundy)"
+                    : "url(#topo-arrow-green)"
+                }
+                opacity={0.8}
+              />
+              <rect
+                x={midX - 6}
+                y={midY - 6}
+                width="12"
+                height="12"
+                fill="#0b0f14"
+                stroke={edge.isUnhealthy ? "#9f1239" : "#475569"}
+                strokeWidth="1"
+                rx="2"
+              />
+              <text
+                x={midX}
+                y={midY + 3}
+                textAnchor="middle"
+                fill={edge.isUnhealthy ? "#fda4af" : "#94a3b8"}
+                fontSize="7.5"
+                fontFamily="'Space Mono', monospace"
+              >
+                ≡
+              </text>
+            </g>
+          );
+        })}
+
+        {/* Nodes */}
+        {top5.map((item, idx) => {
+          const pos = positions[idx];
+          if (!pos) return null;
+          const isUnhealthy = item.health === "UNHEALTHY" || item.health === "DEGRADED";
+
+          return (
+            <g
+              key={item.service_id}
+              onClick={() => onSelectService(item.service_id)}
+              style={{ cursor: "pointer" }}
+            >
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r="17"
+                fill="none"
+                stroke={isUnhealthy ? "#9f1239" : "#10b981"}
+                strokeWidth="2"
+                filter={isUnhealthy ? "url(#topo-glow-burgundy)" : "url(#topo-glow-green)"}
+              />
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r="12"
+                fill="#0b0f14"
+                stroke={isUnhealthy ? "#fda4af" : "#4ade80"}
+                strokeWidth="1.25"
+              />
+              <circle
+                cx={pos.x}
+                cy={pos.y}
+                r="4"
+                fill={isUnhealthy ? "#9f1239" : "#10b981"}
+              />
+
+              <text
+                x={pos.x}
+                y={pos.y + 28}
+                textAnchor="middle"
+                fill="#e5e7eb"
+                fontSize="8.5"
+                fontWeight="700"
+                fontFamily="'Space Mono', monospace"
+              >
+                {item.service.length > 15 ? `${item.service.slice(0, 13)}…` : item.service}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 export function OverviewPage() {
   const navigate = useNavigate();
-  const { overview, mode, openImport } = useWorkspace();
+  const { overview, mode, openImport, graph } = useWorkspace();
+  const [criticalityView, setCriticalityView] = useState<"combo" | "bars" | "topology" | "list">("combo");
   const [rankings, setRankings] = useState<RankingItem[]>([]);
   const [sims, setSims] = useState<SimulationListItem[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -301,12 +603,45 @@ export function OverviewPage() {
 
             {/* 4. Service Health Section (Highest Technical Criticality) */}
             <section className="dashboard-panel" data-purpose="criticality-table">
-              <div className="panel-header">
+              <div className="panel-header flex items-center justify-between flex-wrap gap-2">
                 <h2 className="panel-title">
                   <span style={{ color: "#9cafc4" }}>▲</span>
                   <span>HIGHEST TECHNICAL CRITICALITY</span>
                 </h2>
-                <span className="panel-badge">[ TOP 5 SERVICES ]</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    className={`telemetry-tab ${criticalityView === "combo" ? "active" : ""}`}
+                    onClick={() => setCriticalityView("combo")}
+                    title="Side-by-side telemetry bars & topology map"
+                  >
+                    [ ⊞ SPLIT ]
+                  </button>
+                  <button
+                    type="button"
+                    className={`telemetry-tab ${criticalityView === "bars" ? "active" : ""}`}
+                    onClick={() => setCriticalityView("bars")}
+                    title="Proportional telemetry bars"
+                  >
+                    [ ▰ BARS ]
+                  </button>
+                  <button
+                    type="button"
+                    className={`telemetry-tab ${criticalityView === "topology" ? "active" : ""}`}
+                    onClick={() => setCriticalityView("topology")}
+                    title="Mini dependency topology network"
+                  >
+                    [ 🕸 TOPOLOGY ]
+                  </button>
+                  <button
+                    type="button"
+                    className={`telemetry-tab ${criticalityView === "list" ? "active" : ""}`}
+                    onClick={() => setCriticalityView("list")}
+                    title="Classic list view"
+                  >
+                    [ ≡ LIST ]
+                  </button>
+                </div>
               </div>
 
               {rankings.length === 0 ? (
@@ -320,54 +655,113 @@ export function OverviewPage() {
                 >
                   &gt; No services found.
                 </p>
-              ) : (
-                <div className="service-list">
-                  {rankings.slice(0, 5).map((item, idx) => {
-                    const isUnhealthy = item.health === "UNHEALTHY" || item.health === "DEGRADED";
-                    return (
-                      <div
-                        key={item.service_id}
-                        className={`service-row ${isUnhealthy ? "unhealthy" : ""}`}
-                        onClick={() => navigate(`/graph?service=${item.service_id}`)}
-                      >
-                        <div className="service-row-left">
-                          <span
-                            className="service-row-rank"
-                            style={{ color: isUnhealthy ? "#fda4af" : "#6b7280" }}
-                          >
-                            {String(idx + 1).padStart(2, "0")}.
-                          </span>
-                          <span
-                            style={{
-                              width: "10px",
-                              height: "10px",
-                              display: "inline-block",
-                              backgroundColor:
-                                item.health === "HEALTHY"
-                                  ? "#22c55e"
-                                  : item.health === "DEGRADED"
-                                  ? "#f59e0b"
-                                  : "#9f1239",
-                            }}
-                            className={
-                              item.health === "UNHEALTHY" ? "pixel-blink" : undefined
-                            }
+              ) : (() => {
+                const top5 = rankings.slice(0, 5);
+                const maxScore = Math.max(50, ...top5.map((s) => s.score));
+
+                if (criticalityView === "combo") {
+                  return (
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+                      <div className="lg:col-span-7 flex flex-col gap-2.5">
+                        {top5.map((item, idx) => (
+                          <TelemetryBarRow
+                            key={item.service_id}
+                            item={item}
+                            idx={idx}
+                            maxScore={maxScore}
+                            onClick={() => navigate(`/graph?service=${item.service_id}`)}
                           />
-                          <span className="service-row-name">{item.service}</span>
-                        </div>
-                        <div className="service-row-right">
-                          <SegmentedMeter score={item.score} isUnhealthy={isUnhealthy} />
-                          <span
-                            className={`service-score-badge ${isUnhealthy ? "unhealthy" : ""}`}
-                          >
-                            {item.score.toFixed(1)}
-                          </span>
-                        </div>
+                        ))}
                       </div>
-                    );
-                  })}
-                </div>
-              )}
+                      <div className="lg:col-span-5 min-h-[300px]">
+                        <MiniTopologySvg
+                          top5={top5}
+                          graphEdges={graph?.edges || []}
+                          onSelectService={(id) => navigate(`/graph?service=${id}`)}
+                        />
+                      </div>
+                    </div>
+                  );
+                }
+
+                if (criticalityView === "bars") {
+                  return (
+                    <div className="flex flex-col gap-2.5">
+                      {top5.map((item, idx) => (
+                        <TelemetryBarRow
+                          key={item.service_id}
+                          item={item}
+                          idx={idx}
+                          maxScore={maxScore}
+                          onClick={() => navigate(`/graph?service=${item.service_id}`)}
+                        />
+                      ))}
+                    </div>
+                  );
+                }
+
+                if (criticalityView === "topology") {
+                  return (
+                    <div className="min-h-[340px]">
+                      <MiniTopologySvg
+                        top5={top5}
+                        graphEdges={graph?.edges || []}
+                        onSelectService={(id) => navigate(`/graph?service=${id}`)}
+                      />
+                    </div>
+                  );
+                }
+
+                // Default / Classic List
+                return (
+                  <div className="service-list">
+                    {top5.map((item, idx) => {
+                      const isUnhealthy = item.health === "UNHEALTHY" || item.health === "DEGRADED";
+                      return (
+                        <div
+                          key={item.service_id}
+                          className={`service-row ${isUnhealthy ? "unhealthy" : ""}`}
+                          onClick={() => navigate(`/graph?service=${item.service_id}`)}
+                        >
+                          <div className="service-row-left">
+                            <span
+                              className="service-row-rank"
+                              style={{ color: isUnhealthy ? "#fda4af" : "#6b7280" }}
+                            >
+                              {String(idx + 1).padStart(2, "0")}.
+                            </span>
+                            <span
+                              style={{
+                                width: "10px",
+                                height: "10px",
+                                display: "inline-block",
+                                backgroundColor:
+                                  item.health === "HEALTHY"
+                                    ? "#22c55e"
+                                    : item.health === "DEGRADED"
+                                    ? "#f59e0b"
+                                    : "#9f1239",
+                              }}
+                              className={
+                                item.health === "UNHEALTHY" ? "pixel-blink" : undefined
+                              }
+                            />
+                            <span className="service-row-name">{item.service}</span>
+                          </div>
+                          <div className="service-row-right">
+                            <SegmentedMeter score={item.score} isUnhealthy={isUnhealthy} />
+                            <span
+                              className={`service-score-badge ${isUnhealthy ? "unhealthy" : ""}`}
+                            >
+                              {item.score.toFixed(1)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </section>
 
             {/* 5. Recent Simulations Section */}

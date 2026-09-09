@@ -1583,3 +1583,93 @@ textarea {
   margin-right: 2px;
   border-radius: 1px;
 }
+
+/* Technical Criticality Graph & Telemetry Bar Styling */
+.telemetry-tab {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 4px 8px;
+  background-color: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 100ms ease;
+  box-sizing: border-box;
+}
+
+.telemetry-tab:hover {
+  color: #e5e7eb;
+  border-color: #9cafc4;
+}
+
+.telemetry-tab.active {
+  background-color: #9cafc4;
+  color: #0b0f14;
+  border-color: #dbe5ee;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #6b7280;
+}
+
+.telemetry-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background-color: #0b0f14;
+  border: 1px solid #1f2937;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 120ms ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.telemetry-bar-row:hover {
+  background-color: #111827;
+  border-color: #374151;
+}
+
+.telemetry-bar-row.unhealthy {
+  border-color: #881337;
+  box-shadow: inset 1px 1px 0 rgba(136, 19, 55, 0.15);
+}
+
+.telemetry-bar-row.unhealthy:hover {
+  background-color: #170e14;
+  border-color: #9f1239;
+}
+
+.telemetry-capsule {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  background: #080d14;
+  height: 26px;
+  box-sizing: border-box;
+}
+
+.telemetry-pill-block {
+  flex: 1;
+  height: 14px;
+  min-width: 5px;
+  border-radius: 2px;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.telemetry-pill-block.active-healthy {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+}
+
+.telemetry-pill-block.active-unhealthy {
+  background: #9f1239;
+  box-shadow: 0 0 6px rgba(159, 18, 57, 0.75);
+}
+
+.telemetry-pill-block.inactive {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
