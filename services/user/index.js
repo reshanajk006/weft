@@ -7,9 +7,12 @@ const morgan = require('morgan');
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+const { chaosMiddleware } = require('../../shared/chaos');
+
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(chaosMiddleware('user-service'));
 
 const users = [
   { id: 'u-001', name: 'Alexander Wright', email: 'admin@nexus-it.com', role: 'SYS_ADMIN', department: 'IT Infrastructure' },

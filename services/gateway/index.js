@@ -5,12 +5,17 @@ const cors = require('cors');
 const morgan = require('morgan');
 const axios = require('axios');
 
+const { chaosMiddleware, injectErrorRule, clearErrorRule, getChaosState } = require('../../shared/chaos');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+
+// Mount Chaos & Manual Error Injection Middleware
+app.use(chaosMiddleware('api-gateway'));
 
 // Service URLs
 const SERVICES = {
@@ -25,8 +30,34 @@ const SERVICES = {
   support: process.env.SUPPORT_SERVICE_URL || 'http://localhost:3009',
 };
 
+// Helper to forward chaos headers to downstream microservices
+function forwardChaosHeaders(req) {
+  const headers = {};
+  if (req.headers['x-inject-error']) headers['x-inject-error'] = req.headers['x-inject-error'];
+  if (req.headers['x-fail-service']) headers['x-fail-service'] = req.headers['x-fail-service'];
+  return headers;
+}
+
 // Health Check
 app.get('/health', (req, res) => res.json({ service: 'api-gateway', status: 'UP', timestamp: new Date().toISOString() }));
+
+// Chaos Management Endpoints
+app.post('/api/chaos/inject', (req, res) => {
+  const { service, statusCode = 500, errorRate = 1.0, message } = req.body;
+  if (!service) return res.status(400).json({ error: 'Service name required (e.g. order-service)' });
+  const rule = injectErrorRule(service, { statusCode, errorRate, message });
+  res.json({ status: 'SUCCESS', rule, currentRules: getChaosState().activeRules });
+});
+
+app.delete('/api/chaos/reset', (req, res) => {
+  const { service } = req.query;
+  clearErrorRule(service);
+  res.json({ status: 'SUCCESS', currentRules: getChaosState().activeRules });
+});
+
+app.get('/api/chaos/status', (req, res) => {
+  res.json(getChaosState());
+});
 
 // Forwarding Routes
 app.post('/api/auth/login', async (req, res) => {

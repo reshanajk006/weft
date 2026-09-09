@@ -9,9 +9,12 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://localhost:3002';
 
+const { chaosMiddleware } = require('../../shared/chaos');
+
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(chaosMiddleware('auth-service'));
 
 app.get('/health', (req, res) => res.json({ service: 'auth-service', status: 'UP' }));
 

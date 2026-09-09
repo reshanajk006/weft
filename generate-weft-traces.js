@@ -25,8 +25,11 @@ function getArg(flag, def) {
   return idx !== -1 ? args[idx + 1] : def;
 }
 
-const TRACE_COUNT = parseInt(getArg('--traces', '50'));
-const OUTPUT      = getArg('--output', `weft-traces-${Date.now()}.json`);
+const TRACE_COUNT  = parseInt(getArg('--traces', '50'));
+const OUTPUT       = getArg('--output', `weft-traces-${Date.now()}.json`);
+const FAIL_SERVICE = getArg('--fail-service', null);
+const ERROR_RATE   = parseFloat(getArg('--error-rate', '1.0'));
+const ERROR_CODE   = getArg('--error-code', '500');
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function hexId(bytes) {
@@ -78,6 +81,21 @@ function makeSpan(tId, sId, parentSId, service, opName, startMicros, durationMic
     { key: 'span.kind',  type: 'string', value: parentSId ? 'server' : 'client' },
     { key: 'component',  type: 'string', value: 'express' },
   ];
+
+  // Inject manual chaos error if requested for this service
+  if (FAIL_SERVICE && FAIL_SERVICE === service && Math.random() <= ERROR_RATE) {
+    const hasError = tags.some(t => t.key === 'error');
+    if (!hasError) {
+      tags.push({ key: 'error', type: 'bool', value: true });
+    }
+    const statusIdx = tags.findIndex(t => t.key === 'http.status_code');
+    if (statusIdx !== -1) {
+      tags[statusIdx] = { key: 'http.status_code', type: 'int', value: parseInt(ERROR_CODE, 10) };
+    } else {
+      tags.push({ key: 'http.status_code', type: 'int', value: parseInt(ERROR_CODE, 10) });
+    }
+    tags.push({ key: 'chaos.manual_error', type: 'bool', value: true });
+  }
 
   return {
     traceID:       tId,
