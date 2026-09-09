@@ -59,6 +59,13 @@ def create_and_activate_dataset(db: Session, name: str, source: str | None) -> T
     return dataset
 
 
+def activate_dataset(db: Session, dataset: TelemetryDataset) -> TelemetryDataset:
+    db.execute(update(TelemetryDataset).values(is_active=False))
+    dataset.is_active = True
+    db.flush()
+    return dataset
+
+
 def dataset_summary(db: Session, dataset: TelemetryDataset | None) -> DatasetSummary | None:
     if dataset is None:
         return None

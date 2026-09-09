@@ -1,7 +1,10 @@
 import type {
   GraphResponse,
   GraphValidation,
+  IncidentAnalysis,
   IngestionResult,
+  JaegerStatus,
+  JaegerTestResult,
   Overview,
   Paginated,
   RankingItem,
@@ -101,4 +104,26 @@ export const api = {
     }),
   resetDatabase: () =>
     request<{ cleared: boolean; tables: Record<string, number> }>("/api/dev/reset", { method: "POST" }),
+  jaegerStatus: () => request<JaegerStatus>("/api/jaeger/status"),
+  jaegerTest: (jaeger_url: string) =>
+    request<JaegerTestResult>("/api/jaeger/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jaeger_url }),
+    }),
+  jaegerConnect: (body: {
+    jaeger_url: string;
+    poll_interval: number;
+    max_traces_per_poll: number;
+    service_filter?: string | null;
+    resume?: boolean;
+  }) =>
+    request<JaegerStatus>("/api/jaeger/connect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  jaegerDisconnect: () => request<JaegerStatus>("/api/jaeger/disconnect", { method: "POST" }),
+  jaegerReconnect: () => request<JaegerStatus>("/api/jaeger/reconnect", { method: "POST" }),
+  simulationAnalysis: (id: string) => request<IncidentAnalysis>(`/api/simulations/${id}/analysis`),
 };

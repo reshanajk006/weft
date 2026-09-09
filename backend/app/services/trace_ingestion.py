@@ -6,19 +6,23 @@ import json
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.config.thresholds import get_thresholds
-from app.core.exceptions import ValidationFailedError
+from app.core.exceptions import NotFoundError, ValidationFailedError
 from app.core.logging import get_logger
 from app.core.utils import as_bool, as_str, new_id, normalize_name, percentile, safe_div, utc_now
 from app.db.models import (
     CircuitBreakerState,
+    CircuitBreakerTransition,
+    CriticalitySnapshot,
     Dependency,
     Service,
+    ServiceHealthHistory,
     ServiceOperation,
     SpanRecord,
+    TelemetryDataset,
     TraceIngestion,
 )
 from app.schemas.telemetry import IngestionResult
@@ -27,7 +31,8 @@ from app.services.criticality_service import recompute_all_criticality
 from app.services.dataset_service import create_and_activate_dataset
 from app.services.graph_service import invalidate_graph_cache
 from app.services.health_service import recompute_all_health
-from app.services.origin import SOURCE_TRACE, touch_source
+from app.db.models.simulation import IncidentSimulation, SimulationRun
+from app.services.origin import SOURCE_CONFIG, SOURCE_TRACE, normalized_source, touch_source
 
 logger = get_logger("weft.ingestion")
 
@@ -44,11 +49,32 @@ def ingest_jaeger_payload(
     db: Session,
     payload: Any,
     filename: str | None = None,
+    dataset_id: str | None = None,
+    replace: bool = False,
 ) -> IngestionResult:
-    """Validate and ingest a Jaeger JSON payload into a NEW active dataset."""
+    """Validate and ingest Jaeger JSON.
+
+    Manual import (dataset_id is None) creates and activates a NEW dataset.
+    Live polling passes an existing dataset_id. When replace=True, the live
+    dataset is rebuilt from the current lookback window so removals and
+    metric changes appear on the graph.
+    """
 
     invalidate_graph_cache()
-    dataset = create_and_activate_dataset(db, name=filename or "Jaeger import", source=filename)
+    if dataset_id:
+        dataset = db.get(TelemetryDataset, dataset_id)
+        if dataset is None:
+            raise NotFoundError(
+                "Telemetry dataset was not found",
+                code="DATASET_NOT_FOUND",
+                details={"dataset_id": dataset_id},
+            )
+    else:
+        from app.services.live_jaeger_ingestion import get_live_manager
+
+        get_live_manager().stop_sync()
+        dataset = create_and_activate_dataset(db, name=filename or "Jaeger import", source=filename)
+        replace = False
     ingestion = TraceIngestion(
         id=new_id(),
         dataset_id=dataset.id,
@@ -60,7 +86,18 @@ def ingest_jaeger_payload(
 
     try:
         traces = _validate_payload(payload)
+        if replace:
+            _replace_dataset_spans(db, dataset.id)
         result = _process_traces(db, traces, ingestion, dataset.id)
+        if replace:
+            _recompute_metrics(db, dataset.id)
+            _prune_stale_topology(db, dataset.id)
+            result["service_count"] = len(
+                list(db.execute(select(Service).where(Service.dataset_id == dataset.id)).scalars().all())
+            )
+            result["dependency_count"] = len(
+                list(db.execute(select(Dependency).where(Dependency.dataset_id == dataset.id)).scalars().all())
+            )
         ingestion.trace_count = result["trace_count"]
         ingestion.span_count = result["span_count"]
         ingestion.service_count = result["service_count"]
@@ -245,6 +282,57 @@ def _process_single_trace(
     db.flush()
     _recompute_metrics(db, dataset_id)
     return {"spans": len(parsed), "errors": errors}
+
+
+def _replace_dataset_spans(db: Session, dataset_id: str) -> None:
+    db.execute(delete(SpanRecord).where(SpanRecord.dataset_id == dataset_id))
+    db.flush()
+
+
+def _prune_stale_topology(db: Session, dataset_id: str) -> None:
+    """Drop trace-only services and edges that are no longer in the live window."""
+
+    protected = {
+        row[0]
+        for row in db.execute(select(SimulationRun.failed_service_id).where(SimulationRun.dataset_id == dataset_id))
+        if row[0]
+    }
+    for dependency in list(db.execute(select(Dependency).where(Dependency.dataset_id == dataset_id)).scalars().all()):
+        if dependency.call_count > 0:
+            continue
+        if normalized_source(dependency.source) == SOURCE_CONFIG:
+            continue
+        breakers = list(
+            db.execute(select(CircuitBreakerState).where(CircuitBreakerState.dependency_id == dependency.id)).scalars().all()
+        )
+        for breaker in breakers:
+            db.execute(delete(CircuitBreakerTransition).where(CircuitBreakerTransition.circuit_breaker_id == breaker.id))
+            db.delete(breaker)
+        db.delete(dependency)
+    db.flush()
+    for service in list(db.execute(select(Service).where(Service.dataset_id == dataset_id)).scalars().all()):
+        if service.total_spans > 0:
+            continue
+        if normalized_source(service.source) == SOURCE_CONFIG:
+            continue
+        if service.id in protected:
+            continue
+        leftover = list(
+            db.execute(
+                select(Dependency).where(
+                    Dependency.dataset_id == dataset_id,
+                    (Dependency.source_service_id == service.id) | (Dependency.target_service_id == service.id),
+                )
+            ).scalars().all()
+        )
+        if leftover:
+            continue
+        db.execute(delete(CriticalitySnapshot).where(CriticalitySnapshot.service_id == service.id))
+        db.execute(delete(ServiceHealthHistory).where(ServiceHealthHistory.service_id == service.id))
+        db.execute(delete(ServiceOperation).where(ServiceOperation.service_id == service.id))
+        db.execute(delete(IncidentSimulation).where(IncidentSimulation.service_id == service.id))
+        db.delete(service)
+    db.flush()
 
 
 def _extract_span(span: dict[str, Any], processes: dict[str, Any], fallback_trace_id: str) -> dict[str, Any] | None:

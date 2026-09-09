@@ -18,6 +18,7 @@ from app.api.routes import (
     dev,
     graph,
     health,
+    jaeger,
     reports,
     services,
     simulations,
@@ -45,6 +46,10 @@ def create_app() -> FastAPI:
         logger.info("Thresholds loaded from %s", settings.thresholds_file)
         logger.info("WEFT backend ready")
         yield
+        from app.services.live_jaeger_ingestion import get_live_manager
+
+        await get_live_manager().shutdown()
+        logger.info("WEFT backend stopped")
 
     application = FastAPI(
         title="WEFT API",
@@ -85,6 +90,7 @@ def create_app() -> FastAPI:
         application.include_router(config.router, prefix=prefix)
         application.include_router(dev.router, prefix=prefix)
         application.include_router(admin.router, prefix=prefix)
+        application.include_router(jaeger.router, prefix=prefix)
 
     mount("/api")
     mount("/api/v1")

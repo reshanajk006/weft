@@ -279,6 +279,42 @@ textarea {
   background: transparent;
 }
 
+.live-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.live-status.on {
+  color: #7dcea0;
+}
+
+.live-status.error {
+  color: var(--unhealthy);
+}
+
+.live-status.off {
+  color: var(--muted);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7dcea0;
+  display: inline-block;
+}
+
+.live-dot.off {
+  background: #5b6370;
+}
+
+.row.wrap {
+  flex-wrap: wrap;
+}
+
 .icon-btn {
   width: 36px;
   height: 36px;
@@ -343,6 +379,12 @@ textarea {
   background-image: linear-gradient(#1a2330 1px, transparent 1px),
     linear-gradient(90deg, #1a2330 1px, transparent 1px);
   background-size: 22px 22px;
+}
+
+.empty-graph-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
 }
 
 .empty-graph h2 {

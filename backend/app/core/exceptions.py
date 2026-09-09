@@ -55,3 +55,13 @@ class InternalServerError(AppError):
             status_code=500,
             details=details,
         )
+
+
+class JaegerUnavailableError(AppError):
+    def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
+        super().__init__(
+            code="JAEGER_UNAVAILABLE",
+            message=message,
+            status_code=502,
+            details=details,
+        )

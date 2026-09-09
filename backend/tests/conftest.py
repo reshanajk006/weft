@@ -92,11 +92,14 @@ def tmp_env(tmp_path, monkeypatch):
     from app.core.settings import reset_settings
     from app.config.thresholds import reset_thresholds
     from app.db.database import reset_engine
+    from app.services.live_jaeger_ingestion import reset_live_manager
 
     reset_settings()
     reset_engine()
     reset_thresholds(thresholds_copy)
+    reset_live_manager()
     yield tmp_path
+    reset_live_manager()
     reset_engine()
     reset_settings()
 

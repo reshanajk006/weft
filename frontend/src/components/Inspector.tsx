@@ -8,6 +8,7 @@ export function Inspector() {
     dashboard,
     simulation,
     timeline,
+    analysis,
     error,
     selectService,
     requestSimulate,
@@ -124,7 +125,7 @@ export function Inspector() {
             <p className="muted">{simulation.explanation}</p>
           </div>
           <div>
-            <div className="eyebrow">Circuit breaker</div>
+            <div className="eyebrow">Circuit breaker (predicted)</div>
             {simulation.predicted_circuit_transitions.length === 0 ? (
               <p className="muted">No predicted transitions.</p>
             ) : null}
@@ -134,12 +135,45 @@ export function Inspector() {
                   {item.source} → {item.target}
                 </div>
                 <div className="muted">
-                  {item.previous_state} → {item.new_state}
+                  Predicted: {item.previous_state} → {item.new_state}
                 </div>
                 <div className="muted">{item.reason}</div>
               </div>
             ))}
           </div>
+          {analysis?.root_cause.likely_root_cause ? (
+            <div>
+              <div className="eyebrow">Likely root cause</div>
+              <div className="inspector-line">
+                <span>{analysis.root_cause.likely_root_cause.service}</span>
+                <StatusPill value={analysis.root_cause.likely_root_cause.confidence} />
+              </div>
+              <p className="muted">
+                Error rate {(analysis.root_cause.likely_root_cause.error_rate * 100).toFixed(0)}% · health{" "}
+                {Math.round(analysis.root_cause.likely_root_cause.health_score)} · criticality{" "}
+                {analysis.root_cause.likely_root_cause.criticality_score.toFixed(1)}
+              </p>
+              {analysis.root_cause.likely_root_cause.evidence.map((item) => (
+                <p key={item} className="muted">
+                  {item}
+                </p>
+              ))}
+            </div>
+          ) : null}
+          {analysis?.recommendations.length ? (
+            <div>
+              <div className="eyebrow">Recommended actions</div>
+              <p className="muted">Simulation-only. WEFT does not execute remediation.</p>
+              {analysis.recommendations.map((item, index) => (
+                <div key={`${item.service}-${index}`} className="stack" style={{ gap: 4, marginBottom: 10 }}>
+                  <div>
+                    {item.priority}: {item.recommendation}
+                  </div>
+                  <div className="muted">{item.reason}</div>
+                </div>
+              ))}
+            </div>
+          ) : null}
           <div>
             <div className="eyebrow">Timeline</div>
             {timeline.map((event, index) => (

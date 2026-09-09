@@ -17,8 +17,13 @@ export function GraphWorkspace() {
     simulation,
     error,
     visibleIds,
+    overview,
     openImport,
+    openJaeger,
+    ingestSample,
     selectService,
+    jaeger,
+    reconnectJaeger,
   } = useWorkspace();
 
   const hydrated = useRef(false);
@@ -44,7 +49,10 @@ export function GraphWorkspace() {
     setSearchParams(next, { replace: true });
   }, [mode, selectedId, setSearchParams, simulation]);
 
-  const empty = graph.nodes.length === 0;
+  const empty =
+    graph.nodes.length === 0 &&
+    (overview?.service_count ?? 0) === 0 &&
+    (jaeger.graph_service_count ?? 0) === 0;
   const failedId = mode === "SIMULATION_COMPLETE" ? simulation?.failed_service.id ?? null : null;
   const incident = mode === "SIMULATION_COMPLETE";
 
@@ -57,11 +65,24 @@ export function GraphWorkspace() {
             <div className="eyebrow">Dependency map</div>
             <p className="muted">A → B means A calls B. If B fails, A is in the blast radius.</p>
           </div>
-          <button className="btn ghost" type="button" onClick={openImport}>
-            Import Jaeger JSON
-          </button>
+          <div className="row">
+            <button className="btn ghost" type="button" onClick={openImport}>
+              Import Jaeger JSON
+            </button>
+            <button className="btn ghost" type="button" onClick={openJaeger}>
+              Connect to Jaeger
+            </button>
+          </div>
         </div>
         {error && mode === "ERROR" ? <div className="error-banner">{error}</div> : null}
+        {jaeger.status === "error" && graph.nodes.length > 0 ? (
+          <div className="notice">
+            Jaeger connection lost. Showing last known telemetry.{" "}
+            <button className="linkish" type="button" onClick={() => void reconnectJaeger()}>
+              Reconnect
+            </button>
+          </div>
+        ) : null}
         {validation?.has_cycles ? (
           <div className="notice">
             Circular dependencies detected ({validation.cycle_count}). Analysis still runs; cycles are warnings.
@@ -93,34 +114,81 @@ export function GraphWorkspace() {
           ) : null}
         </div>
         <div className="graph-frame">
+          <GraphCanvas
+            graph={graph}
+            selectedId={selectedId}
+            focusId={focusId}
+            failedId={failedId}
+            dimmed={visibleIds}
+            onSelect={(id) => {
+              if (!id && incident) return;
+              void selectService(id);
+            }}
+          />
           {empty ? (
-            <div className="empty-graph">
-              <div className="eyebrow">Empty dependency map</div>
-              <h2>Your dependency map will appear here.</h2>
-              <p className="muted">
-                {mode === "ERROR"
-                  ? "Unable to load system data."
-                  : "No telemetry has been imported yet. Import a Jaeger JSON export to reconstruct your system."}
-              </p>
-              <div className="row">
-                <button className="btn" type="button" onClick={openImport}>
-                  Import Jaeger JSON
-                </button>
-              </div>
+            <div className="empty-graph empty-graph-overlay">
+              {jaeger.is_running || overview?.active_dataset ? (
+                <>
+                  <div className="eyebrow">{jaeger.is_running ? "Live ingestion active" : "Dataset loaded"}</div>
+                  <h2>
+                    {jaeger.is_running
+                      ? "Waiting for traces from Jaeger."
+                      : "This dataset has no services yet."}
+                  </h2>
+                  <p className="muted">
+                    {jaeger.is_running
+                      ? `Connected to ${jaeger.jaeger_url ?? "Jaeger"}. ${jaeger.services_discovered.length} service(s) discovered, ${jaeger.traces_ingested} traces ingested.${jaeger.last_poll_time ? ` Last poll ${new Date(jaeger.last_poll_time).toLocaleTimeString()}.` : ""}`
+                      : "Import another file or connect to Jaeger to populate the graph."}
+                  </p>
+                  {jaeger.status === "error" ? (
+                    <div className="error-banner">
+                      {jaeger.error_message || "Jaeger connection lost."}{" "}
+                      <button className="linkish" type="button" onClick={() => void reconnectJaeger()}>
+                        Reconnect
+                      </button>
+                    </div>
+                  ) : null}
+                  <div className="row wrap">
+                    <button className="btn" type="button" onClick={openJaeger}>
+                      {jaeger.is_running ? "Live connection" : "Connect to Jaeger"}
+                    </button>
+                    <button className="btn ghost" type="button" onClick={openImport}>
+                      Import Jaeger JSON
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="eyebrow">No system data loaded</div>
+                  <h2>Import telemetry to reconstruct your service dependency graph.</h2>
+                  <p className="muted">
+                    {mode === "ERROR"
+                      ? "Unable to load system data. The backend is unavailable or returned an error."
+                      : "Nothing happens until you choose a source. WEFT will not invent a system for you."}
+                  </p>
+                  {mode !== "ERROR" ? (
+                    <div className="row wrap">
+                      <button className="btn" type="button" onClick={openImport}>
+                        Import Jaeger JSON
+                      </button>
+                      <button className="btn" type="button" onClick={openJaeger}>
+                        Connect to Jaeger
+                      </button>
+                      <button className="btn ghost" type="button" onClick={() => void ingestSample()}>
+                        Load sample
+                      </button>
+                    </div>
+                  ) : null}
+                  {mode !== "ERROR" ? (
+                    <p className="muted">
+                      Import Jaeger JSON is static/pre-recorded telemetry. Connect to Jaeger is live Query API polling.
+                      Load sample is an explicit local demonstration dataset.
+                    </p>
+                  ) : null}
+                </>
+              )}
             </div>
-          ) : (
-            <GraphCanvas
-              graph={graph}
-              selectedId={selectedId}
-              focusId={focusId}
-              failedId={failedId}
-              dimmed={visibleIds}
-              onSelect={(id) => {
-                if (!id && incident) return;
-                void selectService(id);
-              }}
-            />
-          )}
+          ) : null}
         </div>
       </section>
       <Inspector />

@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Search, Settings } from "lucide-react";
 import { useState } from "react";
 import { ImportModal } from "./ImportModal";
+import { JaegerConnectModal } from "./JaegerConnectModal";
 import { useWorkspace } from "../state/workspace";
 
 const TABS = [
@@ -12,9 +13,43 @@ const TABS = [
   { to: "/reports", label: "Reports" },
 ];
 
+function LiveStatus() {
+  const { jaeger, reconnectJaeger } = useWorkspace();
+  const last = jaeger.last_poll_time ? new Date(jaeger.last_poll_time).toLocaleTimeString() : null;
+
+  if (jaeger.status === "error") {
+    return (
+      <div className="live-status error">
+        <span>CONNECTION ERROR</span>
+        <button className="btn ghost" type="button" onClick={() => void reconnectJaeger()}>
+          Reconnect
+        </button>
+      </div>
+    );
+  }
+  if (jaeger.is_running) {
+    return (
+      <div className="live-status on">
+        <span className="live-dot" />
+        LIVE
+        <span className="muted">
+          {last ? `Last update ${last}` : "Connected to Jaeger"}
+          {jaeger.graph_service_count ? ` · ${jaeger.graph_service_count} services` : ""}
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div className="live-status off">
+      <span className="live-dot off" />
+      OFFLINE
+    </div>
+  );
+}
+
 export function AppShell() {
   const navigate = useNavigate();
-  const { searchAndSelect, graph } = useWorkspace();
+  const { searchAndSelect } = useWorkspace();
   const [query, setQuery] = useState("");
   const [miss, setMiss] = useState(false);
 
@@ -36,18 +71,16 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
+        <LiveStatus />
         <form
           className="top-search"
           onSubmit={(event) => {
             event.preventDefault();
             if (!query.trim()) return;
-            if (graph.nodes.length === 0) {
-              setMiss(true);
-              return;
-            }
-            const found = searchAndSelect(query);
-            setMiss(!found);
-            if (found) navigate("/");
+            void searchAndSelect(query).then((found) => {
+              setMiss(!found);
+              if (found) navigate("/");
+            });
           }}
         >
           <Search size={14} />
@@ -68,6 +101,7 @@ export function AppShell() {
       </header>
       <Outlet />
       <ImportModal />
+      <JaegerConnectModal />
     </div>
   );
 }

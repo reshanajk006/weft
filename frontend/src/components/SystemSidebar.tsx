@@ -9,6 +9,7 @@ export function SystemSidebar() {
     setHealthFilter,
     setCriticalityFilter,
     openImport,
+    openJaeger,
     ingestSample,
   } = useWorkspace();
   const empty = mode === "NO_DATA" || mode === "ERROR" || !overview?.active_dataset;
@@ -22,8 +23,11 @@ export function SystemSidebar() {
           <button className="btn" type="button" onClick={openImport}>
             Import Jaeger JSON
           </button>
+          <button className="btn ghost" type="button" onClick={openJaeger}>
+            Connect to Jaeger
+          </button>
           <button className="btn ghost" type="button" onClick={() => void ingestSample().catch(() => undefined)}>
-            Load sample system
+            Load sample
           </button>
         </>
       ) : (

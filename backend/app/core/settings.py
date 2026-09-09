@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     max_trace_file_size_mb: int = Field(default=20, ge=1)
     log_level: str = Field(default="INFO")
     thresholds_path: str = Field(default="")
+    jaeger_query_url: str = Field(default="http://localhost:16686")
+    jaeger_poll_interval_seconds: int = Field(default=30, ge=5)
+    jaeger_max_traces_per_poll: int = Field(default=50, ge=1)
+    jaeger_service_filter: str = Field(default="")
     app_name: str = Field(default="weft-backend")
     app_version: str = Field(default="1.0.0")
 

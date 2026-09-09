@@ -3,17 +3,18 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+
 
 from sqlalchemy.orm import Session
 
-from app.config.thresholds import get_thresholds
-from app.core.exceptions import BadRequestError, NotFoundError
+from app.core.exceptions import BadRequestError
 from app.core.settings import get_settings
 from app.core.utils import isoformat, new_id, utc_now
-from app.db.models import ImpactReport, Service, SimulationRun
+from app.db.models import ImpactReport, Service
 from app.schemas.report import ReportResponse
 from app.schemas.simulation import SimulationResponse, TimelineEvent
+from app.services.recommendation_service import build_recommendations, recommendation_lines
+from app.services.root_cause_service import analyze_root_cause
 from app.services.simulation_service import _get_active_simulation, get_timeline
 
 
@@ -24,7 +25,9 @@ def generate_report(db: Session, simulation_id: str, fmt: str) -> ReportResponse
     run = _get_active_simulation(db, simulation_id)
     result = SimulationResponse.model_validate(run.result_json)
     timeline = get_timeline(db, simulation_id).items
-    recommendations = _recommendations(db, result)
+    rec_response = build_recommendations(db, simulation_id)
+    recommendations = recommendation_lines(rec_response.items)
+    root = analyze_root_cause(db, simulation_id)
     failed = db.get(Service, result.failed_service.id)
 
     payload = {
@@ -63,13 +66,15 @@ def generate_report(db: Session, simulation_id: str, fmt: str) -> ReportResponse
         ],
         "circuit_breaker_simulation": [item.model_dump() for item in result.predicted_circuit_transitions],
         "incident_timeline": [item.model_dump() for item in timeline],
+        "root_cause": root.model_dump(),
+        "recommendation_items": [item.model_dump() for item in rec_response.items],
         "recommendations": recommendations,
     }
 
     if fmt_normalized == "json":
         content = json.dumps(payload, indent=2)
     else:
-        content = _markdown(payload, timeline, recommendations)
+        content = _markdown(payload, timeline, recommendations, root)
 
     created_at = utc_now()
     report_id = new_id()
@@ -98,39 +103,7 @@ def generate_report(db: Session, simulation_id: str, fmt: str) -> ReportResponse
     )
 
 
-def _recommendations(db: Session, result: SimulationResponse) -> list[str]:
-    thresholds = get_thresholds()
-    recs: list[str] = []
-    failed = db.get(Service, result.failed_service.id)
-    if failed is None:
-        return recs
-    if failed.error_rate >= thresholds.health.degraded_error_rate:
-        recs.append(
-            f"Investigate {failed.name} error rate of {failed.error_rate:.0%}."
-        )
-    if failed.avg_latency_ms >= thresholds.latency.high_latency_ms:
-        recs.append(
-            f"Investigate {failed.name} latency of {failed.avg_latency_ms:.0f}ms."
-        )
-    if result.blast_radius_score >= thresholds.severity.medium_max:
-        recs.append(
-            f"{failed.name} is a high-impact dependency. Review containment strategy."
-        )
-    if result.critical_services_affected >= 2 or len(result.directly_affected) >= 3:
-        recs.append(f"Multiple critical callers depend on {failed.name}.")
-    if result.predicted_circuit_transitions:
-        recs.append(
-            "Predicted circuit-breaker opens would contain caller traffic in simulation only; "
-            "no production circuit breakers were changed."
-        )
-    if not recs:
-        recs.append(
-            f"Review remaining callers of {failed.name} and continue monitoring observed error rate and latency."
-        )
-    return recs
-
-
-def _markdown(payload: dict, timeline: list[TimelineEvent], recommendations: list[str]) -> str:
+def _markdown(payload: dict, timeline: list[TimelineEvent], recommendations: list[str], root) -> str:
     failed = payload["failed_service"]
     health = payload["current_health"]
     blast = payload["blast_radius"]
@@ -183,6 +156,18 @@ def _markdown(payload: dict, timeline: list[TimelineEvent], recommendations: lis
     for event in timeline:
         label = event.service or ""
         lines.append(f"- {event.timestamp} [{event.type}] {label} {event.message}".strip())
+    lines.extend(["", "## Root Cause"])
+    likely = root.likely_root_cause
+    if likely is None:
+        lines.append("- No root-cause candidate from observed telemetry.")
+    else:
+        lines.append(f"- Likely root cause: {likely.service}")
+        lines.append(f"- Confidence: {likely.confidence}")
+        lines.append(f"- Error rate: {likely.error_rate}")
+        lines.append(f"- Health score: {likely.health_score}")
+        lines.append(f"- Criticality: {likely.criticality_score}")
+        for item in likely.evidence:
+            lines.append(f"- {item}")
     lines.extend(["", "## Recommendations"])
     for rec in recommendations:
         lines.append(f"- {rec}")

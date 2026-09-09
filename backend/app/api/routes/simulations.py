@@ -9,7 +9,10 @@ from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
 
 from app.api.deps import get_db
+from app.schemas.analysis import IncidentAnalysisResponse
 from app.schemas.simulation import MultiFailureRequest, SimulationListResponse, SimulationResponse, TimelineResponse
+from app.services.recommendation_service import build_recommendations
+from app.services.root_cause_service import analyze_root_cause
 from app.services.simulation_service import (
     get_simulation,
     get_timeline,
@@ -87,3 +90,18 @@ def simulation_detail(simulation_id: str, db: Session = Depends(get_db)) -> Simu
 )
 def simulation_timeline(simulation_id: str, db: Session = Depends(get_db)) -> TimelineResponse:
     return get_timeline(db, simulation_id)
+
+
+@router.get(
+    "/simulations/{simulation_id}/analysis",
+    response_model=IncidentAnalysisResponse,
+    summary="Explainable root cause and recommendations",
+)
+def simulation_analysis(simulation_id: str, db: Session = Depends(get_db)) -> IncidentAnalysisResponse:
+    root = analyze_root_cause(db, simulation_id)
+    recs = build_recommendations(db, simulation_id)
+    return IncidentAnalysisResponse(
+        simulation_id=simulation_id,
+        root_cause=root,
+        recommendations=recs.items,
+    )

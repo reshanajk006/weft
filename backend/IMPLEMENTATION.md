@@ -1,10 +1,12 @@
 # WEFT Backend Implementation
 
-This document describes what is implemented in the WEFT backend and how it works.
+This document describes **what is implemented**, **how it works**, and **what it uses**.
 
-WEFT is a **deterministic analysis and simulation platform**. The only required user input is a Jaeger-format JSON trace file. The backend derives the rest: services, dependencies, health, technical criticality, blast radius, failure simulation, circuit-breaker simulation, incident history, and reports.
+WEFT is a **deterministic dependency-graph blast-radius analyzer**. You import telemetry (Jaeger JSON or OTLP JSON) or declare a topology. The backend derives services, edges, health, criticality, blast radius, failure simulation, circuit-breaker simulation, and reports.
 
-It does **not** talk to a live Jaeger server, Kubernetes, Prometheus, or any production traffic path. Simulated failures and circuit breakers never stop real services.
+It does **not** talk to a live Jaeger server, Kubernetes, Prometheus, or production traffic. Simulated failures never stop real services and do not mutate live health.
+
+**Graph rule (do not reverse):** edge `A → B` means A calls B. If B fails, A is affected (`nx.ancestors`). Callees of B are not in the blast radius just because they are called.
 
 ---
 
@@ -12,39 +14,72 @@ It does **not** talk to a live Jaeger server, Kubernetes, Prometheus, or any pro
 
 | Area | Status |
 | --- | --- |
-| Backend REST API | Implemented |
-| SQLite persistence | Implemented |
+| FastAPI REST API (`/api` and `/api/v1`) | Implemented |
+| SQLite persistence + additive schema migration | Implemented |
+| Dataset-scoped workspace (empty until import) | Implemented |
 | Jaeger ingest + graph derivation | Implemented |
-| Health, criticality, blast radius | Implemented |
-| Failure + circuit-breaker simulation | Implemented |
+| OTLP JSON ingest | Implemented |
+| Config-driven topology (JSON/YAML) | Implemented |
+| Health, 5-factor criticality, blast radius | Implemented |
+| Single + multi-service failure simulation | Implemented |
+| Circuit-breaker simulation | Implemented |
 | Reports, SSE, thresholds API | Implemented |
-| Automated tests | 57 tests, passing |
-| Frontend | Not implemented (`frontend/.gitkeep` only) |
+| Graph cache, GraphML/DOT export | Implemented |
+| Admin reset/seed, optional API key | Implemented |
+| Live Jaeger Query API (manual connect, poll, same dataset) | Implemented |
+| Deterministic root cause + recommendations | Implemented |
+| Docker + GitHub Actions CI | Implemented |
+| Automated tests | 94 pytest tests |
+| React frontend (Vite + xyflow) | Implemented; live Jaeger UI wired |
+
+---
+
+## Stack (what it uses)
+
+| Layer | Technology |
+| --- | --- |
+| HTTP | FastAPI 0.115, Uvicorn |
+| Validation / settings | Pydantic v2, pydantic-settings, PyYAML |
+| Persistence | SQLAlchemy 2.x, SQLite (`weft.db`) |
+| Graph compute | NetworkX `DiGraph` |
+| Streaming | sse-starlette (SSE, not WebSockets) |
+| Uploads | python-multipart |
+| Tests / lint | pytest, httpx, ruff |
+| Frontend (separate package) | React 18, Vite, xyflow |
+| Packaging | `backend/Dockerfile`, root `docker-compose.yml` |
+| CI | GitHub Actions: pytest + ruff on Python 3.12 |
+
+Run locally: `cd backend && python run.py` (Uvicorn, host `0.0.0.0`, port `8000`, reload). Interactive docs: `/docs`, `/redoc`.
 
 ---
 
 ## How a request flows
 
 ```
-Frontend / curl
-    → FastAPI route (thin)
-        → service layer (algorithms)
-            → SQLAlchemy models (source of truth)
-            → NetworkX DiGraph (compute only)
+UI / curl
+    → FastAPI route (thin, Pydantic response_model)
+        → service layer (ingest, health, criticality, blast radius, simulation)
+            → SQLite (source of truth)
+            → NetworkX DiGraph (compute only; copy of an in-process cache)
         → Pydantic schema
-    → JSON response
+    → JSON
 ```
 
-Routes never return ORM objects. Every endpoint has a Pydantic `response_model`.
+Routes never return ORM objects. Errors are always:
+
+```json
+{ "error": { "code": "SERVICE_NOT_FOUND", "message": "…", "details": {} } }
+```
 
 Startup (`app/main.py`):
 
 1. Load settings from environment / `.env`
 2. Configure logging
-3. Create SQLite tables (`Base.metadata.create_all`)
+3. `create_all` + `ensure_dataset_schema` (additive ALTERs; rebuild tables with stale uniques)
 4. Load `config/thresholds.yaml`
-5. Register CORS and exception handlers
-6. Mount all `/api` routers
+5. CORS (credentials off) + exception handlers
+6. Global write-API-key dependency (no-op if `API_KEY` unset)
+7. Mount the same routers at `/api` and `/api/v1`
 
 ---
 
@@ -54,87 +89,118 @@ Startup (`app/main.py`):
 weft/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py                 # FastAPI factory
-│   │   ├── api/routes/            # HTTP endpoints
-│   │   ├── core/                 # settings, logging, exceptions
-│   │   ├── config/thresholds.py    # YAML loader + validation
-│   │   ├── db/models/             # SQLAlchemy 2.x models
-│   │   ├── schemas/              # Pydantic v2 response models
-│   │   └── services/             # algorithms
+│   │   ├── main.py                 # FastAPI factory; dual /api + /api/v1
+│   │   ├── api/routes/           # HTTP endpoints
+│   │   ├── api/errors.py        # JSON error envelope
+│   │   ├── core/                # settings, logging, exceptions, security
+│   │   ├── config/thresholds.py  # YAML loader + Pydantic validation
+│   │   ├── db/models/           # SQLAlchemy 2.x models
+│   │   ├── db/database.py        # engine, sessions, schema migration
+│   │   ├── schemas/            # Pydantic v2 response models
+│   │   └── services/            # algorithms
 │   ├── config/thresholds.yaml
-│   ├── samples/                 # sample Jaeger JSON
+│   ├── samples/                 # Jaeger + OTLP sample JSON
 │   ├── tests/
+│   ├── Dockerfile
+│   ├── ruff.toml
 │   ├── run.py
 │   └── requirements.txt
-└── frontend/                    # empty placeholder
+├── frontend/                   # React workspace (consumes /api)
+├── docker-compose.yml
+└── .github/workflows/ci.yml
 ```
 
 ---
 
-## Input: Jaeger JSON
+## Feature 1 — Empty workspace until import (datasets)
 
-Two equivalent ingest paths share `app/services/trace_ingestion.py`:
+**Why:** SQLite used to look like “the system” on refresh. A new import must **replace** the on-screen graph, not merge with leftover rows.
 
-| Method | Endpoint |
-| --- | --- |
-| File upload | `POST /api/telemetry/traces/upload` |
-| Raw JSON body | `POST /api/telemetry/traces` |
+**How (`dataset_service.py`):**
 
-Uploads are stored under `data/traces/` with a generated filename (`{ingestion_id}.json`). User-supplied names are never used as filesystem paths. Max size is `MAX_TRACE_FILE_SIZE_MB` (default 20).
+- Each Jaeger/OTLP ingest calls `create_and_activate_dataset`, which marks every other `TelemetryDataset` inactive.
+- Graph, services, overview, simulation, and blast-radius queries are scoped to `is_active` dataset id.
+- `GET /api/datasets/active` returns `null` when nothing is activated.
+- Legacy rows with `dataset_id = NULL` are hidden.
+- Startup does **not** wipe the DB.
 
-Supported Jaeger fields:
+**Uniqueness:** `(dataset_id, normalized_name)` for services; `(dataset_id, source, target)` for edges; `(dataset_id, trace_id, span_id)` for spans. Names are unique **case-insensitively within a dataset**.
 
-- `data[].traceID`
-- `data[].spans[]` with `spanID`, `operationName`, `startTime`, `duration`, `tags`, `references`
-- service name from `process.serviceName`, `processID` → `processes`, or tag `service.name`
-
-### How dependencies are derived
-
-Parent spans may appear before or after children. Ingestion therefore:
-
-1. Build `span_id → service_name` for **all** spans first
-2. Then resolve parent-child pairs
-
-For each child span:
-
-- `source` = parent span’s service
-- `target` = current span’s service
-- if they differ, create/update `source → target`
-
-That edge means **source calls target**. Same-service parent/child does not create a self-edge.
-
-Re-uploading the same `(trace_id, span_id)` is idempotent. Duplicate spans are skipped.
+**Schema (`database.py`):** old DBs had table-level UNIQUE on `(trace_id, span_id)`. Re-importing sample Jaeger IDs then collided. `ensure_dataset_schema` rebuilds those tables in place and adds columns (`source`, `owner`, `criticality_override`, `failed_service_ids`).
 
 ---
 
-## Error and latency rules
+## Feature 2 — Jaeger ingest (observed topology)
+
+**Using:** `trace_ingestion.py`, endpoints `POST /api/telemetry/traces` and `POST /api/telemetry/traces/upload`.
+
+Uploads are stored under `data/traces/{ingestion_id}.json`. User filenames are never used as filesystem paths. Max size: `MAX_TRACE_FILE_SIZE_MB` (default 20).
+
+Supported Jaeger fields: `data[].traceID`, `spans[]` (`spanID`, `operationName`, `startTime`, `duration`, `tags`, `references`). Service name from `process.serviceName`, `processID` → `processes`, or tag `service.name`.
+
+### How edges are derived
+
+Parent spans may appear after children. Ingestion:
+
+1. Builds `span_id → service_name` for **all** spans first
+2. Then resolves parent → child
+
+`source` = parent service, `target` = child service. Same-service parent/child: no self-edge. That edge means **source calls target**.
+
+Within a dataset, re-uploading the same `(trace_id, span_id)` is skipped (idempotent). A **new** ingest creates a **new** dataset, so the same Jaeger IDs can appear again.
+
+After spans: recompute metrics, health, criticality, circuit breakers, critical edge weights; invalidate graph cache.
+
+---
+
+## Feature 3 — OTLP JSON ingest
+
+**Using:** `otlp_ingestion.py` → maps to Jaeger shape → `ingest_jaeger_payload`.
+
+`POST /api/telemetry/otlp` reads `resourceSpans[].scopeSpans[].spans[]`. Service from resource/span attributes. Duration: nanoseconds → microseconds. `status.code == 2` is treated as error. Sample: `samples/sample_traces_otlp.json`.
+
+---
+
+## Feature 4 — Config-driven topology
+
+**Using:** `topology_service.py`, `POST /api/config/topology` and `/upload` (JSON or YAML).
+
+Payload: `{ "services": [{ name, tier, type, owner }], "dependencies": [{ source, target, critical_weight, protocol }], "mode": "merge" | "replace" }`.
+
+- Upsert by normalized name. Trace-derived **metrics are never overwritten**.
+- `Service.source` / `Dependency.source`: `trace` | `config` | `both` (`origin.py`).
+- Unknown dependency names → **422**, no placeholder services.
+- `mode=replace` only deletes rows whose origin is `config`.
+- If no active dataset exists, creates one named “Config topology”.
+
+API-only today (UI is not wired).
+
+---
+
+## Feature 5 — Error and latency rules
 
 A span is failed if:
 
 - tag `error` is true (`true`, `True`, `"true"`, `1`, …), **or**
 - `http.status_code` starts with `5`
 
-`404` is **not** an error. Tag types are coerced so mixed string/int/bool values do not crash.
+`404` is **not** an error. Tag types are coerced.
 
 Jaeger `duration` is microseconds. Stored latency is milliseconds: `duration / 1000`.
 
-Per service and per dependency the backend stores:
-
-- call/span counts
-- error count and error rate (`0` if count is `0`)
-- avg / min / max latency
-- P95 / P99 via linear interpolation on sorted samples
+Per service and per dependency: call/span counts, error rate (`0` if count is `0`), avg/min/max latency, P95/P99 via linear interpolation on sorted samples.
 
 ---
 
 ## Data model (SQLite)
 
-Default URL: `sqlite:///./weft.db`, resolved to an absolute path under `backend/` so different working directories do not create extra databases.
+Default URL: `sqlite:///./weft.db`, resolved to an absolute path under `backend/`.
 
 | Model | Role |
 | --- | --- |
-| `Service` | Discovered service + aggregated metrics, health, criticality |
-| `Dependency` | Directed edge `source → target` with unique `(source, target)` |
+| `TelemetryDataset` | Active workspace; ingest activates a new one |
+| `Service` | Metrics, health, criticality, `source`, `owner`, `criticality_override` |
+| `Dependency` | Directed edge `source → target` with `source` origin |
 | `SpanRecord` | Individual spans used to recompute metrics |
 | `ServiceOperation` | Operation names for search |
 | `ServiceHealthHistory` | Snapshot after every health computation |
@@ -142,25 +208,27 @@ Default URL: `sqlite:///./weft.db`, resolved to an absolute path under `backend/
 | `TraceIngestion` | Ingest job metadata |
 | `CircuitBreakerState` | Simulated breaker per dependency |
 | `CircuitBreakerTransition` | Logged state changes |
-| `SimulationRun` | Saved failure-simulation result JSON |
+| `SimulationRun` | Saved result JSON; `failed_service_ids` for multi-fail |
 | `IncidentSimulation` | Timeline events |
 | `ImpactReport` | Generated markdown/JSON report |
 
-Service names are unique after case-insensitive normalization (`Payment-Service` and `payment-service` are the same row).
+`Service.effective_criticality_score()` returns override if set, else computed score.
 
 ---
 
-## Graph
+## Feature 6 — Graph (NetworkX + cache)
 
-`app/services/graph_service.py` builds a NetworkX `DiGraph` from the database on demand. The database is the source of truth; NetworkX is discarded after the request.
+**Using:** `graph_service.py`, NetworkX `DiGraph`.
 
-- **Node** = service
-- **Edge** `A → B` means A calls B
-- **Upstream of X** = predecessors (who calls X)
-- **Downstream of X** = successors (who X calls)
-- Cycles are allowed (`GET /api/graph/validation` reports them as warnings)
+- Node = service in the **active** dataset
+- Edge `A → B` = A calls B
+- Upstream of X = predecessors (who calls X)
+- Downstream of X = successors (who X calls)
+- Cycles allowed (`GET /api/graph/validation` reports them as warnings)
 
-`GET /api/graph?highlight_service_id=...` annotates nodes for UI highlighting:
+**Cache:** module-level, keyed by dataset id, returns `graph.copy()`. Invalidated on ingest, topology, `PATCH /services/{id}`, admin reset/seed, and test `reset_engine()`.
+
+`GET /api/graph?highlight_service_id=...` annotates:
 
 | `status` | Meaning |
 | --- | --- |
@@ -171,11 +239,13 @@ Service names are unique after case-insensitive normalization (`Payment-Service`
 
 Impacted edges are marked `IMPACTED`.
 
+**Export:** `GET /api/graph/export?format=graphml|dot`. GraphML via `nx.write_graphml`. DOT written by hand (no pydot). API-only.
+
 ---
 
-## Health
+## Feature 7 — Health
 
-`app/services/health_service.py`
+**Using:** `health_service.py`, `config/thresholds.yaml` → `health:`.
 
 ```
 health_score = clamp(round((1 - error_rate) * 100), 0, 100)
@@ -187,51 +257,50 @@ health_score = clamp(round((1 - error_rate) * 100), 0, 100)
 | `DEGRADED` | `0.10 ≤ error_rate < 0.50` |
 | `UNHEALTHY` | `error_rate ≥ 0.50` |
 
-Health uses spans inside a sliding window (default 10 seconds, relative to the latest span timestamp in that service). If the window is empty, all spans are used. Every recomputation writes a `ServiceHealthHistory` row.
+Uses spans inside a sliding window (default 10 seconds, relative to the latest span timestamp for that service). Empty window → all spans. Every recompute writes `ServiceHealthHistory`.
 
 ---
 
-## Technical criticality
+## Feature 8 — Criticality (5 factors + override)
 
-Jaeger has no business-tier metadata, so scoring is technical only.
-
-Each factor is normalized to `0..1` against the current dataset max, then weighted:
+**Using:** `criticality_service.py`. Each factor is `0..1` vs dataset max, then weighted. Weights in YAML **must sum to 1.0**. Pydantic `tier_weight` default is `0.0` so old 4-weight files still load.
 
 | Factor | Default weight | Raw value |
 | --- | --- | --- |
-| Call volume | 0.30 | `total_calls` |
-| Error impact | 0.25 | `error_rate` |
-| Latency impact | 0.25 | `avg_latency_ms` |
+| Call volume | 0.25 | `total_calls` |
+| Error impact | 0.20 | `error_rate` |
+| Latency impact | 0.20 | `avg_latency_ms` |
 | Dependency impact | 0.20 | in-degree + out-degree |
+| Business tier | 0.15 | YAML `tier_scores` (`critical=1.0` … unset = 0) |
 
 ```
-score = 100 * (0.30*call_norm + 0.25*error_norm + 0.25*latency_norm + 0.20*dep_norm)
+computed = 100 * Σ (weight_i * normalized_i)
 ```
 
-Every ranking includes the full breakdown (`weight`, `raw_value`, `normalized_score`, `contribution`). Rankings sort by score desc, then call volume desc, then name asc.
+`PATCH /api/services/{id}` sets `tier`, `owner`, `service_type`, or `criticality_override` (0–100). Blast radius and “critical services affected” use **effective** score. Rankings sort by effective score desc, then call volume desc, then name asc. Each ranking includes the full breakdown.
 
 ---
 
-## Blast radius
+## Feature 9 — Blast radius
 
-If `A → B` and **B fails**, **A is affected**. Downstream callees of B are not.
+**Using:** `blast_radius_service.py`. `GET /api/blast-radius/{id}`.
 
-Structural radius: `nx.ancestors(graph, failed_service)` plus the failed service itself.
+Structural: `failed ∪ nx.ancestors(graph, failed)`.
 
-Probabilistic radius: BFS through **predecessors**, starting at probability `1.0`:
+Probabilistic: BFS through **predecessors**, seed failed at `1.0`:
 
 ```
 caller_impact = failed_impact * edge_weight
 ```
 
 - Critical edge weight default `0.90`
-- Non-critical edge weight default `0.50`
+- Non-critical default `0.50`
 - Stop when probability `< 0.10`
 - Multiple paths keep the **maximum** probability
 
-Edges are treated as critical when their call count is at/above the configured percentile of all edges.
+Edges are critical when call count is at/above the configured percentile of all edges.
 
-Blast-radius score (0..100):
+Score:
 
 ```
 score = 100 * (
@@ -241,120 +310,133 @@ score = 100 * (
 )
 ```
 
-The formula is returned in the response.
+The formula string is returned in the response.
 
 ---
 
-## Failure simulation
+## Feature 10 — Failure simulation
 
-`POST /api/simulate/failure/{service_id}` is analysis only.
+**Using:** `simulation_service.py`.
 
-It:
-
-1. Confirms the service exists
-2. Computes structural + probabilistic blast radius
-3. Projects caller health: `current * (1 - impact_probability)` (failed service → `0`)
-4. Ranks impacted services
-5. Predicts which caller circuit breakers would open
-6. Assigns severity from blast-radius score
-7. Saves `SimulationRun` + timeline events
-8. **Restores live service health** so the database is unchanged
-
-Severity defaults:
-
-| Score | Severity |
+| Endpoint | What |
 | --- | --- |
-| `< 25` | `LOW` |
-| `25–49` | `MEDIUM` |
-| `50–74` | `HIGH` |
-| `≥ 75` | `CRITICAL` |
+| `POST /api/simulate/failure/{id}` | Single failure (UI uses this) |
+| `POST /api/simulate/failure` `{ "service_ids": [...] }` | Multi-fail union (API-only) |
 
-SSE: `GET /api/simulate/failure/{service_id}/stream` emits `blast_radius_start`, `service_affected`, `blast_radius_complete`. Computation finishes first; the stream only yields JSON events.
+Both:
 
-Timeline: `GET /api/simulations/{id}/timeline`
+1. Confirm service(s) exist in the active dataset
+2. Compute structural + probabilistic blast radius (`analyze_failure_set` for multi)
+3. Project caller health: `current * (1 - impact_probability)` (failed → `0`)
+4. Rank impacted services; multi-fail adds `caused_by`
+5. Predict which caller circuit breakers would open (**does not persist** breaker state)
+6. Severity from blast-radius score
+7. Save `SimulationRun` + timeline (`failed_service_id` = first id; `failed_service_ids` JSON)
+8. **Restore live health** from the snapshot taken at start
+
+Severity defaults: `< 25` LOW, `25–49` MEDIUM, `50–74` HIGH, `≥ 75` CRITICAL.
+
+SSE: `GET /api/simulate/failure/{id}/stream` emits `blast_radius_start`, `service_affected`, `blast_radius_complete`. Computation finishes first; the stream only yields JSON events.
+
+Timeline: `GET /api/simulations/{id}/timeline`.
 
 ---
 
-## Circuit-breaker simulation
+## Feature 11 — Circuit-breaker simulation
 
-This is a state machine on a **dependency**, not a real Resilience4j deployment.
+**Using:** `circuit_breaker_service.py`. One simulated machine **per dependency**, not a real Resilience4j deployment.
 
 States: `CLOSED` → `OPEN` → `HALF_OPEN` → `CLOSED` or back to `OPEN`.
 
 | Transition | Rule |
 | --- | --- |
-| CLOSED → OPEN | simulated error rate ≥ threshold (default 0.50) |
+| CLOSED → OPEN | simulated error rate ≥ 0.50 |
 | OPEN → HALF_OPEN | cooldown elapsed (default 30s) |
-| HALF_OPEN → CLOSED | simulated health ≥ recovery threshold (default 80) |
+| HALF_OPEN → CLOSED | simulated health ≥ 80 |
 | HALF_OPEN → OPEN | health still below recovery |
 
-`POST /api/circuit-breakers/simulate` **persists** the transition (`kind: real_circuit_transition`).
-
-Failure simulation only **predicts** opens on caller edges (`kind: predicted_circuit_transition`) and does not flip stored breaker state.
+`POST /api/circuit-breakers/simulate` **persists** (`kind: real_circuit_transition`). Failure simulation only **predicts** (`kind: predicted_circuit_transition`).
 
 ---
 
-## Reports
+## Feature 12 — Reports
 
 `POST /api/reports/generate` with `{ "simulation_id", "format": "json" | "markdown" }`.
 
-Reports are built from the **stored** simulation JSON, not recomputed randomly. Sections: executive summary, failed service, health, blast radius, affected services, impact ranking, criticality, circuit-breaker predictions, timeline, deterministic recommendations.
+Built from the **stored** simulation JSON, not a random recompute. Sections: executive summary, failed service, health, blast radius, affected services, impact ranking, criticality, circuit-breaker predictions, timeline, deterministic recommendations. Files under `storage/reports/`.
 
-Files are written under `storage/reports/`.
+---
+
+## Feature 13 — Admin, reset, security
+
+| Endpoint | Gate | Effect |
+| --- | --- | --- |
+| `POST /api/dev/reset` | `ALLOW_DEV_RESET` (default true) | Truncate all tables. Frontend Settings uses this. |
+| `POST /api/admin/reset` | header `X-Admin-Key` == `ADMIN_KEY` | Same wipe. Unset key → 403. |
+| `POST /api/admin/seed-sample` | same admin key | Ingests `samples.generate_samples.build_sample_traces` |
+
+Optional `API_KEY`: if set, all non-GET/HEAD/OPTIONS require header `X-API-Key`.
+
+Startup never auto-seeds and never wipes.
 
 ---
 
 ## REST API
 
-All JSON errors look like:
-
-```json
-{
-  "error": {
-    "code": "SERVICE_NOT_FOUND",
-    "message": "Service '…' was not found",
-    "details": {}
-  }
-}
-```
+Prefixes: `/api` and `/api/v1` (same routers). Frontend uses `/api`.
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| GET | `/api/health` | Process liveness (no DB) |
-| GET | `/api/health/services` | Observed health list |
-| GET | `/api/overview` | Dashboard summary |
-| POST | `/api/telemetry/traces` | Ingest Jaeger JSON |
-| POST | `/api/telemetry/traces/upload` | Upload `.json` file |
-| GET | `/api/telemetry/ingestions` | Ingest history |
-| GET | `/api/graph` | Nodes + edges for UI |
-| GET | `/api/graph/validation` | Cycles / orphans |
-| GET | `/api/services` | Search + filter + pagination |
-| GET | `/api/services/{id}` | Detail, metrics, criticality |
-| GET | `/api/services/{id}/dashboard` | Aggregate for a service page |
-| GET | `/api/services/{id}/upstream` | Direct callers |
-| GET | `/api/services/{id}/downstream` | Direct callees |
-| GET | `/api/services/{id}/health-history` | History with time filters |
-| GET | `/api/criticality/rankings` | Ranked technical criticality |
-| GET | `/api/criticality/{id}` | One service explanation |
-| GET | `/api/blast-radius/{id}` | Blast radius for a failure |
-| POST | `/api/simulate/failure/{id}` | Failure simulation |
-| GET | `/api/simulate/failure/{id}/stream` | SSE stream |
-| GET | `/api/simulations` | Simulation history |
-| GET | `/api/simulations/{id}` | Saved result |
-| GET | `/api/simulations/{id}/timeline` | Incident timeline |
-| GET | `/api/circuit-breakers` | List simulated breakers |
-| GET | `/api/circuit-breakers/{id}` | One breaker |
-| POST | `/api/circuit-breakers/simulate` | Evaluate state machine |
-| POST | `/api/circuit-breakers/{id}/reset` | Force CLOSED |
-| POST | `/api/circuit-breakers/{id}/transition` | Force a state |
-| POST | `/api/reports/generate` | Markdown/JSON report |
-| GET/PUT | `/api/config/thresholds` | Read/update analysis config |
+| GET | `/health` | Process liveness (no DB) |
+| GET | `/health/services` | Observed health list |
+| GET | `/overview` | Dashboard summary + active dataset |
+| GET | `/datasets/active` | Current workspace or null |
+| POST | `/telemetry/traces` | Ingest Jaeger JSON (new dataset) |
+| POST | `/telemetry/traces/upload` | Upload `.json` file |
+| POST | `/telemetry/otlp` | Ingest OTLP JSON |
+| GET | `/telemetry/ingestions` | Ingest history |
+| GET | `/graph` | Nodes + edges for UI |
+| GET | `/graph/validation` | Cycles / orphans |
+| GET | `/graph/export` | GraphML or DOT download |
+| GET | `/services` | Search + filter + pagination |
+| GET | `/services/{id}` | Detail, metrics, criticality |
+| PATCH | `/services/{id}` | Metadata / tier / override |
+| GET | `/services/{id}/dashboard` | Aggregate for a service page |
+| GET | `/services/{id}/upstream` | Direct callers |
+| GET | `/services/{id}/downstream` | Direct callees |
+| GET | `/services/{id}/health-history` | History with time filters |
+| GET | `/criticality/rankings` | Ranked criticality |
+| GET | `/criticality/{id}` | One service explanation |
+| GET | `/blast-radius/{id}` | Blast radius for a failure |
+| POST | `/simulate/failure` | Multi-service failure |
+| POST | `/simulate/failure/{id}` | Single failure |
+| GET | `/simulate/failure/{id}/stream` | SSE stream |
+| GET | `/simulations` | Simulation history |
+| GET | `/simulations/{id}` | Saved result |
+| GET | `/simulations/{id}/timeline` | Incident timeline |
+| GET | `/circuit-breakers` | List simulated breakers |
+| GET | `/circuit-breakers/{id}` | One breaker |
+| POST | `/circuit-breakers/simulate` | Evaluate state machine |
+| POST | `/circuit-breakers/{id}/reset` | Force CLOSED |
+| POST | `/circuit-breakers/{id}/transition` | Force a state |
+| POST | `/reports/generate` | Markdown/JSON report |
+| GET/PUT | `/config/thresholds` | Read/update analysis config |
+| POST | `/config/topology` | Declarative topology JSON |
+| POST | `/config/topology/upload` | Topology JSON/YAML file |
+| POST | `/dev/reset` | Dev wipe |
+| POST | `/admin/reset` | Admin wipe |
+| POST | `/admin/seed-sample` | Admin sample ingest |
+| POST | `/jaeger/test` | Test Jaeger Query API (no dataset) |
+| GET | `/jaeger/test` | Same, query-param URL |
+| POST | `/jaeger/connect` | Create one live dataset and start polling |
+| GET | `/jaeger/status` | Live connection status |
+| POST | `/jaeger/disconnect` | Stop polling; keep dataset |
+| POST | `/jaeger/reconnect` | Resume polling on the same live dataset |
+| GET | `/simulations/{id}/analysis` | Root cause + recommendations |
 
 Service list query params: `q`, `tier`, `type`, `health_status`, `min_health`, `max_health`, `min_risk`, `max_risk`, error/latency/call ranges, `limit`, `offset`. Search matches name, normalized name, and operation names.
 
-Pagination shape: `{ "items", "total", "limit", "offset" }`.
-
-Interactive docs: `/docs` and `/redoc`.
+Pagination: `{ "items", "total", "limit", "offset" }`.
 
 ---
 
@@ -364,18 +446,16 @@ Environment (`.env.example`):
 
 - `DATABASE_URL`
 - `CORS_ORIGINS` (never `*` with credentials; credentials are off)
-- `TRACE_UPLOAD_DIR`
-- `REPORT_STORAGE_DIR`
-- `MAX_TRACE_FILE_SIZE_MB`
-- `LOG_LEVEL`
+- `TRACE_UPLOAD_DIR`, `REPORT_STORAGE_DIR`
+- `MAX_TRACE_FILE_SIZE_MB`, `LOG_LEVEL`, `THRESHOLDS_PATH`
+- `ALLOW_DEV_RESET`
+- `ADMIN_KEY`, `API_KEY`
+- `JAEGER_QUERY_URL` (default `http://localhost:16686`) — **does not auto-connect**
+- `JAEGER_POLL_INTERVAL_SECONDS`, `JAEGER_MAX_TRACES_PER_POLL`, `JAEGER_SERVICE_FILTER`
 
-Analysis knobs live in `config/thresholds.yaml` and are loaded at startup. `PUT /api/config/thresholds` validates:
+Live Jaeger starts only after `POST /api/jaeger/connect`. Startup does not poll Jaeger.
 
-- weights ≥ 0 and groups that must sum to 1.0
-- probabilities in `0..1`
-- health scores in `0..100`
-- positive durations
-- logical ordering (e.g. degraded ≤ critical)
+Analysis knobs live in `config/thresholds.yaml` and are loaded at startup. `PUT /api/config/thresholds` validates weights ≥ 0 and groups that must sum to 1.0, probabilities in `0..1`, health scores in `0..100`, positive durations, and logical ordering.
 
 ---
 
@@ -383,8 +463,9 @@ Analysis knobs live in `config/thresholds.yaml` and are loaded at startup. `PUT 
 
 Generated by `python samples/generate_samples.py`.
 
-- `sample_traces.json` — 10 services, checkout / auth / order / payment / inventory / db / user / cache / recommendations / notifications, including 4xx and 5xx
+- `sample_traces.json` — 10 services (checkout / auth / order / payment / inventory / db / user / cache / recommendations / notifications), including 4xx and 5xx
 - `payment_incident_traces.json` — repeated checkout traces with many payment-gateway failures
+- `sample_traces_otlp.json` — same topology in OTLP JSON
 
 Expected graph edges from the normal sample include:
 
@@ -392,16 +473,36 @@ Expected graph edges from the normal sample include:
 
 ---
 
+## Frontend (what is wired vs API-only)
+
+React 18 + Vite + xyflow. Home is the dependency map. Bootstrap uses **active dataset**, so refresh stays empty until import. Sample system is explicit “Load sample” (`/samples/sample_traces.json` via ingest).
+
+**Wired:** import Jaeger JSON, load sample, click a node, inspect, simulate **one** failure, blast highlight, report download, settings/reset (`/api/dev/reset`).
+
+**API-only (no UI yet):** config topology, multi-service fail, OTLP ingest, GraphML/DOT export, admin seed, PATCH metadata/tier.
+
+---
+
 ## Tests
 
-`cd backend && pytest`
+`cd backend && pytest` — **94 tests**.
 
-Coverage includes ingest validation, unordered parents, duplicate ingest, mixed tag types, graph direction, cycles, health boundaries, criticality determinism, blast-radius direction (`B` fails → callers of `B`, not callees), simulation non-mutation, circuit-breaker transitions, CORS, 404, and 422.
+Coverage includes ingest validation, unordered parents, duplicate ingest, mixed tag types, datasets (new import does not merge), schema migration of stale uniques, topology merge/replace/422, graph direction, cycles, GraphML/DOT, cache invalidation, health boundaries, 5-factor criticality + override, blast-radius direction (`B` fails → callers of `B`, not callees), simulation non-mutation, multi-fail max probability, circuit-breaker transitions, admin key, OTLP vs Jaeger topology, CORS, 404, and 422.
+
+CI also runs `ruff check app tests`.
+
+---
+
+## Docker
+
+`backend/Dockerfile`: Python 3.12-slim, `python run.py` on port 8000.
+
+Root `docker-compose.yml` builds that image. Optional Postgres is commented; default remains SQLite.
 
 ---
 
 ## What is intentionally not implemented
 
-No Kubernetes, Istio, Prometheus, Datadog, Slack, PagerDuty, live Jaeger connection, OpenTelemetry collector, Redis, Postgres requirement, OAuth/SSO, ML anomaly detection, auto-remediation, real failover, or real circuit-breaker injection into another process.
+No Kubernetes, Istio, Prometheus, Datadog, Slack, PagerDuty, live Jaeger connection, OpenTelemetry collector process, Redis, required Postgres, OAuth/SSO, ML anomaly detection, auto-remediation, real failover, or real circuit-breaker injection into another process.
 
-The frontend is not built yet. The API is designed so a React UI can upload a trace, render `GET /api/graph`, click a node, simulate failure, highlight blast radius, show the timeline, and generate a report without reimplementing any scoring.
+UI is not yet wired to topology upload, multi-fail, OTLP, graph export, or PATCH metadata — those endpoints exist and are tested.

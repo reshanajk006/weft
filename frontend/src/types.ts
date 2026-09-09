@@ -262,6 +262,64 @@ export interface ReportResponse {
   created_at: string;
 }
 
+export interface JaegerStatus {
+  is_running: boolean;
+  status: string;
+  jaeger_url: string | null;
+  started_at: string | null;
+  last_poll_time: string | null;
+  traces_ingested: number;
+  services_discovered: string[];
+  error_message: string | null;
+  dataset_id: string | null;
+  poll_interval: number;
+  max_traces_per_poll: number;
+  service_filter: string | null;
+  poll_generation?: number;
+  graph_service_count?: number;
+  graph_dependency_count?: number;
+}
+
+export interface JaegerTestResult {
+  ok: boolean;
+  jaeger_url: string;
+  services: string[];
+  service_count: number;
+}
+
+export interface RootCauseCandidate {
+  service_id: string;
+  service: string;
+  score: number;
+  confidence: string;
+  health_status: string;
+  health_score: number;
+  error_rate: number;
+  avg_latency_ms: number;
+  criticality_score: number;
+  called_by: string[];
+  calls: string[];
+  evidence: string[];
+}
+
+export interface RecommendationItem {
+  priority: string;
+  service: string;
+  recommendation: string;
+  reason: string;
+  evidence: Record<string, unknown>;
+}
+
+export interface IncidentAnalysis {
+  simulation_id: string;
+  root_cause: {
+    simulation_id: string;
+    likely_root_cause: RootCauseCandidate | null;
+    candidates: RootCauseCandidate[];
+  };
+  recommendations: RecommendationItem[];
+}
+
 export type HealthFilter = "" | "HEALTHY" | "DEGRADED" | "UNHEALTHY";
 export type CriticalityFilter = "" | "HIGH" | "MEDIUM" | "LOW";
 

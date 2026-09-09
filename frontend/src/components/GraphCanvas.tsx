@@ -6,6 +6,7 @@ import {
   MarkerType,
   ReactFlow,
   ReactFlowProvider,
+  useNodesInitialized,
   useReactFlow,
   type Edge,
   type Node,
@@ -100,11 +101,25 @@ function GraphInner({
   onSelect: (id: string) => void;
 }) {
   const { fitView } = useReactFlow();
+  const nodesInitialized = useNodesInitialized();
   const { flowNodes, flowEdges } = useMemo(() => layout(graph, dimmed), [dimmed, graph]);
   const nodes = useMemo(
     () => flowNodes.map((node) => ({ ...node, selected: node.id === selectedId })),
     [flowNodes, selectedId],
   );
+  const topologyKey = useMemo(
+    () =>
+      `${graph.nodes.map((node) => node.id).join(",")}|${graph.edges.map((edge) => edge.id).join(",")}`,
+    [graph.edges, graph.nodes],
+  );
+
+  useEffect(() => {
+    if (!flowNodes.length || !nodesInitialized) return;
+    const timer = window.setTimeout(() => {
+      void fitView({ padding: 0.24, duration: 280 });
+    }, 50);
+    return () => window.clearTimeout(timer);
+  }, [fitView, flowNodes.length, nodesInitialized, topologyKey]);
 
   useEffect(() => {
     if (!focusId) return;
@@ -127,6 +142,9 @@ function GraphInner({
       edges={flowEdges}
       nodeTypes={nodeTypes}
       fitView
+      onInit={(instance) => {
+        void instance.fitView({ padding: 0.24 });
+      }}
       nodesConnectable={false}
       onNodeClick={onNodeClick}
       onPaneClick={() => onSelect("")}
