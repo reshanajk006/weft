@@ -29,9 +29,14 @@ def classify_impact_level(probability: float) -> str:
     return "LOW"
 
 
-def calculate_blast_radius(db: Session, service_id: str) -> BlastRadiusResponse:
+def calculate_blast_radius(
+    db: Session,
+    service_id: str,
+    *,
+    edge_weight_overrides: dict[tuple[str, str], float] | None = None,
+) -> BlastRadiusResponse:
     failed = get_service_or_404(db, service_id)
-    graph = build_graph(db)
+    graph = _apply_edge_weight_overrides(build_graph(db), edge_weight_overrides)
     services = {node_id: db.get(Service, node_id) for node_id in graph.nodes}
 
     structural_ids = {failed.id}
@@ -98,10 +103,19 @@ def calculate_blast_radius(db: Session, service_id: str) -> BlastRadiusResponse:
 def analyze_failure_set(
     db: Session,
     failed_ids: list[str],
-) -> tuple[nx.DiGraph, dict[str, Service | None], list[BlastRadiusService], float, dict[str, list[str]]]:
+    *,
+    edge_weight_overrides: dict[tuple[str, str], float] | None = None,
+) -> tuple[
+    nx.DiGraph,
+    dict[str, Service | None],
+    list[BlastRadiusService],
+    float,
+    dict[str, list[str]],
+    BlastRadiusScoreBreakdown,
+]:
     """Union structural + probabilistic blast radius for multiple failed services."""
 
-    graph = build_graph(db)
+    graph = _apply_edge_weight_overrides(build_graph(db), edge_weight_overrides)
     services = {node_id: db.get(Service, node_id) for node_id in graph.nodes}
     for failed_id in failed_ids:
         get_service_or_404(db, failed_id)
@@ -156,8 +170,8 @@ def analyze_failure_set(
                 current_health_score=service.health_score,
             )
         )
-    score, _breakdown = _blast_radius_score(graph, services, affected_rows)
-    return graph, services, affected_rows, score, caused_by
+    score, breakdown = _blast_radius_score(graph, services, affected_rows)
+    return graph, services, affected_rows, score, caused_by, breakdown
 
 
 def _probabilistic_blast_radius(graph: nx.DiGraph, failed_ids: list[str]) -> dict[str, tuple[float, int]]:
@@ -234,6 +248,23 @@ def _blast_radius_score(
         affected_ratio=round(affected_ratio, 6),
         weighted_impact=round(weighted_impact, 6),
         critical_service_factor=round(critical_factor, 6),
+        mean_impact_probability=round(weighted_impact, 6),
+        affected_criticality_ratio=round(critical_factor, 6),
         formula=f"score = 100 * ({formula})",
     )
     return score, breakdown
+
+
+def _apply_edge_weight_overrides(
+    graph: nx.DiGraph,
+    overrides: dict[tuple[str, str], float] | None,
+) -> nx.DiGraph:
+    """Return a copy with virtual edge weights. Never mutates the cached graph."""
+
+    if not overrides:
+        return graph
+    graph = graph.copy()
+    for (source_id, target_id), weight in overrides.items():
+        if graph.has_edge(source_id, target_id):
+            graph[source_id][target_id]["critical_weight"] = float(weight)
+    return graph

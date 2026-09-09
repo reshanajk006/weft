@@ -4,16 +4,19 @@ from __future__ import annotations
 
 import json
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Body, Depends, Query, status
 from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
 
 from app.api.deps import get_db
 from app.schemas.analysis import IncidentAnalysisResponse
+from app.schemas.mitigation import MitigationRequest, MitigationResponse
 from app.schemas.simulation import MultiFailureRequest, SimulationListResponse, SimulationResponse, TimelineResponse
+from app.services.mitigation_service import simulate_mitigation
 from app.services.recommendation_service import build_recommendations
 from app.services.root_cause_service import analyze_root_cause
 from app.services.simulation_service import (
+    _get_active_simulation,
     get_simulation,
     get_timeline,
     list_simulations,
@@ -100,8 +103,26 @@ def simulation_timeline(simulation_id: str, db: Session = Depends(get_db)) -> Ti
 def simulation_analysis(simulation_id: str, db: Session = Depends(get_db)) -> IncidentAnalysisResponse:
     root = analyze_root_cause(db, simulation_id)
     recs = build_recommendations(db, simulation_id)
+    run = _get_active_simulation(db, simulation_id)
+    result = SimulationResponse.model_validate(run.result_json)
     return IncidentAnalysisResponse(
         simulation_id=simulation_id,
+        scenario=root.scenario,
         root_cause=root,
         recommendations=recs.items,
+        mitigation=result.mitigation,
     )
+
+
+@router.post(
+    "/simulations/{simulation_id}/mitigation",
+    response_model=MitigationResponse,
+    summary="Virtual mitigation comparison",
+    description="What-if fallback comparison. Does not persist graph, health, or circuit-breaker changes.",
+)
+def simulation_mitigation(
+    simulation_id: str,
+    payload: MitigationRequest = Body(default_factory=MitigationRequest),
+    db: Session = Depends(get_db),
+) -> MitigationResponse:
+    return simulate_mitigation(db, simulation_id, payload.strategy, payload.dependency_id)

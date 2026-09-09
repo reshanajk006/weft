@@ -46,9 +46,10 @@ def test_severity_boundaries():
     from app.services.simulation_service import classify_severity
 
     assert classify_severity(0, 0) == "LOW"
+    assert classify_severity(24.99, 0) == "LOW"
     assert classify_severity(25, 0) == "MEDIUM"
-    assert classify_severity(49.9, 0) == "MEDIUM"
+    assert classify_severity(49.99, 0) == "MEDIUM"
     assert classify_severity(50, 0) == "HIGH"
-    assert classify_severity(74.9, 0) == "HIGH"
+    assert classify_severity(74.99, 0) == "HIGH"
     assert classify_severity(75, 0) == "CRITICAL"
     assert classify_severity(100, 1) == "CRITICAL"

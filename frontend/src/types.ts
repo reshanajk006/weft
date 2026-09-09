@@ -191,6 +191,45 @@ export interface SimulationResponse {
   }>;
   explanation: string;
   created_at: string;
+  score_breakdown?: {
+    affected_ratio: number;
+    weighted_impact: number;
+    critical_service_factor: number;
+    mean_impact_probability?: number | null;
+    affected_criticality_ratio?: number | null;
+    formula: string;
+  } | null;
+  mitigation?: MitigationComparison | null;
+}
+
+export interface MitigationSnapshot {
+  affected_services: number;
+  tier1_services_at_risk: number;
+  blast_radius_score: number;
+  projected_caller_health: number;
+}
+
+export interface MitigationComparison {
+  simulation_id: string;
+  strategy: string;
+  baseline: MitigationSnapshot;
+  mitigated: MitigationSnapshot | null;
+  improvement: {
+    blast_radius_score_delta: number;
+    blast_radius_reduction_percent: number;
+    affected_services_delta: number;
+    tier1_services_delta: number;
+  } | null;
+  mitigation: { type?: string; description?: string };
+  affected_edges: Array<{
+    dependency_id: string;
+    source_service_name: string;
+    target_service_name: string;
+    original_weight: number;
+    virtual_weight: number;
+  }>;
+  explanation: string;
+  production_changes_executed: boolean;
 }
 
 export interface SimulationListItem {
@@ -291,6 +330,7 @@ export interface JaegerTestResult {
 export interface RootCauseCandidate {
   service_id: string;
   service: string;
+  service_name?: string;
   score: number;
   confidence: string;
   health_status: string;
@@ -301,24 +341,64 @@ export interface RootCauseCandidate {
   called_by: string[];
   calls: string[];
   evidence: string[];
+  evidence_items?: Array<{
+    factor: string;
+    points: number;
+    value: unknown;
+    explanation: string;
+  }>;
 }
 
 export interface RecommendationItem {
   priority: string;
+  priority_rank?: number;
+  category?: string;
+  title?: string;
+  action?: string;
   service: string;
   recommendation: string;
   reason: string;
+  expected_outcome?: string;
+  risk?: string;
+  effort?: string;
+  safe_to_automate?: boolean;
+  validation?: string;
   evidence: Record<string, unknown>;
 }
 
 export interface IncidentAnalysis {
   simulation_id: string;
+  scenario?: {
+    type: string;
+    input_source: string;
+    selected_failure_target: string;
+    current_observed_status: string;
+    current_health_score: number;
+    observed_production_incident: boolean;
+    live_service_health_modified: boolean;
+  } | null;
   root_cause: {
     simulation_id: string;
+    mode?: string;
+    root_cause_status?: string;
+    status?: string;
+    message?: string;
+    disclaimer?: string;
     likely_root_cause: RootCauseCandidate | null;
     candidates: RootCauseCandidate[];
+    selected_target?: {
+      service_id: string;
+      service_name: string;
+      observed_status: string;
+      observed_health_score: number;
+      observed_error_rate: number;
+      observed_latency_ms: number;
+    } | null;
+    observed_status?: string | null;
+    observed_health_score?: number | null;
   };
   recommendations: RecommendationItem[];
+  mitigation?: MitigationComparison | null;
 }
 
 export type HealthFilter = "" | "HEALTHY" | "DEGRADED" | "UNHEALTHY";

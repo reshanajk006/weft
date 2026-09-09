@@ -25,6 +25,8 @@ class ThresholdsUpdateRequest(APIModel):
     critical_service: dict[str, Any] | None = None
     critical_edge: dict[str, Any] | None = None
     latency: dict[str, Any] | None = None
+    root_cause: dict[str, Any] | None = None
+    mitigation: dict[str, Any] | None = None
 
 
 class TopologyServiceSpec(APIModel):

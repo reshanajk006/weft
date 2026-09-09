@@ -60,7 +60,7 @@ def test_graph_services_blast_simulation_report(ingest, client):
         json={"simulation_id": sim.json()["simulation_id"], "format": "markdown"},
     )
     assert report.status_code == 201
-    assert "# Incident Impact Report" in report.json()["content"]
+    assert "# WEFT Incident Impact Report" in report.json()["content"]
     json_report = client.post(
         "/api/reports/generate",
         json={"simulation_id": sim.json()["simulation_id"], "format": "json"},

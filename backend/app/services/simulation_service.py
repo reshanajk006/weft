@@ -121,6 +121,7 @@ def simulate_failure(db: Session, service_id: str) -> SimulationResponse:
         predicted_circuit_transitions=predicted_models,
         explanation=explanation,
         created_at=isoformat(created_at) or "",
+        score_breakdown=blast.score_breakdown,
     )
 
     run = SimulationRun(
@@ -165,7 +166,7 @@ def simulate_multi_failure(db: Session, service_ids: list[str]) -> SimulationRes
     snapshot_health = {row.id: row.health_score for row in list_active_services(db)}
     logger.info("Multi-failure simulation start for %s", [item.name for item in failed_models])
 
-    _graph, _services, blast_rows, score, caused_by = analyze_failure_set(db, unique_ids)
+    _graph, _services, blast_rows, score, caused_by, breakdown = analyze_failure_set(db, unique_ids)
     failed_set = set(unique_ids)
     predictions = _union_predictions(db, unique_ids)
     critical_min = get_thresholds().critical_service.min_criticality_score
@@ -240,6 +241,7 @@ def simulate_multi_failure(db: Session, service_ids: list[str]) -> SimulationRes
         predicted_circuit_transitions=predicted_models,
         explanation=explanation,
         created_at=isoformat(created_at) or "",
+        score_breakdown=breakdown,
     )
     run = SimulationRun(
         id=response.simulation_id,

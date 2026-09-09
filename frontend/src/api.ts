@@ -14,6 +14,7 @@ import type {
   SimulationListItem,
   SimulationResponse,
   TimelineEvent,
+  MitigationComparison,
 } from "./types";
 
 export class ApiError extends Error {
@@ -139,4 +140,10 @@ export const api = {
   jaegerDisconnect: () => request<JaegerStatus>("/api/jaeger/disconnect", { method: "POST" }),
   jaegerReconnect: () => request<JaegerStatus>("/api/jaeger/reconnect", { method: "POST" }),
   simulationAnalysis: (id: string) => request<IncidentAnalysis>(`/api/simulations/${id}/analysis`),
+  simulationMitigation: (id: string, strategy = "FALLBACK") =>
+    request<MitigationComparison>(`/api/simulations/${id}/mitigation`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ strategy }),
+    }),
 };

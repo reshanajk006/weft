@@ -79,6 +79,7 @@ type WorkspaceValue = {
   runSimulate: () => Promise<void>;
   clearSimulation: () => Promise<void>;
   generateReport: () => Promise<void>;
+  runMitigation: () => Promise<void>;
   ingestFile: (file: File) => Promise<void>;
   ingestSample: () => Promise<void>;
   connectJaeger: (body: {
@@ -346,6 +347,18 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     URL.revokeObjectURL(url);
   }, [simulation]);
 
+  const runMitigation = useCallback(async () => {
+    if (!simulation) return;
+    setError(null);
+    try {
+      const comparison = await api.simulationMitigation(simulation.simulation_id);
+      setSimulation({ ...simulation, mitigation: comparison });
+      setAnalysis((current) => (current ? { ...current, mitigation: comparison } : current));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Virtual mitigation failed");
+    }
+  }, [simulation]);
+
   const ingestFile = useCallback(
     async (file: File) => {
       setError(null);
@@ -519,6 +532,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     runSimulate,
     clearSimulation,
     generateReport,
+    runMitigation,
     ingestFile,
     ingestSample,
     connectJaeger,

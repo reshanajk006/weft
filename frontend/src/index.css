@@ -489,6 +489,26 @@ textarea {
   font-size: 13px;
 }
 
+.fact-block,
+.compare-grid {
+  border: 1px solid var(--line);
+  padding: 12px;
+  border-radius: var(--radius);
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.pill.NOT_DETERMINED,
+.pill.HYPOTHETICAL {
+  background: #1d232c;
+  color: var(--muted);
+}
+
 .metric {
   border-top: 1px solid var(--line);
   padding-top: 10px;

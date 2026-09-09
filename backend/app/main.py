@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.errors import register_exception_handlers
 from app.api.routes import (
     admin,
+    analysis,
     blast_radius,
     circuit_breakers,
     config,
@@ -85,6 +86,7 @@ def create_app() -> FastAPI:
         application.include_router(blast_radius.router, prefix=prefix)
         application.include_router(criticality.router, prefix=prefix)
         application.include_router(simulations.router, prefix=prefix)
+        application.include_router(analysis.router, prefix=prefix)
         application.include_router(circuit_breakers.router, prefix=prefix)
         application.include_router(reports.router, prefix=prefix)
         application.include_router(config.router, prefix=prefix)
