@@ -50,10 +50,19 @@ class BlastRadiusScoreThresholds(BaseModel):
 
 
 class CriticalityThresholds(BaseModel):
-    call_volume_weight: float = Field(default=0.30, ge=0.0)
-    error_weight: float = Field(default=0.25, ge=0.0)
-    latency_weight: float = Field(default=0.25, ge=0.0)
+    call_volume_weight: float = Field(default=0.25, ge=0.0)
+    error_weight: float = Field(default=0.20, ge=0.0)
+    latency_weight: float = Field(default=0.20, ge=0.0)
     dependency_weight: float = Field(default=0.20, ge=0.0)
+    tier_weight: float = Field(default=0.0, ge=0.0)
+    tier_scores: dict[str, float] = Field(
+        default_factory=lambda: {
+            "critical": 1.0,
+            "high": 0.75,
+            "medium": 0.5,
+            "low": 0.25,
+        }
+    )
 
     @model_validator(mode="after")
     def validate_weights(self) -> "CriticalityThresholds":
@@ -62,6 +71,7 @@ class CriticalityThresholds(BaseModel):
             + self.error_weight
             + self.latency_weight
             + self.dependency_weight
+            + self.tier_weight
         )
         if abs(total - 1.0) > 0.001:
             raise ValueError("criticality weights must sum to 1.0")

@@ -12,6 +12,8 @@ from app.core.exceptions import NotFoundError
 from app.core.utils import clamp, isoformat, safe_div
 from app.db.models import Service, ServiceHealthHistory, SpanRecord
 from app.schemas.health import HealthHistoryItem, HealthHistoryResponse
+from app.services.dataset_service import list_active_services
+from app.services.graph_service import get_service_or_404
 
 
 def classify_health(error_rate: float) -> tuple[float, str]:
@@ -56,8 +58,13 @@ def recompute_service_health(db: Session, service: Service) -> ServiceHealthHist
     return history
 
 
-def recompute_all_health(db: Session) -> None:
-    services = list(db.execute(select(Service).order_by(Service.normalized_name)).scalars().all())
+def recompute_all_health(db: Session, dataset_id: str | None = None) -> None:
+    if dataset_id:
+        services = list(
+            db.execute(select(Service).where(Service.dataset_id == dataset_id).order_by(Service.normalized_name)).scalars().all()
+        )
+    else:
+        services = list_active_services(db)
     for service in services:
         recompute_service_health(db, service)
 
@@ -69,13 +76,7 @@ def list_health_history(
     start_time: datetime | None = None,
     end_time: datetime | None = None,
 ) -> HealthHistoryResponse:
-    service = db.get(Service, service_id)
-    if service is None:
-        raise NotFoundError(
-            f"Service '{service_id}' was not found",
-            code="SERVICE_NOT_FOUND",
-            details={"service_id": service_id},
-        )
+    service = get_service_or_404(db, service_id)
     query = select(ServiceHealthHistory).where(ServiceHealthHistory.service_id == service_id)
     if start_time is not None:
         query = query.where(ServiceHealthHistory.calculated_at >= start_time)

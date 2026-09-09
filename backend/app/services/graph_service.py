@@ -2,14 +2,35 @@
 
 from __future__ import annotations
 
+from io import BytesIO
+
 import networkx as nx
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import NotFoundError
-from app.db.models import Dependency, Service
+from app.core.exceptions import NotFoundError, ValidationFailedError
+from app.db.models import Service
 from app.schemas.graph import CycleInfo, GraphEdge, GraphNode, GraphResponse, GraphValidationResponse
 from app.schemas.services import NeighborListResponse, NeighborService
+from app.services.dataset_service import (
+    active_dataset_id,
+    is_in_active_dataset,
+    list_active_dependencies,
+    list_active_services,
+)
+
+# Invalidation call sites: trace ingest, topology ingest, PATCH /services/{id},
+# admin reset/seed, and reset_engine() between tests. Missing one of these is the
+# only way a stale graph can leak into a later read.
+_graph_cache: nx.DiGraph | None = None
+_cache_dataset_id: str | None = None
+_cache_dirty: bool = True
+
+
+def invalidate_graph_cache() -> None:
+    global _graph_cache, _cache_dataset_id, _cache_dirty
+    _graph_cache = None
+    _cache_dataset_id = None
+    _cache_dirty = True
 
 
 def build_graph(db: Session) -> nx.DiGraph:
@@ -17,10 +38,16 @@ def build_graph(db: Session) -> nx.DiGraph:
 
     Edge direction is source -> target, meaning source CALLS target.
     If target fails, source is affected. Blast radius therefore uses ancestors.
+    Returns a copy of the cached graph so callers cannot mutate shared state.
     """
 
+    global _graph_cache, _cache_dataset_id, _cache_dirty
+    dataset_id = active_dataset_id(db)
+    if not _cache_dirty and _graph_cache is not None and _cache_dataset_id == dataset_id:
+        return _graph_cache.copy()
+
     graph = nx.DiGraph()
-    services = list(db.execute(select(Service).order_by(Service.normalized_name)).scalars().all())
+    services = list_active_services(db)
     for service in services:
         graph.add_node(
             service.id,
@@ -28,9 +55,10 @@ def build_graph(db: Session) -> nx.DiGraph:
             name=service.name,
             health_score=service.health_score,
             health_status=service.health_status,
-            criticality_score=service.criticality_score,
+            criticality_score=service.effective_criticality_score(),
+            tier=service.tier or "",
         )
-    dependencies = list(db.execute(select(Dependency)).scalars().all())
+    dependencies = list_active_dependencies(db)
     for dependency in dependencies:
         if dependency.source_service_id not in graph or dependency.target_service_id not in graph:
             continue
@@ -43,14 +71,17 @@ def build_graph(db: Session) -> nx.DiGraph:
             avg_latency_ms=dependency.avg_latency_ms,
             critical_weight=dependency.critical_weight,
         )
-    return graph
+    _graph_cache = graph
+    _cache_dataset_id = dataset_id
+    _cache_dirty = False
+    return graph.copy()
 
 
 def get_service_or_404(db: Session, service_id: str) -> Service:
     service = db.get(Service, service_id)
-    if service is None:
+    if service is None or not is_in_active_dataset(db, service):
         raise NotFoundError(
-            f"Service '{service_id}' was not found",
+            f"Service '{service_id}' was not found in the active dataset",
             code="SERVICE_NOT_FOUND",
             details={"service_id": service_id},
         )
@@ -174,10 +205,45 @@ def _neighbors(
                 name=service.name,
                 health_status=service.health_status,
                 health_score=service.health_score,
-                criticality_score=service.criticality_score,
+                criticality_score=service.effective_criticality_score(),
                 call_count=int(edge.get("call_count") or 0),
                 error_rate=float(edge.get("error_rate") or 0),
                 avg_latency_ms=float(edge.get("avg_latency_ms") or 0),
             )
         )
     return items
+
+
+def export_graph(db: Session, fmt: str) -> tuple[bytes, str, str]:
+    """Serialize the active graph as GraphML or DOT for download."""
+
+    graph = build_graph(db)
+    fmt = fmt.strip().lower()
+    if fmt == "graphml":
+        buffer = BytesIO()
+        nx.write_graphml(graph, buffer)
+        return buffer.getvalue(), "application/graphml+xml", "weft-graph.graphml"
+    if fmt == "dot":
+        text = _to_dot(graph)
+        return text.encode("utf-8"), "text/vnd.graphviz", "weft-graph.dot"
+    raise ValidationFailedError("format must be graphml or dot", details={"format": fmt})
+
+
+def _to_dot(graph: nx.DiGraph) -> str:
+    lines = ["digraph weft {"]
+    for node_id, data in sorted(graph.nodes(data=True), key=lambda item: item[1].get("name", "")):
+        label = data.get("name", node_id)
+        health = data.get("health_status", "")
+        crit = data.get("criticality_score", 0)
+        tier = data.get("tier", "")
+        lines.append(
+            f'  "{node_id}" [label="{label}", health_status="{health}", '
+            f'criticality_score="{crit}", tier="{tier}"];'
+        )
+    for source, target, data in sorted(graph.edges(data=True), key=lambda item: (item[0], item[1])):
+        lines.append(
+            f'  "{source}" -> "{target}" [call_count="{data.get("call_count", 0)}", '
+            f'error_rate="{data.get("error_rate", 0)}", critical_weight="{data.get("critical_weight", 0.5)}"];'
+        )
+    lines.append("}")
+    return "\n".join(lines) + "\n"

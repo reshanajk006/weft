@@ -12,10 +12,16 @@ blast_radius_score:
   weighted_impact_weight: 0.35
   critical_service_factor_weight: 0.25
 criticality:
-  call_volume_weight: 0.3
-  error_weight: 0.25
-  latency_weight: 0.25
-  dependency_weight: 0.2
+  call_volume_weight: 0.25
+  error_weight: 0.20
+  latency_weight: 0.20
+  dependency_weight: 0.20
+  tier_weight: 0.15
+  tier_scores:
+    critical: 1.0
+    high: 0.75
+    medium: 0.5
+    low: 0.25
 circuit_breaker:
   error_threshold: 0.5
   cooldown_seconds: 30.0

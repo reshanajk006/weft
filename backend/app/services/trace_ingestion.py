@@ -24,7 +24,10 @@ from app.db.models import (
 from app.schemas.telemetry import IngestionResult
 from app.services.circuit_breaker_service import ensure_circuit_breakers_for_dependencies
 from app.services.criticality_service import recompute_all_criticality
+from app.services.dataset_service import create_and_activate_dataset
+from app.services.graph_service import invalidate_graph_cache
 from app.services.health_service import recompute_all_health
+from app.services.origin import SOURCE_TRACE, touch_source
 
 logger = get_logger("weft.ingestion")
 
@@ -42,10 +45,13 @@ def ingest_jaeger_payload(
     payload: Any,
     filename: str | None = None,
 ) -> IngestionResult:
-    """Validate and ingest a Jaeger JSON payload into the database."""
+    """Validate and ingest a Jaeger JSON payload into a NEW active dataset."""
 
+    invalidate_graph_cache()
+    dataset = create_and_activate_dataset(db, name=filename or "Jaeger import", source=filename)
     ingestion = TraceIngestion(
         id=new_id(),
+        dataset_id=dataset.id,
         filename=filename,
         status="processing",
     )
@@ -54,7 +60,7 @@ def ingest_jaeger_payload(
 
     try:
         traces = _validate_payload(payload)
-        result = _process_traces(db, traces, ingestion)
+        result = _process_traces(db, traces, ingestion, dataset.id)
         ingestion.trace_count = result["trace_count"]
         ingestion.span_count = result["span_count"]
         ingestion.service_count = result["service_count"]
@@ -63,10 +69,11 @@ def ingest_jaeger_payload(
         ingestion.status = "completed"
         db.flush()
 
-        recompute_all_health(db)
-        recompute_all_criticality(db)
-        ensure_circuit_breakers_for_dependencies(db)
-        _refresh_dependency_critical_weights(db)
+        recompute_all_health(db, dataset_id=dataset.id)
+        recompute_all_criticality(db, dataset_id=dataset.id)
+        ensure_circuit_breakers_for_dependencies(db, dataset_id=dataset.id)
+        _refresh_dependency_critical_weights(db, dataset_id=dataset.id)
+        invalidate_graph_cache()
 
         logger.info(
             "Ingestion %s completed: traces=%s spans=%s services=%s dependencies=%s errors=%s",
@@ -79,6 +86,8 @@ def ingest_jaeger_payload(
         )
         return IngestionResult(
             ingestion_id=ingestion.id,
+            dataset_id=dataset.id,
+            dataset_name=dataset.name,
             filename=filename,
             traces_processed=ingestion.trace_count,
             spans_processed=ingestion.span_count,
@@ -134,29 +143,40 @@ def _validate_payload(payload: Any) -> list[dict[str, Any]]:
     return traces
 
 
-def _process_traces(db: Session, traces: list[dict[str, Any]], ingestion: TraceIngestion) -> dict[str, int]:
+def _process_traces(
+    db: Session,
+    traces: list[dict[str, Any]],
+    ingestion: TraceIngestion,
+    dataset_id: str,
+) -> dict[str, int]:
     span_count = 0
     error_count = 0
-    services_before = {row[0] for row in db.execute(select(Service.normalized_name)).all()}
-    deps_before = {row[0] for row in db.execute(select(Dependency.id)).all()}
-
     for trace in traces:
-        processed = _process_single_trace(db, trace, ingestion.id)
+        processed = _process_single_trace(db, trace, ingestion.id, dataset_id)
         span_count += processed["spans"]
         error_count += processed["errors"]
 
-    services_after = {row[0] for row in db.execute(select(Service.normalized_name)).all()}
-    deps_after = {row[0] for row in db.execute(select(Dependency.id)).all()}
+    service_count = len(
+        list(db.execute(select(Service).where(Service.dataset_id == dataset_id)).scalars().all())
+    )
+    dependency_count = len(
+        list(db.execute(select(Dependency).where(Dependency.dataset_id == dataset_id)).scalars().all())
+    )
     return {
         "trace_count": len(traces),
         "span_count": span_count,
-        "service_count": len(services_after - services_before) if services_before else len(services_after),
-        "dependency_count": len(deps_after - deps_before) if deps_before else len(deps_after),
+        "service_count": service_count,
+        "dependency_count": dependency_count,
         "error_count": error_count,
     }
 
 
-def _process_single_trace(db: Session, trace: dict[str, Any], ingestion_id: str) -> dict[str, int]:
+def _process_single_trace(
+    db: Session,
+    trace: dict[str, Any],
+    ingestion_id: str,
+    dataset_id: str,
+) -> dict[str, int]:
     processes = trace.get("processes") or {}
     if not isinstance(processes, dict):
         processes = {}
@@ -183,6 +203,7 @@ def _process_single_trace(db: Session, trace: dict[str, Any], ingestion_id: str)
     for item in parsed:
         existing = db.execute(
             select(SpanRecord).where(
+                SpanRecord.dataset_id == dataset_id,
                 SpanRecord.trace_id == item["trace_id"],
                 SpanRecord.span_id == item["span_id"],
             )
@@ -190,7 +211,7 @@ def _process_single_trace(db: Session, trace: dict[str, Any], ingestion_id: str)
         if existing is not None:
             continue
 
-        service = _get_or_create_service(db, item["service_name"])
+        service = _get_or_create_service(db, item["service_name"], dataset_id)
         _ensure_operation(db, service, item["operation_name"], seen_operations)
         parent_service_name = None
         parent_span_id = item["parent_span_id"]
@@ -199,11 +220,12 @@ def _process_single_trace(db: Session, trace: dict[str, Any], ingestion_id: str)
 
         dependency = None
         if parent_service_name and normalize_name(parent_service_name) != service.normalized_name:
-            source = _get_or_create_service(db, parent_service_name)
-            dependency = _get_or_create_dependency(db, source, service)
+            source = _get_or_create_service(db, parent_service_name, dataset_id)
+            dependency = _get_or_create_dependency(db, source, service, dataset_id)
 
         record = SpanRecord(
             id=new_id(),
+            dataset_id=dataset_id,
             ingestion_id=ingestion_id,
             service_id=service.id,
             dependency_id=dependency.id if dependency else None,
@@ -221,7 +243,7 @@ def _process_single_trace(db: Session, trace: dict[str, Any], ingestion_id: str)
             errors += 1
 
     db.flush()
-    _recompute_metrics(db)
+    _recompute_metrics(db, dataset_id)
     return {"spans": len(parsed), "errors": errors}
 
 
@@ -323,17 +345,23 @@ def _detect_error(tags: Any) -> tuple[bool, str | None]:
     return error, status
 
 
-def _get_or_create_service(db: Session, name: str) -> Service:
+def _get_or_create_service(db: Session, name: str, dataset_id: str) -> Service:
     normalized = normalize_name(name)
-    service = db.execute(select(Service).where(Service.normalized_name == normalized)).scalar_one_or_none()
+    service = db.execute(
+        select(Service).where(Service.dataset_id == dataset_id, Service.normalized_name == normalized)
+    ).scalar_one_or_none()
     if service is None:
         service = Service(
             id=new_id(),
+            dataset_id=dataset_id,
             name=name.strip(),
             normalized_name=normalized,
+            source=SOURCE_TRACE,
         )
         db.add(service)
         db.flush()
+    else:
+        touch_source(service, SOURCE_TRACE)
     return service
 
 
@@ -359,9 +387,10 @@ def _ensure_operation(
         db.add(ServiceOperation(id=new_id(), service_id=service.id, operation_name=operation_name))
 
 
-def _get_or_create_dependency(db: Session, source: Service, target: Service) -> Dependency:
+def _get_or_create_dependency(db: Session, source: Service, target: Service, dataset_id: str) -> Dependency:
     dependency = db.execute(
         select(Dependency).where(
+            Dependency.dataset_id == dataset_id,
             Dependency.source_service_id == source.id,
             Dependency.target_service_id == target.id,
         )
@@ -370,15 +399,18 @@ def _get_or_create_dependency(db: Session, source: Service, target: Service) -> 
         thresholds = get_thresholds()
         dependency = Dependency(
             id=new_id(),
+            dataset_id=dataset_id,
             source_service_id=source.id,
             target_service_id=target.id,
             critical_weight=get_thresholds().blast_radius.non_critical_edge_weight,
+            source=SOURCE_TRACE,
         )
         db.add(dependency)
         db.flush()
         db.add(
             CircuitBreakerState(
                 id=new_id(),
+                dataset_id=dataset_id,
                 source_service_id=source.id,
                 target_service_id=target.id,
                 dependency_id=dependency.id,
@@ -389,11 +421,13 @@ def _get_or_create_dependency(db: Session, source: Service, target: Service) -> 
             )
         )
         db.flush()
+    else:
+        touch_source(dependency, SOURCE_TRACE)
     return dependency
 
 
-def _recompute_metrics(db: Session) -> None:
-    services = list(db.execute(select(Service)).scalars().all())
+def _recompute_metrics(db: Session, dataset_id: str) -> None:
+    services = list(db.execute(select(Service).where(Service.dataset_id == dataset_id)).scalars().all())
     for service in services:
         spans = list(db.execute(select(SpanRecord).where(SpanRecord.service_id == service.id)).scalars().all())
         durations = [span.duration_ms for span in spans]
@@ -412,7 +446,7 @@ def _recompute_metrics(db: Session) -> None:
             service.last_seen_at = _start_time_to_datetime(latest)
         service.updated_at = utc_now()
 
-    dependencies = list(db.execute(select(Dependency)).scalars().all())
+    dependencies = list(db.execute(select(Dependency).where(Dependency.dataset_id == dataset_id)).scalars().all())
     for dependency in dependencies:
         spans = list(
             db.execute(select(SpanRecord).where(SpanRecord.dependency_id == dependency.id)).scalars().all()
@@ -429,9 +463,12 @@ def _recompute_metrics(db: Session) -> None:
     db.flush()
 
 
-def _refresh_dependency_critical_weights(db: Session) -> None:
+def _refresh_dependency_critical_weights(db: Session, dataset_id: str | None = None) -> None:
     thresholds = get_thresholds()
-    dependencies = list(db.execute(select(Dependency)).scalars().all())
+    query = select(Dependency)
+    if dataset_id:
+        query = query.where(Dependency.dataset_id == dataset_id)
+    dependencies = list(db.execute(query).scalars().all())
     if not dependencies:
         return
     counts = sorted(dep.call_count for dep in dependencies)

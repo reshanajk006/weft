@@ -47,7 +47,15 @@ The API is available at:
 - ReDoc: http://localhost:8000/redoc
 - OpenAPI: http://localhost:8000/openapi.json
 
-The SQLite database is created automatically on startup (`weft.db` by default, resolved relative to the `backend/` directory).
+The SQLite database is created automatically on startup (`weft.db` by default, resolved relative to the `backend/` directory). Existing local DBs pick up new columns via startup `ALTER TABLE` (no wipe). If a column add ever fails, delete `weft.db` and restart, or run `POST /api/dev/reset`.
+
+Docker:
+
+```bash
+docker compose up --build
+```
+
+The container serves `/docs` on port 8000. Optional Postgres is commented in `docker-compose.yml`; only `DATABASE_URL` needs to change to switch.
 
 ## Expected user flow
 
@@ -102,14 +110,17 @@ CORS defaults to `http://localhost:3000` and `http://localhost:5173`.
 | Area | Endpoints |
 | --- | --- |
 | Health | `GET /api/health`, `GET /api/health/services`, `GET /api/overview` |
-| Telemetry | `POST /api/telemetry/traces`, `POST /api/telemetry/traces/upload`, `GET /api/telemetry/ingestions` |
-| Graph | `GET /api/graph`, `GET /api/graph/validation` |
-| Services | `GET /api/services`, `GET /api/services/{id}`, dashboard, upstream, downstream, health-history |
+| Telemetry | `POST /api/telemetry/traces`, `POST /api/telemetry/traces/upload`, `POST /api/telemetry/otlp`, `GET /api/telemetry/ingestions` |
+| Graph | `GET /api/graph`, `GET /api/graph/validation`, `GET /api/graph/export` |
+| Services | `GET /api/services`, `GET/PATCH /api/services/{id}`, dashboard, upstream, downstream, health-history |
 | Criticality | `GET /api/criticality/rankings`, `GET /api/criticality/{id}` |
 | Blast radius | `GET /api/blast-radius/{id}` |
-| Simulation | `POST /api/simulate/failure/{id}`, SSE stream, history, timeline |
+| Simulation | `POST /api/simulate/failure`, `POST /api/simulate/failure/{id}`, SSE stream, history, timeline |
 | Circuit breakers | list, get, simulate, reset, transition |
 | Reports | `POST /api/reports/generate` |
-| Config | `GET/PUT /api/config/thresholds` |
+| Config | `GET/PUT /api/config/thresholds`, `POST /api/config/topology`, `POST /api/config/topology/upload` |
+| Admin | `POST /api/admin/reset`, `POST /api/admin/seed-sample` (requires `X-Admin-Key`) |
+
+`/api/v1/...` is the canonical prefix; `/api/...` remains supported. Write endpoints accept optional `X-API-Key` when `API_KEY` is set.
 
 Blast-radius direction: if `A -> B` then `A` calls `B`. If `B` fails, `A` is affected. Structural blast radius uses graph ancestors, not descendants.

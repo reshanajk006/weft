@@ -13,12 +13,19 @@ from app.db.base import Base
 
 class Service(Base):
     __tablename__ = "services"
+    __table_args__ = (UniqueConstraint("dataset_id", "normalized_name", name="uq_service_dataset_name"),)
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    dataset_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("telemetry_datasets.id"), nullable=True, index=True
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    normalized_name: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    normalized_name: Mapped[str] = mapped_column(String(255), index=True)
     tier: Mapped[str | None] = mapped_column(String(64), nullable=True)
     service_type: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    owner: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    source: Mapped[str] = mapped_column(String(16), default="trace")
+    criticality_override: Mapped[float | None] = mapped_column(Float, nullable=True)
     total_calls: Mapped[int] = mapped_column(Integer, default=0)
     error_count: Mapped[int] = mapped_column(Integer, default=0)
     error_rate: Mapped[float] = mapped_column(Float, default=0.0)
@@ -34,6 +41,11 @@ class Service(Base):
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, onupdate=utc_now)
+
+    def effective_criticality_score(self) -> float:
+        if self.criticality_override is not None:
+            return float(self.criticality_override)
+        return float(self.criticality_score)
 
     outgoing_dependencies: Mapped[list["Dependency"]] = relationship(
         "Dependency",
@@ -75,9 +87,12 @@ class ServiceOperation(Base):
 
 class SpanRecord(Base):
     __tablename__ = "span_records"
-    __table_args__ = (UniqueConstraint("trace_id", "span_id", name="uq_trace_span"),)
+    __table_args__ = (UniqueConstraint("dataset_id", "trace_id", "span_id", name="uq_dataset_trace_span"),)
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    dataset_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("telemetry_datasets.id"), nullable=True, index=True
+    )
     ingestion_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("trace_ingestions.id"), nullable=True)
     service_id: Mapped[str] = mapped_column(String(36), ForeignKey("services.id"), nullable=False, index=True)
     dependency_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("dependencies.id"), nullable=True, index=True)

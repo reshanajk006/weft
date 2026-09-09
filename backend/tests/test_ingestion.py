@@ -127,3 +127,33 @@ def test_same_service_parent_does_not_create_self_edge(ingest, client):
     ingest(payload)
     graph = client.get("/api/graph").json()
     assert graph["edges"] == []
+
+
+def test_otlp_ingestion_matches_jaeger_topology(client, ingest):
+    ingest(chain_payload(["checkout-service", "payment-gateway"]))
+    jaeger_graph = client.get("/api/graph").json()
+    jaeger_names = {node["name"] for node in jaeger_graph["nodes"]}
+    jaeger_edges = {
+        next(n["name"] for n in jaeger_graph["nodes"] if n["id"] == edge["source"])
+        + "->"
+        + next(n["name"] for n in jaeger_graph["nodes"] if n["id"] == edge["target"])
+        for edge in jaeger_graph["edges"]
+    }
+    from pathlib import Path
+    import json
+
+    otlp = json.loads((Path(__file__).resolve().parent.parent / "samples" / "sample_traces_otlp.json").read_text(encoding="utf-8"))
+    response = client.post("/api/telemetry/otlp", json=otlp)
+    assert response.status_code == 201, response.text
+    otlp_graph = client.get("/api/graph").json()
+    names = {node["name"] for node in otlp_graph["nodes"]}
+    edges = {
+        next(n["name"] for n in otlp_graph["nodes"] if n["id"] == edge["source"])
+        + "->"
+        + next(n["name"] for n in otlp_graph["nodes"] if n["id"] == edge["target"])
+        for edge in otlp_graph["edges"]
+    }
+    assert names == jaeger_names
+    assert edges == jaeger_edges
+    assert names == jaeger_names or names == {"checkout-service", "payment-gateway"}
+

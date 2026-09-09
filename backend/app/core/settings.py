@@ -21,7 +21,12 @@ class Settings(BaseSettings):
     )
 
     database_url: str = Field(default="sqlite:///./weft.db")
-    cors_origins: str = Field(default="http://localhost:3000,http://localhost:5173,http://localhost:5174")
+    cors_origins: str = Field(
+        default="http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175"
+    )
+    allow_dev_reset: bool = Field(default=True)
+    admin_key: str = Field(default="")
+    api_key: str = Field(default="")
     trace_upload_dir: str = Field(default="./data/traces")
     report_storage_dir: str = Field(default="./storage/reports")
     max_trace_file_size_mb: int = Field(default=20, ge=1)

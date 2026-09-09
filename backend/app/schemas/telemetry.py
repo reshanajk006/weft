@@ -11,6 +11,8 @@ from app.schemas.common import APIModel
 
 class IngestionResult(APIModel):
     ingestion_id: str
+    dataset_id: str | None = None
+    dataset_name: str | None = None
     filename: str | None = None
     traces_processed: int
     spans_processed: int

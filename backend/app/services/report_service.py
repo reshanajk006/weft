@@ -14,20 +14,14 @@ from app.core.utils import isoformat, new_id, utc_now
 from app.db.models import ImpactReport, Service, SimulationRun
 from app.schemas.report import ReportResponse
 from app.schemas.simulation import SimulationResponse, TimelineEvent
-from app.services.simulation_service import get_timeline
+from app.services.simulation_service import _get_active_simulation, get_timeline
 
 
 def generate_report(db: Session, simulation_id: str, fmt: str) -> ReportResponse:
     fmt_normalized = fmt.lower().strip()
     if fmt_normalized not in {"json", "markdown"}:
         raise BadRequestError("format must be 'json' or 'markdown'", details={"format": fmt})
-    run = db.get(SimulationRun, simulation_id)
-    if run is None:
-        raise NotFoundError(
-            f"Simulation '{simulation_id}' was not found",
-            code="SIMULATION_NOT_FOUND",
-            details={"simulation_id": simulation_id},
-        )
+    run = _get_active_simulation(db, simulation_id)
     result = SimulationResponse.model_validate(run.result_json)
     timeline = get_timeline(db, simulation_id).items
     recommendations = _recommendations(db, result)

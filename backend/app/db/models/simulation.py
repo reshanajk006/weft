@@ -15,7 +15,12 @@ class SimulationRun(Base):
     __tablename__ = "simulation_runs"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    dataset_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("telemetry_datasets.id"), nullable=True, index=True
+    )
     failed_service_id: Mapped[str] = mapped_column(String(36), ForeignKey("services.id"), nullable=False, index=True)
+    # Multi-failure runs store every id here and keep failed_service_id as the first id.
+    failed_service_ids: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
     blast_radius_score: Mapped[float] = mapped_column(Float, default=0.0)
     severity: Mapped[str] = mapped_column(String(32), default="LOW")
     affected_service_count: Mapped[int] = mapped_column(Integer, default=0)

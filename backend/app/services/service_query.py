@@ -5,7 +5,7 @@ from __future__ import annotations
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.orm import Session
 
-from app.core.utils import isoformat
+from app.core.utils import isoformat, utc_now
 from app.db.models import CircuitBreakerState, Dependency, Service, ServiceOperation, SimulationRun
 from app.schemas.services import (
     OverviewHighestRisk,
@@ -21,6 +21,13 @@ from app.schemas.services import (
 )
 from app.services.circuit_breaker_service import list_circuit_breakers
 from app.services.criticality_service import get_criticality
+from app.services.dataset_service import (
+    active_dataset_id,
+    dataset_summary,
+    get_active_dataset,
+    list_active_dependencies,
+    list_active_services,
+)
 from app.services.graph_service import get_downstream, get_service_or_404, get_upstream
 from app.services.health_service import list_health_history
 from app.services.simulation_service import list_simulations
@@ -46,6 +53,10 @@ def list_services(
     offset: int = 0,
 ) -> ServiceListResponse:
     query = select(Service)
+    dataset_id = active_dataset_id(db)
+    if not dataset_id:
+        return ServiceListResponse(items=[], total=0, limit=limit, offset=offset)
+    query = query.where(Service.dataset_id == dataset_id)
     filters = []
     if q:
         pattern = f"%{q.lower()}%"
@@ -124,6 +135,9 @@ def get_service_detail(db: Session, service_id: str) -> ServiceDetail:
         updated_at=isoformat(service.updated_at) or "",
         tier=service.tier,
         service_type=service.service_type,
+        owner=service.owner,
+        source=service.source,
+        criticality_override=service.criticality_override,
     )
 
 
@@ -159,7 +173,7 @@ def get_dashboard(db: Session, service_id: str) -> ServiceDashboard:
 
 
 def list_service_health(db: Session) -> ServiceHealthListResponse:
-    rows = list(db.execute(select(Service).order_by(Service.normalized_name)).scalars().all())
+    rows = list_active_services(db)
     items = [
         ServiceHealthListItem(
             service_id=service.id,
@@ -176,23 +190,34 @@ def list_service_health(db: Session) -> ServiceHealthListResponse:
 
 
 def get_overview(db: Session) -> OverviewResponse:
-    services = list(db.execute(select(Service)).scalars().all())
-    dependency_count = db.execute(select(func.count(Dependency.id))).scalar_one()
+    services = list_active_services(db)
+    dataset = get_active_dataset(db)
+    dataset_id = dataset.id if dataset else None
+    dependency_count = len(list_active_dependencies(db))
     healthy = sum(1 for service in services if service.health_status == "HEALTHY")
     degraded = sum(1 for service in services if service.health_status == "DEGRADED")
     unhealthy = sum(1 for service in services if service.health_status == "UNHEALTHY")
     average = round(sum(service.health_score for service in services) / len(services), 4) if services else 0.0
     highest = None
     if services:
-        top = sorted(services, key=lambda service: (-service.criticality_score, -service.total_calls, service.normalized_name))[0]
+        top = sorted(
+            services,
+            key=lambda service: (-service.effective_criticality_score(), -service.total_calls, service.normalized_name),
+        )[0]
         highest = OverviewHighestRisk(
             id=top.id,
             name=top.name,
-            criticality_score=top.criticality_score,
+            criticality_score=top.effective_criticality_score(),
             health_status=top.health_status,
             health_score=top.health_score,
         )
-    latest_row = db.execute(select(SimulationRun).order_by(SimulationRun.created_at.desc())).scalars().first()
+    latest_row = None
+    if dataset_id:
+        latest_row = db.execute(
+            select(SimulationRun)
+            .where(SimulationRun.dataset_id == dataset_id)
+            .order_by(SimulationRun.created_at.desc())
+        ).scalars().first()
     latest = None
     if latest_row:
         failed = db.get(Service, latest_row.failed_service_id)
@@ -204,9 +229,14 @@ def get_overview(db: Session) -> OverviewResponse:
             blast_radius_score=latest_row.blast_radius_score,
             created_at=isoformat(latest_row.created_at) or "",
         )
-    open_count = db.execute(
-        select(func.count(CircuitBreakerState.id)).where(CircuitBreakerState.state == "OPEN")
-    ).scalar_one()
+    open_count = 0
+    if dataset_id:
+        open_count = db.execute(
+            select(func.count(CircuitBreakerState.id)).where(
+                CircuitBreakerState.state == "OPEN",
+                CircuitBreakerState.dataset_id == dataset_id,
+            )
+        ).scalar_one()
     return OverviewResponse(
         service_count=len(services),
         dependency_count=int(dependency_count or 0),
@@ -217,6 +247,7 @@ def get_overview(db: Session) -> OverviewResponse:
         highest_risk_service=highest,
         latest_simulation=latest,
         open_circuit_breakers=int(open_count or 0),
+        active_dataset=dataset_summary(db, dataset),
     )
 
 
@@ -232,8 +263,12 @@ def _summary(service: Service) -> ServiceSummary:
         total_calls=service.total_calls,
         total_spans=service.total_spans,
         criticality_score=service.criticality_score,
+        effective_criticality_score=service.effective_criticality_score(),
         tier=service.tier,
         service_type=service.service_type,
+        owner=service.owner,
+        source=service.source,
+        criticality_override=service.criticality_override,
     )
 
 
@@ -250,3 +285,27 @@ def _metrics(service: Service) -> ServiceMetrics:
         p99_latency_ms=service.p99_latency_ms,
         sample_count=service.total_spans,
     )
+
+
+def update_service(db: Session, service_id: str, payload) -> ServiceDetail:
+    """Patch business metadata. Invalidates the graph cache after criticality recompute."""
+
+    from app.services.criticality_service import recompute_all_criticality
+    from app.services.graph_service import invalidate_graph_cache
+
+    invalidate_graph_cache()
+    service = get_service_or_404(db, service_id)
+    data = payload.model_dump(exclude_unset=True)
+    if "tier" in data:
+        service.tier = data["tier"]
+    if "service_type" in data:
+        service.service_type = data["service_type"]
+    if "owner" in data:
+        service.owner = data["owner"]
+    if "criticality_override" in data:
+        service.criticality_override = data["criticality_override"]
+    service.updated_at = utc_now()
+    db.flush()
+    recompute_all_criticality(db, dataset_id=service.dataset_id)
+    invalidate_graph_cache()
+    return get_service_detail(db, service_id)

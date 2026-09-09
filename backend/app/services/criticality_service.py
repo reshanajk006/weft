@@ -16,11 +16,15 @@ from app.schemas.criticality import (
     CriticalityRankingResponse,
     FactorBreakdown,
 )
-from app.services.graph_service import build_graph
+from app.services.graph_service import build_graph, get_service_or_404
+from app.services.dataset_service import list_active_services
 
 
-def recompute_all_criticality(db: Session) -> list[CriticalityExplanation]:
-    services = list(db.execute(select(Service)).scalars().all())
+def recompute_all_criticality(db: Session, dataset_id: str | None = None) -> list[CriticalityExplanation]:
+    if dataset_id:
+        services = list(db.execute(select(Service).where(Service.dataset_id == dataset_id)).scalars().all())
+    else:
+        services = list_active_services(db)
     graph = build_graph(db)
     max_calls = max((service.total_calls for service in services), default=0)
     max_latency = max((service.avg_latency_ms for service in services), default=0.0)
@@ -38,21 +42,25 @@ def recompute_all_criticality(db: Session) -> list[CriticalityExplanation]:
         error_norm = clamp(service.error_rate, 0.0, 1.0)
         latency_norm = safe_div(service.avg_latency_ms, max_latency)
         dep_norm = safe_div(dependency_raw[service.id], max_dependency)
+        tier_norm = _tier_norm(service.tier, weights.tier_scores)
         breakdown = CriticalityBreakdown(
             call_volume=_factor(weights.call_volume_weight, float(service.total_calls), call_norm),
             error_impact=_factor(weights.error_weight, service.error_rate, error_norm),
             latency_impact=_factor(weights.latency_weight, service.avg_latency_ms, latency_norm),
             dependency_impact=_factor(weights.dependency_weight, dependency_raw[service.id], dep_norm),
+            business_tier=_factor(weights.tier_weight, tier_norm, tier_norm),
         )
-        score = round(
+        computed = round(
             breakdown.call_volume.contribution
             + breakdown.error_impact.contribution
             + breakdown.latency_impact.contribution
-            + breakdown.dependency_impact.contribution,
+            + breakdown.dependency_impact.contribution
+            + breakdown.business_tier.contribution,
             4,
         )
-        score = clamp(score, 0.0, 100.0)
-        service.criticality_score = score
+        computed = clamp(computed, 0.0, 100.0)
+        service.criticality_score = computed
+        score = service.effective_criticality_score()
         snapshot = CriticalitySnapshot(
             service_id=service.id,
             score=score,
@@ -65,6 +73,8 @@ def recompute_all_criticality(db: Session) -> list[CriticalityExplanation]:
                 service_id=service.id,
                 score=score,
                 breakdown=breakdown,
+                computed_score=computed,
+                criticality_override=service.criticality_override,
             )
         )
     db.flush()
@@ -72,13 +82,7 @@ def recompute_all_criticality(db: Session) -> list[CriticalityExplanation]:
 
 
 def get_criticality(db: Session, service_id: str) -> CriticalityExplanation:
-    service = db.get(Service, service_id)
-    if service is None:
-        raise NotFoundError(
-            f"Service '{service_id}' was not found",
-            code="SERVICE_NOT_FOUND",
-            details={"service_id": service_id},
-        )
+    service = get_service_or_404(db, service_id)
     snapshot = db.execute(
         select(CriticalitySnapshot)
         .where(CriticalitySnapshot.service_id == service_id)
@@ -95,19 +99,21 @@ def get_criticality(db: Session, service_id: str) -> CriticalityExplanation:
     return CriticalityExplanation(
         service=service.name,
         service_id=service.id,
-        score=service.criticality_score,
+        score=service.effective_criticality_score(),
         breakdown=breakdown,
+        computed_score=service.criticality_score,
+        criticality_override=service.criticality_override,
     )
 
 
 def list_rankings(db: Session) -> CriticalityRankingResponse:
-    services = list(db.execute(select(Service)).scalars().all())
+    services = list_active_services(db)
     if services and not db.execute(select(CriticalitySnapshot)).scalars().first():
         recompute_all_criticality(db)
     items: list[CriticalityRankingItem] = []
     ranked = sorted(
         services,
-        key=lambda service: (-service.criticality_score, -service.total_calls, service.normalized_name),
+        key=lambda service: (-service.effective_criticality_score(), -service.total_calls, service.normalized_name),
     )
     for index, service in enumerate(ranked, start=1):
         explanation = get_criticality(db, service.id)
@@ -116,7 +122,7 @@ def list_rankings(db: Session) -> CriticalityRankingResponse:
                 rank=index,
                 service=service.name,
                 service_id=service.id,
-                score=service.criticality_score,
+                score=service.effective_criticality_score(),
                 health=service.health_status,
                 health_score=service.health_score,
                 error_rate=service.error_rate,
@@ -135,3 +141,9 @@ def _factor(weight: float, raw_value: float, normalized_score: float) -> FactorB
         normalized_score=round(normalized_score, 6),
         contribution=round(weight * normalized_score * 100.0, 4),
     )
+
+
+def _tier_norm(tier: str | None, scores: dict[str, float]) -> float:
+    if not tier:
+        return 0.0
+    return float(scores.get(tier.strip().lower(), 0.0))

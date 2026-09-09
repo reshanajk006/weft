@@ -14,10 +14,11 @@ from app.schemas.services import (
     ServiceDashboard,
     ServiceDetail,
     ServiceListResponse,
+    ServiceUpdateRequest,
 )
 from app.services.graph_service import get_downstream, get_upstream
 from app.services.health_service import list_health_history
-from app.services.service_query import get_dashboard, get_service_detail, list_services
+from app.services.service_query import get_dashboard, get_service_detail, list_services, update_service
 
 router = APIRouter(prefix="/services", tags=["Services"])
 
@@ -76,6 +77,19 @@ def list_services_route(
 )
 def get_service(service_id: str, db: Session = Depends(get_db)) -> ServiceDetail:
     return get_service_detail(db, service_id)
+
+
+@router.patch(
+    "/{service_id}",
+    response_model=ServiceDetail,
+    summary="Update service metadata",
+)
+def patch_service(
+    service_id: str,
+    payload: ServiceUpdateRequest,
+    db: Session = Depends(get_db),
+) -> ServiceDetail:
+    return update_service(db, service_id, payload)
 
 
 @router.get(

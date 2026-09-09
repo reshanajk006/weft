@@ -37,6 +37,11 @@ class ConflictError(AppError):
         super().__init__(code=code, message=message, status_code=409, details=details)
 
 
+class ForbiddenError(AppError):
+    def __init__(self, message: str, code: str = "FORBIDDEN", details: dict[str, Any] | None = None) -> None:
+        super().__init__(code=code, message=message, status_code=403, details=details)
+
+
 class ValidationFailedError(AppError):
     def __init__(self, message: str, code: str = "VALIDATION_ERROR", details: dict[str, Any] | None = None) -> None:
         super().__init__(code=code, message=message, status_code=422, details=details)

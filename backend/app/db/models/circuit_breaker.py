@@ -15,6 +15,9 @@ class CircuitBreakerState(Base):
     __tablename__ = "circuit_breaker_states"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    dataset_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("telemetry_datasets.id"), nullable=True, index=True
+    )
     source_service_id: Mapped[str] = mapped_column(String(36), ForeignKey("services.id"), nullable=False, index=True)
     target_service_id: Mapped[str] = mapped_column(String(36), ForeignKey("services.id"), nullable=False, index=True)
     dependency_id: Mapped[str] = mapped_column(String(36), ForeignKey("dependencies.id"), nullable=False, unique=True)

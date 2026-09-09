@@ -15,6 +15,7 @@ from app.core.settings import get_settings
 from app.core.utils import isoformat, new_id
 from app.db.models import TraceIngestion
 from app.schemas.telemetry import IngestionHistoryItem, IngestionHistoryResponse, IngestionResult
+from app.services.otlp_ingestion import ingest_otlp_payload
 from app.services.trace_ingestion import ALLOWED_UPLOAD_TYPES, ingest_jaeger_file, ingest_jaeger_payload
 
 router = APIRouter(prefix="/telemetry", tags=["Telemetry"])
@@ -29,6 +30,16 @@ router = APIRouter(prefix="/telemetry", tags=["Telemetry"])
 )
 def ingest_traces(payload: dict[str, Any], db: Session = Depends(get_db)) -> IngestionResult:
     return ingest_jaeger_payload(db, payload)
+
+
+@router.post(
+    "/otlp",
+    response_model=IngestionResult,
+    status_code=status.HTTP_201_CREATED,
+    summary="Ingest OTLP JSON traces",
+)
+def ingest_otlp(payload: dict[str, Any], db: Session = Depends(get_db)) -> IngestionResult:
+    return ingest_otlp_payload(db, payload)
 
 
 @router.post(

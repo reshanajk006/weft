@@ -4,15 +4,18 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.errors import register_exception_handlers
 from app.api.routes import (
+    admin,
     blast_radius,
     circuit_breakers,
     config,
     criticality,
+    datasets,
+    dev,
     graph,
     health,
     reports,
@@ -22,6 +25,7 @@ from app.api.routes import (
 )
 from app.config.thresholds import load_thresholds
 from app.core.logging import get_logger, setup_logging
+from app.core.security import enforce_write_api_key
 from app.core.settings import get_settings
 from app.db.database import init_db
 
@@ -47,13 +51,15 @@ def create_app() -> FastAPI:
         version=settings.app_version,
         description=(
             "WEFT is a dependency-graph-driven resilience analysis platform. "
-            "Upload Jaeger JSON traces to derive services, dependencies, health, "
-            "technical criticality, blast radius, and circuit-breaker simulations."
+            "Upload Jaeger JSON traces or a declarative topology to derive services, "
+            "dependencies, health, technical criticality, blast radius, and circuit-breaker simulations. "
+            "Canonical prefix is /api/v1; /api remains supported."
         ),
         docs_url="/docs",
         redoc_url="/redoc",
         openapi_url="/openapi.json",
         lifespan=lifespan,
+        dependencies=[Depends(enforce_write_api_key)],
     )
 
     application.add_middleware(
@@ -65,17 +71,23 @@ def create_app() -> FastAPI:
     )
     register_exception_handlers(application)
 
-    prefix = "/api"
-    application.include_router(health.router, prefix=prefix)
-    application.include_router(telemetry.router, prefix=prefix)
-    application.include_router(graph.router, prefix=prefix)
-    application.include_router(services.router, prefix=prefix)
-    application.include_router(blast_radius.router, prefix=prefix)
-    application.include_router(criticality.router, prefix=prefix)
-    application.include_router(simulations.router, prefix=prefix)
-    application.include_router(circuit_breakers.router, prefix=prefix)
-    application.include_router(reports.router, prefix=prefix)
-    application.include_router(config.router, prefix=prefix)
+    def mount(prefix: str) -> None:
+        application.include_router(health.router, prefix=prefix)
+        application.include_router(telemetry.router, prefix=prefix)
+        application.include_router(datasets.router, prefix=prefix)
+        application.include_router(graph.router, prefix=prefix)
+        application.include_router(services.router, prefix=prefix)
+        application.include_router(blast_radius.router, prefix=prefix)
+        application.include_router(criticality.router, prefix=prefix)
+        application.include_router(simulations.router, prefix=prefix)
+        application.include_router(circuit_breakers.router, prefix=prefix)
+        application.include_router(reports.router, prefix=prefix)
+        application.include_router(config.router, prefix=prefix)
+        application.include_router(dev.router, prefix=prefix)
+        application.include_router(admin.router, prefix=prefix)
+
+    mount("/api")
+    mount("/api/v1")
     return application
 
 

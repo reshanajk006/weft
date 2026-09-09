@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pydantic import Field, model_validator
+
 from app.schemas.common import APIModel
 
 
@@ -20,6 +22,7 @@ class SimulatedAffectedService(APIModel):
     projected_health_score: float
     impact_level: str
     direct: bool
+    caused_by: list[str] = Field(default_factory=list)
 
 
 class PredictedCircuitTransition(APIModel):
@@ -36,6 +39,7 @@ class PredictedCircuitTransition(APIModel):
 class SimulationResponse(APIModel):
     simulation_id: str
     failed_service: SimulatedFailedService
+    failed_services: list[SimulatedFailedService] = Field(default_factory=list)
     severity: str
     blast_radius_score: float
     services_affected: int
@@ -47,6 +51,16 @@ class SimulationResponse(APIModel):
     predicted_circuit_transitions: list[PredictedCircuitTransition]
     explanation: str
     created_at: str
+
+    @model_validator(mode="after")
+    def fill_failed_services(self) -> "SimulationResponse":
+        if not self.failed_services:
+            self.failed_services = [self.failed_service]
+        return self
+
+
+class MultiFailureRequest(APIModel):
+    service_ids: list[str] = Field(min_length=1)
 
 
 class TimelineEvent(APIModel):

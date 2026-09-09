@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+from starlette.responses import StreamingResponse
 
 from app.api.deps import get_db
 from app.schemas.graph import GraphResponse, GraphValidationResponse
-from app.services.graph_service import serialize_graph, validate_graph
+from app.services.graph_service import export_graph, serialize_graph, validate_graph
 
 router = APIRouter(prefix="/graph", tags=["Graph"])
 
@@ -33,3 +34,19 @@ def get_graph(
 )
 def graph_validation(db: Session = Depends(get_db)) -> GraphValidationResponse:
     return validate_graph(db)
+
+
+@router.get(
+    "/export",
+    summary="Export graph as GraphML or DOT",
+)
+def graph_export(
+    format: str = Query(default="graphml"),
+    db: Session = Depends(get_db),
+) -> StreamingResponse:
+    payload, content_type, filename = export_graph(db, format)
+    return StreamingResponse(
+        iter([payload]),
+        media_type=content_type,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )

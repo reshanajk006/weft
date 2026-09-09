@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from pydantic import Field
+
 from app.schemas.common import APIModel
-from app.schemas.criticality import CriticalityBreakdown, FactorBreakdown
+from app.schemas.dataset import DatasetSummary
 from app.schemas.health import HealthHistoryItem
 
 
@@ -18,8 +20,12 @@ class ServiceSummary(APIModel):
     total_calls: int
     total_spans: int
     criticality_score: float
+    effective_criticality_score: float | None = None
     tier: str | None = None
     service_type: str | None = None
+    owner: str | None = None
+    source: str | None = None
+    criticality_override: float | None = None
 
 
 class ServiceMetrics(APIModel):
@@ -61,6 +67,9 @@ class ServiceDetail(APIModel):
     updated_at: str
     tier: str | None = None
     service_type: str | None = None
+    owner: str | None = None
+    source: str | None = None
+    criticality_override: float | None = None
 
 
 class NeighborListResponse(APIModel):
@@ -90,6 +99,13 @@ class ServiceListResponse(APIModel):
     total: int
     limit: int
     offset: int
+
+
+class ServiceUpdateRequest(APIModel):
+    tier: str | None = None
+    service_type: str | None = None
+    owner: str | None = None
+    criticality_override: float | None = Field(default=None, ge=0.0, le=100.0)
 
 
 class ServiceDashboard(APIModel):
@@ -131,3 +147,4 @@ class OverviewResponse(APIModel):
     highest_risk_service: OverviewHighestRisk | None = None
     latest_simulation: OverviewLatestSimulation | None = None
     open_circuit_breakers: int
+    active_dataset: DatasetSummary | None = None

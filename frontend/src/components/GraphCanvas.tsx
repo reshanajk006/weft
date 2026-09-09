@@ -1,16 +1,23 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   Background,
   Controls,
   MiniMap,
+  MarkerType,
   ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
   type Edge,
   type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import type { GraphResponse } from "../types";
+import { BlastRings } from "./BlastRings";
+import { ServiceNode, type ServiceNodeData } from "./ServiceNode";
 
-function layout(graph: GraphResponse) {
+const nodeTypes = { service: ServiceNode };
+
+function layout(graph: GraphResponse, dimmed: Set<string> | null) {
   const incoming = new Map<string, string[]>();
   graph.nodes.forEach((node) => incoming.set(node.id, []));
   graph.edges.forEach((edge) => incoming.get(edge.target)?.push(edge.source));
@@ -32,7 +39,7 @@ function layout(graph: GraphResponse) {
     list.push(node);
     columns.set(column, list);
   });
-  const flowNodes: Node[] = [];
+  const flowNodes: Node<ServiceNodeData>[] = [];
   [...columns.keys()]
     .sort((a, b) => a - b)
     .forEach((column) => {
@@ -40,39 +47,73 @@ function layout(graph: GraphResponse) {
       list.forEach((node, index) => {
         flowNodes.push({
           id: node.id,
-          position: { x: 40 + column * 240, y: 30 + index * 92 },
-          data: { label: node.name, health: node.health_status, status: node.status, score: node.health_score },
-          style: {
-            border: "1px solid #111",
-            borderRadius: 6,
-            padding: 10,
-            background: node.status === "FAILED" ? "#111" : "#fff",
-            color: node.status === "FAILED" ? "#fff" : "#111",
-            fontSize: 13,
-            width: 180,
+          type: "service",
+          position: { x: 64 + column * 280, y: 48 + index * 120 },
+          data: {
+            label: node.name,
+            health: node.health_status,
+            status: node.status,
+            score: node.health_score,
+            dimmed: dimmed ? !dimmed.has(node.id) : false,
           },
         });
       });
     });
-  const flowEdges: Edge[] = graph.edges.map((edge) => ({
-    id: edge.id,
-    source: edge.source,
-    target: edge.target,
-    animated: edge.status === "IMPACTED",
-    style: { stroke: edge.status === "IMPACTED" ? "#111" : "#bbb", strokeWidth: edge.status === "IMPACTED" ? 1.6 : 1 },
-    label: `${edge.call_count}`,
-  }));
+  const flowEdges: Edge[] = graph.edges.map((edge) => {
+    const impacted = edge.status === "IMPACTED";
+    const critical = edge.critical_weight >= 0.9;
+    const color = impacted ? "#e24b4a" : critical ? "#9aa3b0" : "#3a4250";
+    return {
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      animated: impacted,
+      type: "smoothstep",
+      style: {
+        stroke: color,
+        strokeWidth: impacted ? 2 : critical ? 1.6 : 1.1,
+      },
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        width: 14,
+        height: 14,
+        color,
+      },
+    };
+  });
   return { flowNodes, flowEdges };
 }
 
-export function GraphCanvas({
+function GraphInner({
   graph,
+  selectedId,
+  focusId,
+  failedId,
+  dimmed,
   onSelect,
 }: {
   graph: GraphResponse;
+  selectedId?: string;
+  focusId?: string;
+  failedId: string | null;
+  dimmed: Set<string> | null;
   onSelect: (id: string) => void;
 }) {
-  const { flowNodes, flowEdges } = useMemo(() => layout(graph), [graph]);
+  const { fitView } = useReactFlow();
+  const { flowNodes, flowEdges } = useMemo(() => layout(graph, dimmed), [dimmed, graph]);
+  const nodes = useMemo(
+    () => flowNodes.map((node) => ({ ...node, selected: node.id === selectedId })),
+    [flowNodes, selectedId],
+  );
+
+  useEffect(() => {
+    if (!focusId) return;
+    const timer = window.setTimeout(() => {
+      void fitView({ nodes: [{ id: focusId }], padding: 0.45, duration: 400 });
+    }, 40);
+    return () => window.clearTimeout(timer);
+  }, [fitView, focusId]);
+
   const onNodeClick = useCallback(
     (_: unknown, node: Node) => {
       onSelect(node.id);
@@ -81,19 +122,64 @@ export function GraphCanvas({
   );
 
   return (
+    <ReactFlow
+      nodes={nodes}
+      edges={flowEdges}
+      nodeTypes={nodeTypes}
+      fitView
+      nodesConnectable={false}
+      onNodeClick={onNodeClick}
+      onPaneClick={() => onSelect("")}
+      minZoom={0.25}
+      maxZoom={1.8}
+      proOptions={{ hideAttribution: true }}
+    >
+      <Background color="#243042" gap={22} />
+      <Controls showInteractive={false} />
+      <MiniMap
+        pannable
+        zoomable
+        maskColor="rgba(8, 10, 14, 0.72)"
+        nodeColor={(node) => {
+          const status = (node.data as ServiceNodeData).status;
+          if (status === "FAILED") return "#e24b4a";
+          if (status === "DIRECTLY_AFFECTED") return "#e08a3a";
+          if (status === "INDIRECTLY_AFFECTED") return "#d4b44a";
+          return "#4b5563";
+        }}
+      />
+      <BlastRings failedId={failedId} />
+    </ReactFlow>
+  );
+}
+
+export function GraphCanvas({
+  graph,
+  selectedId,
+  focusId,
+  failedId,
+  dimmed,
+  onSelect,
+}: {
+  graph: GraphResponse;
+  selectedId?: string;
+  focusId?: string;
+  failedId: string | null;
+  dimmed: Set<string> | null;
+  onSelect: (id: string) => void;
+}) {
+  return (
     <div className="graph-wrap">
-      <ReactFlow
-        key={graph.nodes.map((node) => `${node.id}:${node.status}`).join("|")}
-        nodes={flowNodes}
-        edges={flowEdges}
-        fitView
-        onNodeClick={onNodeClick}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background color="#ececec" gap={18} />
-        <Controls showInteractive={false} />
-        <MiniMap pannable zoomable />
-      </ReactFlow>
+      <ReactFlowProvider>
+        <GraphInner
+          graph={graph}
+          selectedId={selectedId}
+          focusId={focusId}
+          failedId={failedId}
+          dimmed={dimmed}
+          onSelect={onSelect}
+        />
+      </ReactFlowProvider>
     </div>
   );
 }

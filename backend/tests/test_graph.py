@@ -68,3 +68,33 @@ def test_graph_highlight_status(ingest, client):
     assert status["b-service"] == "FAILED"
     assert status["a-service"] == "DIRECTLY_AFFECTED"
     assert status["c-service"] == "NORMAL"
+
+
+def test_graph_export_graphml_round_trip(ingest, client):
+    ingest(chain_payload(["a-service", "b-service"]))
+    expected = client.get("/api/graph").json()
+    response = client.get("/api/graph/export", params={"format": "graphml"})
+    assert response.status_code == 200
+    from io import BytesIO
+
+    import networkx as nx
+
+    loaded = nx.read_graphml(BytesIO(response.content))
+    assert loaded.number_of_nodes() == len(expected["nodes"])
+    assert loaded.number_of_edges() == len(expected["edges"])
+    dot = client.get("/api/graph/export", params={"format": "dot"})
+    assert response.status_code == 200
+    assert "digraph" in dot.text
+    assert dot.status_code == 200
+
+
+def test_graph_cache_invalidates_after_ingest(ingest, client):
+    first = client.get("/api/graph").json()
+    assert first == {"nodes": [], "edges": []}
+    ingest(chain_payload(["a-service", "b-service"]))
+    second = client.get("/api/graph").json()
+    assert len(second["nodes"]) == 2
+    ingest(chain_payload(["only-service"]))
+    third = client.get("/api/graph").json()
+    names = {node["name"] for node in third["nodes"]}
+    assert names == {"only-service"}

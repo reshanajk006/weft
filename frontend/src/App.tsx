@@ -1,30 +1,37 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
-import { CircuitBreakersPage } from "./pages/CircuitBreakersPage";
-import { GraphPage } from "./pages/GraphPage";
-import { Landing } from "./pages/Landing";
-import { OverviewPage } from "./pages/Overview";
-import { ServiceDetailPage } from "./pages/ServiceDetail";
-import { ServicesPage } from "./pages/ServicesPage";
+import { GraphWorkspace } from "./pages/GraphWorkspace";
+import { OverviewPage } from "./pages/OverviewPage";
+import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
-import { SimulationDetailPage } from "./pages/SimulationDetail";
-import { SimulationsPage } from "./pages/SimulationsPage";
+import { IncidentsPage, SimulationsHistoryPage } from "./pages/SimulationsPage";
+import { WorkspaceProvider, useWorkspace } from "./state/workspace";
+
+function ServiceRedirect() {
+  const { id } = useParams();
+  const { mode } = useWorkspace();
+  if (mode === "LOADING") return null;
+  if (!id || mode === "NO_DATA" || mode === "ERROR") return <Navigate to="/" replace />;
+  return <Navigate to={`/?service=${id}`} replace />;
+}
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/app" element={<AppShell />}>
-        <Route index element={<OverviewPage />} />
-        <Route path="graph" element={<GraphPage />} />
-        <Route path="services" element={<ServicesPage />} />
-        <Route path="services/:id" element={<ServiceDetailPage />} />
-        <Route path="simulations" element={<SimulationsPage />} />
-        <Route path="simulations/:id" element={<SimulationDetailPage />} />
-        <Route path="circuit-breakers" element={<CircuitBreakersPage />} />
-        <Route path="settings" element={<SettingsPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <WorkspaceProvider>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="/" element={<GraphWorkspace />} />
+          <Route path="/graph" element={<GraphWorkspace />} />
+          <Route path="/overview" element={<OverviewPage />} />
+          <Route path="/simulations" element={<SimulationsHistoryPage />} />
+          <Route path="/incidents" element={<IncidentsPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/service/:id" element={<ServiceRedirect />} />
+          <Route path="/simulate/:id" element={<ServiceRedirect />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </WorkspaceProvider>
   );
 }

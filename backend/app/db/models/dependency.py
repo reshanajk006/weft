@@ -14,10 +14,13 @@ from app.db.base import Base
 class Dependency(Base):
     __tablename__ = "dependencies"
     __table_args__ = (
-        UniqueConstraint("source_service_id", "target_service_id", name="uq_dependency_pair"),
+        UniqueConstraint("dataset_id", "source_service_id", "target_service_id", name="uq_dependency_dataset_pair"),
     )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    dataset_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("telemetry_datasets.id"), nullable=True, index=True
+    )
     source_service_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("services.id"), nullable=False, index=True
     )
@@ -32,6 +35,7 @@ class Dependency(Base):
     p99_latency_ms: Mapped[float | None] = mapped_column(Float, nullable=True)
     dependency_type: Mapped[str] = mapped_column(String(64), default="sync")
     critical_weight: Mapped[float] = mapped_column(Float, default=0.5)
+    source: Mapped[str] = mapped_column(String(16), default="trace")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, onupdate=utc_now)
 

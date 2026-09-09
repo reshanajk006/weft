@@ -9,10 +9,27 @@ from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
 
 from app.api.deps import get_db
-from app.schemas.simulation import SimulationListResponse, SimulationResponse, TimelineResponse
-from app.services.simulation_service import get_simulation, get_timeline, list_simulations, simulate_failure, stream_failure_events
+from app.schemas.simulation import MultiFailureRequest, SimulationListResponse, SimulationResponse, TimelineResponse
+from app.services.simulation_service import (
+    get_simulation,
+    get_timeline,
+    list_simulations,
+    simulate_failure,
+    simulate_multi_failure,
+    stream_failure_events,
+)
 
 router = APIRouter(tags=["Simulations"])
+
+
+@router.post(
+    "/simulate/failure",
+    response_model=SimulationResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Simulate multiple service failures",
+)
+def simulate_batch(payload: MultiFailureRequest, db: Session = Depends(get_db)) -> SimulationResponse:
+    return simulate_multi_failure(db, payload.service_ids)
 
 
 @router.post(

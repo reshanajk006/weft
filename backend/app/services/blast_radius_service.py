@@ -40,7 +40,7 @@ def calculate_blast_radius(db: Session, service_id: str) -> BlastRadiusResponse:
         structural_ids |= nx.ancestors(graph, failed.id)
         predecessors = set(graph.predecessors(failed.id))
 
-    probabilities = _probabilistic_blast_radius(graph, failed.id)
+    probabilities = _probabilistic_blast_radius(graph, [failed.id])
     affected_rows: list[BlastRadiusService] = []
     for node_id in sorted(structural_ids, key=lambda nid: services[nid].normalized_name if services.get(nid) else nid):
         service = services.get(node_id)
@@ -59,7 +59,7 @@ def calculate_blast_radius(db: Session, service_id: str) -> BlastRadiusResponse:
                 distance=distance,
                 direct=direct if node_id != failed.id else False,
                 impact_level=classify_impact_level(probability),
-                criticality_score=service.criticality_score,
+                criticality_score=service.effective_criticality_score(),
                 current_health_score=service.health_score,
             )
         )
@@ -95,13 +95,82 @@ def calculate_blast_radius(db: Session, service_id: str) -> BlastRadiusResponse:
     )
 
 
-def _probabilistic_blast_radius(graph: nx.DiGraph, failed_id: str) -> dict[str, tuple[float, int]]:
-    """BFS through predecessors. child_impact = parent_impact * edge_weight."""
+def analyze_failure_set(
+    db: Session,
+    failed_ids: list[str],
+) -> tuple[nx.DiGraph, dict[str, Service | None], list[BlastRadiusService], float, dict[str, list[str]]]:
+    """Union structural + probabilistic blast radius for multiple failed services."""
+
+    graph = build_graph(db)
+    services = {node_id: db.get(Service, node_id) for node_id in graph.nodes}
+    for failed_id in failed_ids:
+        get_service_or_404(db, failed_id)
+        services[failed_id] = db.get(Service, failed_id)
+
+    structural_ids: set[str] = set(failed_ids)
+    predecessors: set[str] = set()
+    caused_by: dict[str, list[str]] = {failed_id: [failed_id] for failed_id in failed_ids}
+    for failed_id in failed_ids:
+        if failed_id not in graph:
+            continue
+        ancestors = nx.ancestors(graph, failed_id)
+        structural_ids |= ancestors
+        predecessors |= set(graph.predecessors(failed_id))
+        for ancestor in ancestors:
+            caused_by.setdefault(ancestor, [])
+            if failed_id not in caused_by[ancestor]:
+                caused_by[ancestor].append(failed_id)
+
+    probabilities = _probabilistic_blast_radius(graph, failed_ids)
+    affected_rows: list[BlastRadiusService] = []
+    failed_set = set(failed_ids)
+
+    def sort_key(nid: str) -> str:
+        service = services.get(nid)
+        return service.normalized_name if service else nid
+
+    for node_id in sorted(structural_ids, key=sort_key):
+        service = services.get(node_id)
+        if service is None:
+            continue
+        probability, distance = probabilities.get(
+            node_id,
+            (1.0 if node_id in failed_set else 0.0, 0 if node_id in failed_set else 0),
+        )
+        if node_id not in failed_set and node_id not in probabilities:
+            distance = min(
+                (_shortest_reverse_distance(graph, failed_id, node_id) for failed_id in failed_ids),
+                default=0,
+            )
+            probability = 0.0
+        direct = node_id in predecessors
+        affected_rows.append(
+            BlastRadiusService(
+                service_id=service.id,
+                service_name=service.name,
+                impact_probability=round(probability, 6),
+                distance=distance,
+                direct=direct if node_id not in failed_set else False,
+                impact_level=classify_impact_level(probability),
+                criticality_score=service.effective_criticality_score(),
+                current_health_score=service.health_score,
+            )
+        )
+    score, _breakdown = _blast_radius_score(graph, services, affected_rows)
+    return graph, services, affected_rows, score, caused_by
+
+
+def _probabilistic_blast_radius(graph: nx.DiGraph, failed_ids: list[str]) -> dict[str, tuple[float, int]]:
+    """BFS through predecessors. child_impact = parent_impact * edge_weight.
+
+    Seed every failed service at probability 1.0. If a node is reachable from more
+    than one failure, keep the maximum probability.
+    """
 
     thresholds = get_thresholds().blast_radius
     min_prob = thresholds.min_impact_probability
-    impact: dict[str, tuple[float, int]] = {failed_id: (1.0, 0)}
-    queue: deque[str] = deque([failed_id])
+    impact: dict[str, tuple[float, int]] = {failed_id: (1.0, 0) for failed_id in failed_ids}
+    queue: deque[str] = deque(failed_ids)
     while queue:
         current = queue.popleft()
         current_impact, distance = impact[current]
@@ -138,10 +207,10 @@ def _blast_radius_score(
     affected_ratio = safe_div(len(affected), total_services)
     weighted_impact = safe_div(sum(row.impact_probability for row in affected), len(affected))
     affected_crit = sum(
-        (services[row.service_id].criticality_score if services.get(row.service_id) else 0)
+        (services[row.service_id].effective_criticality_score() if services.get(row.service_id) else 0)
         for row in affected
     )
-    all_crit = sum((svc.criticality_score if svc else 0) for svc in services.values())
+    all_crit = sum((svc.effective_criticality_score() if svc else 0) for svc in services.values())
     critical_factor = safe_div(affected_crit, all_crit)
     score = clamp(
         round(

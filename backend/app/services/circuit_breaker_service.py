@@ -20,14 +20,19 @@ from app.schemas.circuit_breaker import (
     CircuitBreakerTransitionItem,
 )
 
+from app.services.dataset_service import active_dataset_id
+
 logger = get_logger("weft.circuit_breaker")
 
 VALID_STATES = {"CLOSED", "OPEN", "HALF_OPEN"}
 
 
-def ensure_circuit_breakers_for_dependencies(db: Session) -> None:
+def ensure_circuit_breakers_for_dependencies(db: Session, dataset_id: str | None = None) -> None:
     thresholds = get_thresholds().circuit_breaker
-    dependencies = list(db.execute(select(Dependency)).scalars().all())
+    query = select(Dependency)
+    if dataset_id:
+        query = query.where(Dependency.dataset_id == dataset_id)
+    dependencies = list(db.execute(query).scalars().all())
     for dependency in dependencies:
         existing = db.execute(
             select(CircuitBreakerState).where(CircuitBreakerState.dependency_id == dependency.id)
@@ -36,6 +41,7 @@ def ensure_circuit_breakers_for_dependencies(db: Session) -> None:
             db.add(
                 CircuitBreakerState(
                     id=new_id(),
+                    dataset_id=dataset_id or dependency.dataset_id,
                     source_service_id=dependency.source_service_id,
                     target_service_id=dependency.target_service_id,
                     dependency_id=dependency.id,
@@ -49,8 +55,17 @@ def ensure_circuit_breakers_for_dependencies(db: Session) -> None:
 
 
 def list_circuit_breakers(db: Session) -> CircuitBreakerListResponse:
-    ensure_circuit_breakers_for_dependencies(db)
-    rows = list(db.execute(select(CircuitBreakerState).order_by(CircuitBreakerState.created_at)).scalars().all())
+    dataset_id = active_dataset_id(db)
+    if not dataset_id:
+        return CircuitBreakerListResponse(items=[], total=0)
+    ensure_circuit_breakers_for_dependencies(db, dataset_id=dataset_id)
+    rows = list(
+        db.execute(
+            select(CircuitBreakerState)
+            .where(CircuitBreakerState.dataset_id == dataset_id)
+            .order_by(CircuitBreakerState.created_at)
+        ).scalars().all()
+    )
     items = [_to_item(db, row) for row in rows]
     items.sort(key=lambda item: (item.dependency.source, item.dependency.target))
     return CircuitBreakerListResponse(items=items, total=len(items))

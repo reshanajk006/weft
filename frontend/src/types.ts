@@ -1,3 +1,13 @@
+export type AppMode =
+  | "NO_DATA"
+  | "LOADING"
+  | "READY"
+  | "SERVICE_SELECTED"
+  | "SIMULATION_CONFIRMATION"
+  | "SIMULATING"
+  | "SIMULATION_COMPLETE"
+  | "ERROR";
+
 export type HealthStatus = "HEALTHY" | "DEGRADED" | "UNHEALTHY";
 
 export interface Overview {
@@ -23,6 +33,15 @@ export interface Overview {
     created_at: string;
   } | null;
   open_circuit_breakers: number;
+  active_dataset: {
+    id: string;
+    name: string;
+    source: string | null;
+    status: string;
+    created_at: string;
+    service_count: number;
+    dependency_count: number;
+  } | null;
 }
 
 export interface GraphNode {
@@ -48,6 +67,15 @@ export interface GraphEdge {
 export interface GraphResponse {
   nodes: GraphNode[];
   edges: GraphEdge[];
+}
+
+export interface GraphValidation {
+  has_cycles: boolean;
+  cycle_count: number;
+  cycles: Array<{ services: string[]; service_ids: string[] }>;
+  orphan_services: string[];
+  dependency_count: number;
+  service_count: number;
 }
 
 export interface ServiceSummary {
@@ -124,27 +152,8 @@ export interface ServiceDashboard {
     error_rate: number;
     calculated_at: string;
   }>;
-  circuit_breakers: Array<Record<string, unknown>>;
+  circuit_breakers: CircuitBreakerItem[];
   recent_simulations: Array<Record<string, unknown>>;
-}
-
-export interface BlastRadiusResponse {
-  failed_service_id: string;
-  failed_service_name: string;
-  blast_radius_score: number;
-  score_breakdown: {
-    affected_ratio: number;
-    weighted_impact: number;
-    critical_service_factor: number;
-    formula: string;
-  };
-  directly_affected: AffectedService[];
-  indirectly_affected: AffectedService[];
-  total_affected: number;
-  affected_service_ids: string[];
-  directly_affected_ids: string[];
-  indirectly_affected_ids: string[];
-  services: AffectedService[];
 }
 
 export interface AffectedService {
@@ -184,6 +193,16 @@ export interface SimulationResponse {
   created_at: string;
 }
 
+export interface SimulationListItem {
+  id: string;
+  failed_service_id: string;
+  failed_service_name: string;
+  severity: string;
+  blast_radius_score: number;
+  affected_service_count: number;
+  created_at: string;
+}
+
 export interface TimelineEvent {
   timestamp: string;
   type: string;
@@ -212,6 +231,8 @@ export interface CircuitBreakerItem {
 
 export interface IngestionResult {
   ingestion_id: string;
+  dataset_id?: string | null;
+  dataset_name?: string | null;
   filename: string | null;
   traces_processed: number;
   spans_processed: number;
@@ -239,4 +260,13 @@ export interface ReportResponse {
   format: string;
   content: string;
   created_at: string;
+}
+
+export type HealthFilter = "" | "HEALTHY" | "DEGRADED" | "UNHEALTHY";
+export type CriticalityFilter = "" | "HIGH" | "MEDIUM" | "LOW";
+
+export function criticalityBand(score: number): "HIGH" | "MEDIUM" | "LOW" {
+  if (score >= 70) return "HIGH";
+  if (score >= 40) return "MEDIUM";
+  return "LOW";
 }

@@ -14,6 +14,9 @@ def test_health_does_not_need_database(client):
     assert response.status_code == 200
     body = response.json()
     assert body == {"status": "ok", "service": "weft-backend", "version": "1.0.0"}
+    v1 = client.get("/api/v1/health")
+    assert v1.status_code == 200
+    assert v1.json() == body
 
 
 def test_upload_and_json_endpoints(client, tmp_path):
