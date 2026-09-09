@@ -1,0 +1,6501 @@
+{
+  "data": [
+    {
+      "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+      "spans": [
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "31fe855859e514e2",
+          "flags": 1,
+          "operationName": "POST /api/orders",
+          "references": [],
+          "startTime": 1788974198619000,
+          "duration": 486529,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/orders"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/api/orders"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "1a47cba70e3e0ecd",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "31fe855859e514e2"
+            }
+          ],
+          "startTime": 1788974198629000,
+          "duration": 456915,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3004/orders"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "net.peer.name",
+              "type": "string",
+              "value": "localhost"
+            },
+            {
+              "key": "net.peer.port",
+              "type": "string",
+              "value": "3004"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "9fbcb0dee3aaf48d",
+          "flags": 1,
+          "operationName": "tcp.connect",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "1a47cba70e3e0ecd"
+            }
+          ],
+          "startTime": 1788974198631000,
+          "duration": 22869,
+          "tags": [
+            {
+              "key": "net.transport",
+              "type": "string",
+              "value": "ip_tcp"
+            },
+            {
+              "key": "net.peer.name",
+              "type": "string",
+              "value": "localhost"
+            },
+            {
+              "key": "net.peer.port",
+              "type": "string",
+              "value": "3004"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "4993abca98c47d63",
+          "flags": 1,
+          "operationName": "POST /orders",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "1a47cba70e3e0ecd"
+            }
+          ],
+          "startTime": 1788974198649000,
+          "duration": 312032,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/orders"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "4d39d7a459401a92",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198655884,
+          "duration": 2252,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "494ffd70c6035fd6",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198652503,
+          "duration": 1995,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "f8f108f14c75d1c9",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198655178,
+          "duration": 1729,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "3a6391993279c7ff",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198652571,
+          "duration": 2870,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "cce14da6fc0fba08",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198652897,
+          "duration": 947,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "5d96caff8bf917d6",
+          "flags": 1,
+          "operationName": "request handler - /orders",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198664000,
+          "duration": 1050,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "/orders"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "request_handler"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "be702b8e4e9ba60e",
+          "flags": 1,
+          "operationName": "GET",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198669000,
+          "duration": 58162,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3002/products/p-001"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "2b3a685c3de134b4",
+          "flags": 1,
+          "operationName": "GET /products/:id",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "be702b8e4e9ba60e"
+            }
+          ],
+          "startTime": 1788974198671000,
+          "duration": 37852,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_catalog-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "412bf1fcad7aae05",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198739000,
+          "duration": 43433,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3005/invoices"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "d34cf436e7b3b479",
+          "flags": 1,
+          "operationName": "POST /invoices",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "412bf1fcad7aae05"
+            }
+          ],
+          "startTime": 1788974198741000,
+          "duration": 25417,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "INSERT INTO invoices ..."
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_billing-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "8350a9b8247ab218",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198819000,
+          "duration": 27814,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3007/send"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "f8078896f85b453f",
+          "flags": 1,
+          "operationName": "POST /send",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "8350a9b8247ab218"
+            }
+          ],
+          "startTime": 1788974198821000,
+          "duration": 28482,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "notification.type",
+              "type": "string",
+              "value": "ORDER_CONFIRMATION"
+            },
+            {
+              "key": "notification.channel",
+              "type": "string",
+              "value": "sms"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "43989e0bf0b9ee54",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "4993abca98c47d63"
+            }
+          ],
+          "startTime": 1788974198869000,
+          "duration": 14810,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3008/events"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "7756aa1c585d70bf",
+          "flags": 1,
+          "operationName": "POST /events",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "43989e0bf0b9ee54"
+            }
+          ],
+          "startTime": 1788974198871000,
+          "duration": 15480,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "event.type",
+              "type": "string",
+              "value": "ORDER_PLACED"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_analytics-service",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "6f126df53d229279",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "31fe855859e514e2"
+            }
+          ],
+          "startTime": 1788974198622745,
+          "duration": 4509,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "d3737803d93e6b6a",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "31fe855859e514e2"
+            }
+          ],
+          "startTime": 1788974198622969,
+          "duration": 1192,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "af7c2360cb9a3103",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "31fe855859e514e2"
+            }
+          ],
+          "startTime": 1788974198622889,
+          "duration": 1357,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "88ef89a80d98844d",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "31fe855859e514e2"
+            }
+          ],
+          "startTime": 1788974198620388,
+          "duration": 861,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+          "spanID": "6efd8f01ffb8a7df",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "b5405d2a1f7fe0b5706be8f6c5428fd1",
+              "spanID": "31fe855859e514e2"
+            }
+          ],
+          "startTime": 1788974198621020,
+          "duration": 944,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-6c0276"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.72.205"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_order-service": {
+          "serviceName": "order-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "order-service-pod-5b5005"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.180.39"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_catalog-service": {
+          "serviceName": "catalog-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "catalog-service-pod-f86988"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.51.193"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_billing-service": {
+          "serviceName": "billing-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "billing-service-pod-bee59e"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.150.89"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_notification-service": {
+          "serviceName": "notification-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "notification-service-pod-ea4771"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.58.11"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_analytics-service": {
+          "serviceName": "analytics-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "analytics-service-pod-7211ff"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.79.199"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "fc92ef5248e015b813d436a0256015f5",
+      "spans": [
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "80f26b8bb24c4a61",
+          "flags": 1,
+          "operationName": "POST /api/auth/login",
+          "references": [],
+          "startTime": 1788974205679281,
+          "duration": 98005,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/auth/login"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/api/auth/login"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "14203f784eb539e8",
+          "flags": 1,
+          "operationName": "POST /login",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "fc92ef5248e015b813d436a0256015f5",
+              "spanID": "80f26b8bb24c4a61"
+            }
+          ],
+          "startTime": 1788974205684281,
+          "duration": 45178,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "db.type",
+              "type": "string",
+              "value": "postgresql"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "SELECT * FROM users WHERE email = $1"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_auth-service",
+          "warnings": null
+        },
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "4dcbb7080382ddc0",
+          "flags": 1,
+          "operationName": "GET /api/catalog",
+          "references": [],
+          "startTime": 1788974206056206,
+          "duration": 63134,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/catalog"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "df04abcc8e93acd2",
+          "flags": 1,
+          "operationName": "GET /products",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "fc92ef5248e015b813d436a0256015f5",
+              "spanID": "4dcbb7080382ddc0"
+            }
+          ],
+          "startTime": 1788974206059206,
+          "duration": 78747,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "db.type",
+              "type": "string",
+              "value": "postgresql"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "SELECT * FROM products LIMIT 50"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_catalog-service",
+          "warnings": null
+        },
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "0249c5a60dad42a3",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "fc92ef5248e015b813d436a0256015f5",
+              "spanID": "80f26b8bb24c4a61"
+            }
+          ],
+          "startTime": 1788974205683221,
+          "duration": 3833,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "9dcc538ff4fbe2f7",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "fc92ef5248e015b813d436a0256015f5",
+              "spanID": "80f26b8bb24c4a61"
+            }
+          ],
+          "startTime": 1788974205683217,
+          "duration": 3323,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "62efc9e27684a12f",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "fc92ef5248e015b813d436a0256015f5",
+              "spanID": "80f26b8bb24c4a61"
+            }
+          ],
+          "startTime": 1788974205680687,
+          "duration": 4646,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "614f1720f309e240",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "fc92ef5248e015b813d436a0256015f5",
+              "spanID": "80f26b8bb24c4a61"
+            }
+          ],
+          "startTime": 1788974205680726,
+          "duration": 2683,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "fc92ef5248e015b813d436a0256015f5",
+          "spanID": "234b7c8b3a38fed9",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "fc92ef5248e015b813d436a0256015f5",
+              "spanID": "80f26b8bb24c4a61"
+            }
+          ],
+          "startTime": 1788974205683274,
+          "duration": 4560,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-e844fb"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.114.77"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_auth-service": {
+          "serviceName": "auth-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "auth-service-pod-fa713b"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.142.10"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_catalog-service": {
+          "serviceName": "catalog-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "catalog-service-pod-ade033"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.168.169"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+      "spans": [
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "4e4bae0fd4da50bb",
+          "flags": 1,
+          "operationName": "POST /api/auth/login",
+          "references": [],
+          "startTime": 1788974214037911,
+          "duration": 193610,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/auth/login"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/api/auth/login"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "48459e6b7441ac03",
+          "flags": 1,
+          "operationName": "POST /login",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+              "spanID": "4e4bae0fd4da50bb"
+            }
+          ],
+          "startTime": 1788974214042911,
+          "duration": 64484,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "db.type",
+              "type": "string",
+              "value": "postgresql"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "SELECT * FROM users WHERE email = $1"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_auth-service",
+          "warnings": null
+        },
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "12e5b61fbcef294e",
+          "flags": 1,
+          "operationName": "GET /api/catalog",
+          "references": [],
+          "startTime": 1788974214291517,
+          "duration": 58533,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/catalog"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "80cc56f920b0458e",
+          "flags": 1,
+          "operationName": "GET /products",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+              "spanID": "12e5b61fbcef294e"
+            }
+          ],
+          "startTime": 1788974214294517,
+          "duration": 54515,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "db.type",
+              "type": "string",
+              "value": "postgresql"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "SELECT * FROM products LIMIT 50"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_catalog-service",
+          "warnings": null
+        },
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "b747450287f1f69b",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+              "spanID": "4e4bae0fd4da50bb"
+            }
+          ],
+          "startTime": 1788974214039313,
+          "duration": 4486,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "e1d0cf12abcbeb4b",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+              "spanID": "4e4bae0fd4da50bb"
+            }
+          ],
+          "startTime": 1788974214039092,
+          "duration": 4181,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "480d80a8782210bb",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+              "spanID": "4e4bae0fd4da50bb"
+            }
+          ],
+          "startTime": 1788974214040781,
+          "duration": 4071,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "e198e3a49068b44d",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+              "spanID": "4e4bae0fd4da50bb"
+            }
+          ],
+          "startTime": 1788974214040428,
+          "duration": 4248,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+          "spanID": "62d2318d57ece073",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "bff1f5abeae0df4382b37403cb7fcfef",
+              "spanID": "4e4bae0fd4da50bb"
+            }
+          ],
+          "startTime": 1788974214039099,
+          "duration": 2642,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-280309"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.200.30"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_auth-service": {
+          "serviceName": "auth-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "auth-service-pod-b9893c"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.86.73"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_catalog-service": {
+          "serviceName": "catalog-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "catalog-service-pod-30e584"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.204.195"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+      "spans": [
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "38b9367bdc5531c5",
+          "flags": 1,
+          "operationName": "POST /api/orders",
+          "references": [],
+          "startTime": 1788974216211455,
+          "duration": 736053,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/orders"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/api/orders"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "5f655b8df6bec4be",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "38b9367bdc5531c5"
+            }
+          ],
+          "startTime": 1788974216221455,
+          "duration": 458345,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3004/orders"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "net.peer.name",
+              "type": "string",
+              "value": "localhost"
+            },
+            {
+              "key": "net.peer.port",
+              "type": "string",
+              "value": "3004"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "4c95618ea19b8fe4",
+          "flags": 1,
+          "operationName": "tcp.connect",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "5f655b8df6bec4be"
+            }
+          ],
+          "startTime": 1788974216223455,
+          "duration": 17672,
+          "tags": [
+            {
+              "key": "net.transport",
+              "type": "string",
+              "value": "ip_tcp"
+            },
+            {
+              "key": "net.peer.name",
+              "type": "string",
+              "value": "localhost"
+            },
+            {
+              "key": "net.peer.port",
+              "type": "string",
+              "value": "3004"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "1d5012c17907a8eb",
+          "flags": 1,
+          "operationName": "POST /orders",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "5f655b8df6bec4be"
+            }
+          ],
+          "startTime": 1788974216241455,
+          "duration": 198030,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/orders"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "766c5dbb086e7c4d",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216245095,
+          "duration": 2043,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "5c7406ff16dc1900",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216244945,
+          "duration": 986,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "1ae7d8278e379be5",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216246042,
+          "duration": 1756,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "f1a92d2fb184ad75",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216248407,
+          "duration": 2429,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "8ad11e5055415bad",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216248363,
+          "duration": 2344,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "00d577586e76ad07",
+          "flags": 1,
+          "operationName": "request handler - /orders",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216256455,
+          "duration": 3780,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "/orders"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "request_handler"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "34fa98fde58f4f5b",
+          "flags": 1,
+          "operationName": "GET",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216261455,
+          "duration": 26531,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3002/products/p-001"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "aa974bafd95a08a9",
+          "flags": 1,
+          "operationName": "GET /products/:id",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "34fa98fde58f4f5b"
+            }
+          ],
+          "startTime": 1788974216263455,
+          "duration": 37745,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_catalog-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "4f3045594203429c",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216331455,
+          "duration": 32977,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3005/invoices"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "311bd05c0ef7af14",
+          "flags": 1,
+          "operationName": "POST /invoices",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "4f3045594203429c"
+            }
+          ],
+          "startTime": 1788974216333455,
+          "duration": 36396,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "INSERT INTO invoices ..."
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_billing-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "50a3f625d97e2968",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216411455,
+          "duration": 30309,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3007/send"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "cde1703fea9639d0",
+          "flags": 1,
+          "operationName": "POST /send",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "50a3f625d97e2968"
+            }
+          ],
+          "startTime": 1788974216413455,
+          "duration": 21678,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "notification.type",
+              "type": "string",
+              "value": "ORDER_CONFIRMATION"
+            },
+            {
+              "key": "notification.channel",
+              "type": "string",
+              "value": "email"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "fae31b896ad0e09d",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "1d5012c17907a8eb"
+            }
+          ],
+          "startTime": 1788974216461455,
+          "duration": 20817,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3008/events"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "58661a9b45c2ff87",
+          "flags": 1,
+          "operationName": "POST /events",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "fae31b896ad0e09d"
+            }
+          ],
+          "startTime": 1788974216463455,
+          "duration": 6244,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "event.type",
+              "type": "string",
+              "value": "ORDER_PLACED"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_analytics-service",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "6a0b64e4a2b070dd",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "38b9367bdc5531c5"
+            }
+          ],
+          "startTime": 1788974216214824,
+          "duration": 520,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "e71f6ae9342481c7",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "38b9367bdc5531c5"
+            }
+          ],
+          "startTime": 1788974216214461,
+          "duration": 2469,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "b602d92012d12949",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "38b9367bdc5531c5"
+            }
+          ],
+          "startTime": 1788974216212933,
+          "duration": 1969,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "b1e8be92fe40d18d",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "38b9367bdc5531c5"
+            }
+          ],
+          "startTime": 1788974216215085,
+          "duration": 2888,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+          "spanID": "9a165a4cde779644",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "95f6f3c80eb892749a61253cbd8ec100",
+              "spanID": "38b9367bdc5531c5"
+            }
+          ],
+          "startTime": 1788974216212599,
+          "duration": 3474,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-ca0c70"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.155.193"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_order-service": {
+          "serviceName": "order-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "order-service-pod-d2058b"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.135.137"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_catalog-service": {
+          "serviceName": "catalog-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "catalog-service-pod-029e50"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.100.61"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_billing-service": {
+          "serviceName": "billing-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "billing-service-pod-34c5bb"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.132.175"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_notification-service": {
+          "serviceName": "notification-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "notification-service-pod-b84296"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.64.34"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_analytics-service": {
+          "serviceName": "analytics-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "analytics-service-pod-34d8d0"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.94.67"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "ba0b940de4ae418cc557828957e5d7db",
+      "spans": [
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "238403354936e8eb",
+          "flags": 1,
+          "operationName": "POST /api/auth/login",
+          "references": [],
+          "startTime": 1788974219209303,
+          "duration": 153955,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/auth/login"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/api/auth/login"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "a93d57cdb1ce9a9e",
+          "flags": 1,
+          "operationName": "POST /login",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "ba0b940de4ae418cc557828957e5d7db",
+              "spanID": "238403354936e8eb"
+            }
+          ],
+          "startTime": 1788974219214303,
+          "duration": 64839,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "db.type",
+              "type": "string",
+              "value": "postgresql"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "SELECT * FROM users WHERE email = $1"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_auth-service",
+          "warnings": null
+        },
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "8b6607d234894289",
+          "flags": 1,
+          "operationName": "GET /api/catalog",
+          "references": [],
+          "startTime": 1788974219581921,
+          "duration": 89277,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/catalog"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "71fdb984255d7ef1",
+          "flags": 1,
+          "operationName": "GET /products",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "ba0b940de4ae418cc557828957e5d7db",
+              "spanID": "8b6607d234894289"
+            }
+          ],
+          "startTime": 1788974219584921,
+          "duration": 45392,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "db.type",
+              "type": "string",
+              "value": "postgresql"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "SELECT * FROM products LIMIT 50"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_catalog-service",
+          "warnings": null
+        },
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "5373acd23f14cdb3",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "ba0b940de4ae418cc557828957e5d7db",
+              "spanID": "238403354936e8eb"
+            }
+          ],
+          "startTime": 1788974219212140,
+          "duration": 609,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "da20631ac1d729c8",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "ba0b940de4ae418cc557828957e5d7db",
+              "spanID": "238403354936e8eb"
+            }
+          ],
+          "startTime": 1788974219211533,
+          "duration": 3386,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "3135f0689119584e",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "ba0b940de4ae418cc557828957e5d7db",
+              "spanID": "238403354936e8eb"
+            }
+          ],
+          "startTime": 1788974219212120,
+          "duration": 3211,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "8e75b4793f08aa5c",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "ba0b940de4ae418cc557828957e5d7db",
+              "spanID": "238403354936e8eb"
+            }
+          ],
+          "startTime": 1788974219212696,
+          "duration": 4863,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "ba0b940de4ae418cc557828957e5d7db",
+          "spanID": "2688e1a6c46de0a2",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "ba0b940de4ae418cc557828957e5d7db",
+              "spanID": "238403354936e8eb"
+            }
+          ],
+          "startTime": 1788974219213293,
+          "duration": 4166,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-737df5"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.197.87"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_auth-service": {
+          "serviceName": "auth-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "auth-service-pod-faf87a"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.82.211"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_catalog-service": {
+          "serviceName": "catalog-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "catalog-service-pod-4a3fff"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.61.249"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "9a990e1fc6edd3baaaa935698165951c",
+      "spans": [
+        {
+          "traceID": "9a990e1fc6edd3baaaa935698165951c",
+          "spanID": "4dbbd39423bad34a",
+          "flags": 1,
+          "operationName": "POST /api/support",
+          "references": [],
+          "startTime": 1788974221546243,
+          "duration": 339430,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/support"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "9a990e1fc6edd3baaaa935698165951c",
+          "spanID": "27eceaa7092bb044",
+          "flags": 1,
+          "operationName": "POST /tickets",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "9a990e1fc6edd3baaaa935698165951c",
+              "spanID": "4dbbd39423bad34a"
+            }
+          ],
+          "startTime": 1788974221554243,
+          "duration": 259215,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "ticket.title",
+              "type": "string",
+              "value": "Unable to login to cloud portal"
+            },
+            {
+              "key": "ticket.priority",
+              "type": "string",
+              "value": "critical"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_support-service",
+          "warnings": null
+        },
+        {
+          "traceID": "9a990e1fc6edd3baaaa935698165951c",
+          "spanID": "a6ced2a058561131",
+          "flags": 1,
+          "operationName": "GET",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "9a990e1fc6edd3baaaa935698165951c",
+              "spanID": "27eceaa7092bb044"
+            }
+          ],
+          "startTime": 1788974221566243,
+          "duration": 31736,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3006/assets/ast-001"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_support-service",
+          "warnings": null
+        },
+        {
+          "traceID": "9a990e1fc6edd3baaaa935698165951c",
+          "spanID": "86e5190f27411cc8",
+          "flags": 1,
+          "operationName": "GET /assets/:id",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "9a990e1fc6edd3baaaa935698165951c",
+              "spanID": "a6ced2a058561131"
+            }
+          ],
+          "startTime": 1788974221568243,
+          "duration": 17879,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_asset-service",
+          "warnings": null
+        },
+        {
+          "traceID": "9a990e1fc6edd3baaaa935698165951c",
+          "spanID": "56efd5efc2311dab",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "9a990e1fc6edd3baaaa935698165951c",
+              "spanID": "27eceaa7092bb044"
+            }
+          ],
+          "startTime": 1788974221626243,
+          "duration": 39210,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3007/send"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_support-service",
+          "warnings": null
+        },
+        {
+          "traceID": "9a990e1fc6edd3baaaa935698165951c",
+          "spanID": "44201cc4c1c4d922",
+          "flags": 1,
+          "operationName": "POST /send",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "9a990e1fc6edd3baaaa935698165951c",
+              "spanID": "56efd5efc2311dab"
+            }
+          ],
+          "startTime": 1788974221628243,
+          "duration": 20865,
+          "tags": [
+            {
+              "key": "notification.type",
+              "type": "string",
+              "value": "TICKET_CREATED"
+            },
+            {
+              "key": "notification.channel",
+              "type": "string",
+              "value": "email"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "9a990e1fc6edd3baaaa935698165951c",
+          "spanID": "5311d71807e639e6",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "9a990e1fc6edd3baaaa935698165951c",
+              "spanID": "27eceaa7092bb044"
+            }
+          ],
+          "startTime": 1788974221676243,
+          "duration": 21559,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3008/events"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_support-service",
+          "warnings": null
+        },
+        {
+          "traceID": "9a990e1fc6edd3baaaa935698165951c",
+          "spanID": "8c45291ccb227712",
+          "flags": 1,
+          "operationName": "POST /events",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "9a990e1fc6edd3baaaa935698165951c",
+              "spanID": "5311d71807e639e6"
+            }
+          ],
+          "startTime": 1788974221678243,
+          "duration": 14167,
+          "tags": [
+            {
+              "key": "event.type",
+              "type": "string",
+              "value": "TICKET_CREATED"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_analytics-service",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-867cc5"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.109.139"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_support-service": {
+          "serviceName": "support-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "support-service-pod-821034"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.208.80"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_asset-service": {
+          "serviceName": "asset-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "asset-service-pod-6d0bf7"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.244.3"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_notification-service": {
+          "serviceName": "notification-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "notification-service-pod-b5a59e"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.26.234"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_analytics-service": {
+          "serviceName": "analytics-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "analytics-service-pod-4a2c9a"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.82.234"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+      "spans": [
+        {
+          "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+          "spanID": "947751f11846f38d",
+          "flags": 1,
+          "operationName": "POST /api/billing/pay",
+          "references": [],
+          "startTime": 1788974225837223,
+          "duration": 158445,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/billing/pay"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+          "spanID": "c2b97aab1219b9fd",
+          "flags": 1,
+          "operationName": "POST /pay",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+              "spanID": "947751f11846f38d"
+            }
+          ],
+          "startTime": 1788974225842223,
+          "duration": 194654,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "payment.method",
+              "type": "string",
+              "value": "credit_card"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "UPDATE invoices SET status=$1 WHERE id=$2"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_billing-service",
+          "warnings": null
+        },
+        {
+          "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+          "spanID": "056fff44d54dd7e5",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+              "spanID": "c2b97aab1219b9fd"
+            }
+          ],
+          "startTime": 1788974225937223,
+          "duration": 29601,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3007/send"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_billing-service",
+          "warnings": null
+        },
+        {
+          "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+          "spanID": "6955c06aa4c98077",
+          "flags": 1,
+          "operationName": "POST /send",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+              "spanID": "056fff44d54dd7e5"
+            }
+          ],
+          "startTime": 1788974225939223,
+          "duration": 16962,
+          "tags": [
+            {
+              "key": "notification.type",
+              "type": "string",
+              "value": "PAYMENT_RECEIVED"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+          "spanID": "c12b97a48d984cb0",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+              "spanID": "c2b97aab1219b9fd"
+            }
+          ],
+          "startTime": 1788974225977223,
+          "duration": 15642,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3008/events"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_billing-service",
+          "warnings": null
+        },
+        {
+          "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+          "spanID": "670fb599eaf5c03b",
+          "flags": 1,
+          "operationName": "POST /events",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "05fa934f391bb4e5b1a92c19cd3c528d",
+              "spanID": "c12b97a48d984cb0"
+            }
+          ],
+          "startTime": 1788974225979223,
+          "duration": 5008,
+          "tags": [
+            {
+              "key": "event.type",
+              "type": "string",
+              "value": "PAYMENT_PROCESSED"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_analytics-service",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-63312a"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.251.135"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_billing-service": {
+          "serviceName": "billing-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "billing-service-pod-597f30"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.78.20"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_notification-service": {
+          "serviceName": "notification-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "notification-service-pod-139409"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.170.231"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_analytics-service": {
+          "serviceName": "analytics-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "analytics-service-pod-964096"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.11.218"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "672b005f4e431a51dd94459508157a00",
+      "spans": [
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "bf43d34b2ce0c9a6",
+          "flags": 1,
+          "operationName": "POST /api/orders",
+          "references": [],
+          "startTime": 1788974234014122,
+          "duration": 559088,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/orders"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/api/orders"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "b5b0d5882b27b707",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "bf43d34b2ce0c9a6"
+            }
+          ],
+          "startTime": 1788974234024122,
+          "duration": 320521,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3004/orders"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "net.peer.name",
+              "type": "string",
+              "value": "localhost"
+            },
+            {
+              "key": "net.peer.port",
+              "type": "string",
+              "value": "3004"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "d8489b01e0418cd6",
+          "flags": 1,
+          "operationName": "tcp.connect",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "b5b0d5882b27b707"
+            }
+          ],
+          "startTime": 1788974234026122,
+          "duration": 10717,
+          "tags": [
+            {
+              "key": "net.transport",
+              "type": "string",
+              "value": "ip_tcp"
+            },
+            {
+              "key": "net.peer.name",
+              "type": "string",
+              "value": "localhost"
+            },
+            {
+              "key": "net.peer.port",
+              "type": "string",
+              "value": "3004"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "50279ffedb534838",
+          "flags": 1,
+          "operationName": "POST /orders",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "b5b0d5882b27b707"
+            }
+          ],
+          "startTime": 1788974234044122,
+          "duration": 186848,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/orders"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "2719bd395793b475",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234047538,
+          "duration": 1750,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "9d6cacb6ee4108cf",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234048327,
+          "duration": 2256,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "e83808aca075e7d8",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234049709,
+          "duration": 1821,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "899dd7163a510693",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234047587,
+          "duration": 2739,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "d1326f7e5d8366aa",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234048882,
+          "duration": 607,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "b0d33c0d01572213",
+          "flags": 1,
+          "operationName": "request handler - /orders",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234059122,
+          "duration": 3940,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "/orders"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "request_handler"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "87c29694d6139073",
+          "flags": 1,
+          "operationName": "GET",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234064122,
+          "duration": 26128,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3002/products/p-001"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "688adc748c19c2b9",
+          "flags": 1,
+          "operationName": "GET /products/:id",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "87c29694d6139073"
+            }
+          ],
+          "startTime": 1788974234066122,
+          "duration": 17261,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_catalog-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "3bf50e30eaad1b1b",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234134122,
+          "duration": 76784,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3005/invoices"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "1de43082e1f71bda",
+          "flags": 1,
+          "operationName": "POST /invoices",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "3bf50e30eaad1b1b"
+            }
+          ],
+          "startTime": 1788974234136122,
+          "duration": 46031,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "201"
+            },
+            {
+              "key": "db.statement",
+              "type": "string",
+              "value": "INSERT INTO invoices ..."
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_billing-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "e51dedcc9ff78165",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234214122,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3007/send"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "cc07c690b4ecf9d7",
+          "flags": 1,
+          "operationName": "POST /send",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "e51dedcc9ff78165"
+            }
+          ],
+          "startTime": 1788974234216122,
+          "duration": 13192,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "notification.type",
+              "type": "string",
+              "value": "ORDER_CONFIRMATION"
+            },
+            {
+              "key": "notification.channel",
+              "type": "string",
+              "value": "email"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "f7f9976a102c9363",
+          "flags": 1,
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "50279ffedb534838"
+            }
+          ],
+          "startTime": 1788974234264122,
+          "duration": 24114,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3008/events"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int",
+              "value": 500
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "chaos.manual_error",
+              "type": "bool",
+              "value": true
+            }
+          ],
+          "logs": [],
+          "processID": "p_order-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "b1e1594d44b4d22a",
+          "flags": 1,
+          "operationName": "POST /events",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "f7f9976a102c9363"
+            }
+          ],
+          "startTime": 1788974234266122,
+          "duration": 16868,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "event.type",
+              "type": "string",
+              "value": "ORDER_PLACED"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_analytics-service",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "32f4df3218e4a7dd",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "bf43d34b2ce0c9a6"
+            }
+          ],
+          "startTime": 1788974234016213,
+          "duration": 2448,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "8133256eacbdba6f",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "bf43d34b2ce0c9a6"
+            }
+          ],
+          "startTime": 1788974234016532,
+          "duration": 4473,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "3b7abb4a3a4d5b7e",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "bf43d34b2ce0c9a6"
+            }
+          ],
+          "startTime": 1788974234018074,
+          "duration": 4573,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "9a034d33f0a603e9",
+          "flags": 1,
+          "operationName": "middleware - logger",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "bf43d34b2ce0c9a6"
+            }
+          ],
+          "startTime": 1788974234015138,
+          "duration": 1112,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "logger"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "672b005f4e431a51dd94459508157a00",
+          "spanID": "be858e78eaad9c8a",
+          "flags": 1,
+          "operationName": "middleware - jsonParser",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "672b005f4e431a51dd94459508157a00",
+              "spanID": "bf43d34b2ce0c9a6"
+            }
+          ],
+          "startTime": 1788974234016975,
+          "duration": 2241,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "jsonParser"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-1894ff"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.51.27"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_order-service": {
+          "serviceName": "order-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "order-service-pod-cdc9da"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.250.3"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_catalog-service": {
+          "serviceName": "catalog-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "catalog-service-pod-76e1d1"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.62.222"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_billing-service": {
+          "serviceName": "billing-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "billing-service-pod-c8fe2d"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.15.60"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_notification-service": {
+          "serviceName": "notification-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "notification-service-pod-8fb46f"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.247.185"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_analytics-service": {
+          "serviceName": "analytics-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "analytics-service-pod-20a3bd"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.105.32"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+      "spans": [
+        {
+          "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+          "spanID": "a1876a49bb68a0d4",
+          "flags": 1,
+          "operationName": "POST /api/notify/bulk",
+          "references": [],
+          "startTime": 1788974236386962,
+          "duration": 473045,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/api/notify/bulk"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+          "spanID": "d929ec597589abbb",
+          "flags": 1,
+          "operationName": "POST /bulk",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+              "spanID": "a1876a49bb68a0d4"
+            }
+          ],
+          "startTime": 1788974236391962,
+          "duration": 225308,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "notification.type",
+              "type": "string",
+              "value": "ALERT"
+            },
+            {
+              "key": "notification.recipients_count",
+              "type": "string",
+              "value": "3"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+          "spanID": "9d6b471203515c50",
+          "flags": 1,
+          "operationName": "GET",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+              "spanID": "d929ec597589abbb"
+            }
+          ],
+          "startTime": 1788974236396962,
+          "duration": 20593,
+          "tags": [
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3003/users"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+          "spanID": "f8ba3126ae7a9dee",
+          "flags": 1,
+          "operationName": "GET /users",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+              "spanID": "9d6b471203515c50"
+            }
+          ],
+          "startTime": 1788974236398962,
+          "duration": 29068,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_user-service",
+          "warnings": null
+        },
+        {
+          "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+          "spanID": "311e031fbe2e1310",
+          "flags": 1,
+          "operationName": "send - sms",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+              "spanID": "d929ec597589abbb"
+            }
+          ],
+          "startTime": 1788974236446962,
+          "duration": 26685,
+          "tags": [
+            {
+              "key": "notification.channel",
+              "type": "string",
+              "value": "sms"
+            },
+            {
+              "key": "notification.recipient",
+              "type": "string",
+              "value": "u-001"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+          "spanID": "00656dc06af36500",
+          "flags": 1,
+          "operationName": "send - sms",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+              "spanID": "d929ec597589abbb"
+            }
+          ],
+          "startTime": 1788974236476962,
+          "duration": 24956,
+          "tags": [
+            {
+              "key": "notification.channel",
+              "type": "string",
+              "value": "sms"
+            },
+            {
+              "key": "notification.recipient",
+              "type": "string",
+              "value": "u-003"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        },
+        {
+          "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+          "spanID": "44f9710fd23fde25",
+          "flags": 1,
+          "operationName": "send - email",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d50bfc3c06469fb3faef6ccb68a6412b",
+              "spanID": "d929ec597589abbb"
+            }
+          ],
+          "startTime": 1788974236506962,
+          "duration": 22338,
+          "tags": [
+            {
+              "key": "notification.channel",
+              "type": "string",
+              "value": "email"
+            },
+            {
+              "key": "notification.recipient",
+              "type": "string",
+              "value": "u-002"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_notification-service",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-99c80d"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.248.139"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_notification-service": {
+          "serviceName": "notification-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "notification-service-pod-8764e4"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.133.147"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        },
+        "p_user-service": {
+          "serviceName": "user-service",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "user-service-pod-362693"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.172.8"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+      "spans": [
+        {
+          "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+          "spanID": "098c0f6ff02ee820",
+          "flags": 1,
+          "operationName": "GET /health",
+          "references": [],
+          "startTime": 1788974245574678,
+          "duration": 10566,
+          "tags": [
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "GET"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://localhost:3000/health"
+            },
+            {
+              "key": "http.status_code",
+              "type": "string",
+              "value": "200"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+          "spanID": "3de8afa58ef20acd",
+          "flags": 1,
+          "operationName": "middleware - query",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+              "spanID": "098c0f6ff02ee820"
+            }
+          ],
+          "startTime": 1788974245575638,
+          "duration": 1234,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "query"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+          "spanID": "17244690364641ed",
+          "flags": 1,
+          "operationName": "middleware - expressInit",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+              "spanID": "098c0f6ff02ee820"
+            }
+          ],
+          "startTime": 1788974245575588,
+          "duration": 1775,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "expressInit"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+          "spanID": "8309fae0eb3b881a",
+          "flags": 1,
+          "operationName": "middleware - corsMiddleware",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+              "spanID": "098c0f6ff02ee820"
+            }
+          ],
+          "startTime": 1788974245576155,
+          "duration": 1326,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "corsMiddleware"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "middleware"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        },
+        {
+          "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+          "spanID": "81e121ec92b7fbf6",
+          "flags": 1,
+          "operationName": "request handler - /health",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "d896c7a6f7ee790b65c5878840f083c2",
+              "spanID": "098c0f6ff02ee820"
+            }
+          ],
+          "startTime": 1788974245579621,
+          "duration": 715,
+          "tags": [
+            {
+              "key": "express.name",
+              "type": "string",
+              "value": "/health"
+            },
+            {
+              "key": "express.type",
+              "type": "string",
+              "value": "request_handler"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "component",
+              "type": "string",
+              "value": "express"
+            }
+          ],
+          "logs": [],
+          "processID": "p_api-gateway",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p_api-gateway": {
+          "serviceName": "api-gateway",
+          "tags": [
+            {
+              "key": "hostname",
+              "type": "string",
+              "value": "api-gateway-pod-f2b150"
+            },
+            {
+              "key": "ip",
+              "type": "string",
+              "value": "10.0.11.116"
+            },
+            {
+              "key": "jaeger.version",
+              "type": "string",
+              "value": "Node-4.8.0"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

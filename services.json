@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXUS-IT Enterprise Platform</title>
+  <meta name="description" content="NEXUS-IT — Enterprise IT management platform powering cloud, security, assets, and operations at scale." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="8" fill="url(#brandGrad)"/>
+          <path d="M8 12h16M8 16h12M8 20h8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+          <defs><linearGradient id="brandGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">NEXUS-IT</span>
+        <span class="brand-sub">Enterprise Platform</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-item active" href="#" data-view="dashboard" id="nav-dashboard">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/></svg>
+        Dashboard
+      </a>
+
+      <div class="nav-section-label">Services</div>
+      <a class="nav-item" href="#" data-view="catalog" id="nav-catalog">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/></svg>
+        Product Catalog
+      </a>
+      <a class="nav-item" href="#" data-view="orders" id="nav-orders">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
+        Orders
+      </a>
+      <a class="nav-item" href="#" data-view="billing" id="nav-billing">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+        Billing
+      </a>
+      <a class="nav-item" href="#" data-view="support" id="nav-support">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0c0 .993-.241 1.929-.668 2.754l-1.524-1.525a3.997 3.997 0 00.078-2.183l1.562-1.562C15.802 8.249 16 9.1 16 10zm-5.165 3.913l1.58 1.58A5.98 5.98 0 0110 16a5.976 5.976 0 01-2.516-.552l1.562-1.562a4.006 4.006 0 001.789.027zm-4.677-2.796a4.002 4.002 0 01-.041-2.08l-.08.08-1.53-1.533A5.98 5.98 0 004 10c0 .954.223 1.856.619 2.657l1.54-1.54zm1.088-6.45A5.974 5.974 0 0110 4c.946 0 1.836.223 2.625.619l-1.562 1.562a4.006 4.006 0 00-1.89-.019L7.246 4.667z" clip-rule="evenodd"/></svg>
+        Support
+      </a>
+      <a class="nav-item" href="#" data-view="assets" id="nav-assets">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 7H7v6h6V7z"/><path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2z" clip-rule="evenodd"/></svg>
+        Assets
+      </a>
+      <a class="nav-item" href="#" data-view="users" id="nav-users">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+        Users
+      </a>
+      <a class="nav-item" href="#" data-view="analytics" id="nav-analytics">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+        Analytics
+      </a>
+
+      <div class="nav-section-label">System</div>
+      <a class="nav-item" href="#" data-view="health" id="nav-health">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+        Service Health
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="avatar">A</div>
+        <div>
+          <div class="user-name">Alice Admin</div>
+          <div class="user-role">Administrator</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title" id="page-title">Dashboard</h1>
+        <span class="breadcrumb" id="breadcrumb">Overview</span>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+          <input type="text" placeholder="Search services, assets, orders…" id="global-search" />
+        </div>
+        <button class="btn-icon" id="refresh-btn" title="Refresh data">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="status-badge online" id="gateway-status">
+          <span class="status-dot"></span> Live
+        </div>
+      </div>
+    </header>
+
+    <!-- Views -->
+    <div class="view-container" id="views">
+
+      <!-- ─── DASHBOARD ───────────────────────────────────────────────────── -->
+      <div class="view active" id="view-dashboard">
+        <div class="kpi-grid" id="kpi-grid">
+          <!-- populated by JS -->
+        </div>
+
+        <div class="grid-2col">
+          <div class="card">
+            <div class="card-header">
+              <h3>Recent Orders</h3>
+              <button class="btn-sm" onclick="switchView('orders')">View All</button>
+            </div>
+            <div id="recent-orders-list" class="list-container">
+              <div class="skeleton-rows"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Open Support Tickets</h3>
+              <button class="btn-sm" onclick="switchView('support')">View All</button>
+            </div>
+            <div id="open-tickets-list" class="list-container"></div>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div class="card">
+            <div class="card-header"><h3>Notification Stats</h3></div>
+            <div id="notify-stats-panel"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Billing Summary</h3></div>
+            <div id="billing-summary-panel"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── CATALOG ────────────────────────────────────────────────────── -->
+      <div class="view" id="view-catalog">
+        <div class="view-toolbar">
+          <input type="text" class="input-field" placeholder="Search products…" id="catalog-search" oninput="filterCatalog(this.value)" />
+          <select class="select-field" id="catalog-category" onchange="filterCatalog()">
+            <option value="">All Categories</option>
+          </select>
+          <button class="btn-primary" onclick="openModal('add-product-modal')">+ Add Product</button>
+        </div>
+        <div class="products-grid" id="products-grid"><!-- JS --></div>
+      </div>
+
+      <!-- ─── ORDERS ─────────────────────────────────────────────────────── -->
+      <div class="view" id="view-orders">
+        <div class="view-toolbar">
+          <select class="select-field" id="orders-status-filter" onchange="loadOrders()">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+          </select>
+          <button class="btn-primary" onclick="openModal('place-order-modal')">+ Place Order</button>
+        </div>
+        <div class="table-card" id="orders-table"><!-- JS --></div>
+      </div>
+
+      <!-- ─── BILLING ────────────────────────────────────────────────────── -->
+      <div class="view" id="view-billing">
+        <div class="view-toolbar">
+          <select class="select-field" id="billing-status-filter" onchange="loadBilling()">
+            <option value="">All Invoices</option>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+        <div class="table-card" id="billing-table"><!-- JS --></div>
+      </div>
+
+      <!-- ─── SUPPORT ────────────────────────────────────────────────────── -->
+      <div class="view" id="view-support">
+        <div class="view-toolbar">
+          <select class="select-field" id="support-priority-filter" onchange="loadSupport()">
+            <option value="">All Priorities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <select class="select-field" id="support-status-filter" onchange="loadSupport()">
+            <option value="">All Statuses</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <button class="btn-primary" onclick="openModal('create-ticket-modal')">+ New Ticket</button>
+        </div>
+        <div class="table-card" id="support-table"><!-- JS --></div>
+      </div>
+
+      <!-- ─── ASSETS ─────────────────────────────────────────────────────── -->
+      <div class="view" id="view-assets">
+        <div class="asset-summary-cards" id="asset-summary"><!-- JS --></div>
+        <div class="view-toolbar" style="margin-top: 1.5rem;">
+          <select class="select-field" id="asset-type-filter" onchange="loadAssets()">
+            <option value="">All Types</option>
+            <option value="server">Server</option>
+            <option value="network">Network</option>
+            <option value="endpoint">Endpoint</option>
+            <option value="storage">Storage</option>
+            <option value="security">Security</option>
+            <option value="firewall">Firewall</option>
+          </select>
+          <select class="select-field" id="asset-status-filter" onchange="loadAssets()">
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="decommissioned">Decommissioned</option>
+          </select>
+          <button class="btn-primary" onclick="openModal('add-asset-modal')">+ Register Asset</button>
+        </div>
+        <div class="table-card" id="assets-table"><!-- JS --></div>
+      </div>
+
+      <!-- ─── USERS ──────────────────────────────────────────────────────── -->
+      <div class="view" id="view-users">
+        <div class="view-toolbar">
+          <input type="text" class="input-field" placeholder="Search users…" id="user-search" oninput="filterUsers(this.value)" />
+          <button class="btn-primary" onclick="openModal('add-user-modal')">+ Add User</button>
+        </div>
+        <div class="users-grid" id="users-grid"><!-- JS --></div>
+      </div>
+
+      <!-- ─── ANALYTICS ──────────────────────────────────────────────────── -->
+      <div class="view" id="view-analytics">
+        <div class="kpi-grid" id="analytics-kpi-grid"><!-- JS --></div>
+        <div class="grid-2col">
+          <div class="card">
+            <div class="card-header"><h3>Revenue by Month (2025)</h3></div>
+            <div class="chart-area" id="revenue-chart"><!-- JS --></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Event Breakdown</h3></div>
+            <div id="event-breakdown"><!-- JS --></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── HEALTH ─────────────────────────────────────────────────────── -->
+      <div class="view" id="view-health">
+        <div class="health-grid" id="health-grid"><!-- JS --></div>
+      </div>
+
+    </div><!-- /view-container -->
+  </main>
+
+  <!-- ─── MODALS ─────────────────────────────────────────────────────────── -->
+
+  <!-- Place Order Modal -->
+  <div class="modal-overlay" id="place-order-modal">
+    <div class="modal">
+      <div class="modal-header"><h2>Place New Order</h2><button class="modal-close" onclick="closeModal('place-order-modal')">✕</button></div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>User</label>
+          <select class="input-field" id="order-user">
+            <option value="u-001">Alice Admin</option>
+            <option value="u-002">John Doe</option>
+            <option value="u-003">Jane Smith</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Product</label>
+          <select class="input-field" id="order-product">
+            <option value="p-001">IBM Cloud Pak for Data ($4,500)</option>
+            <option value="p-002">IBM Watson Assistant ($1,200)</option>
+            <option value="p-003">IBM Security QRadar ($8,900)</option>
+            <option value="p-004">Red Hat OpenShift ($3,200)</option>
+            <option value="p-008">Cisco Webex Suite ($450)</option>
+            <option value="p-011">Instana APM ($1,800)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" class="input-field" id="order-qty" value="1" min="1" max="100" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal('place-order-modal')">Cancel</button>
+        <button class="btn-primary" onclick="placeOrder()">Place Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Ticket Modal -->
+  <div class="modal-overlay" id="create-ticket-modal">
+    <div class="modal">
+      <div class="modal-header"><h2>Create Support Ticket</h2><button class="modal-close" onclick="closeModal('create-ticket-modal')">✕</button></div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" class="input-field" id="ticket-title" placeholder="Describe the issue…" />
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select class="input-field" id="ticket-category">
+            <option value="networking">Networking</option>
+            <option value="software">Software</option>
+            <option value="hardware">Hardware</option>
+            <option value="security">Security</option>
+            <option value="access">Access</option>
+            <option value="storage">Storage</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select class="input-field" id="ticket-priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>User</label>
+          <select class="input-field" id="ticket-user">
+            <option value="u-002">John Doe</option>
+            <option value="u-003">Jane Smith</option>
+            <option value="u-005">Carol Lee</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal('create-ticket-modal')">Cancel</button>
+        <button class="btn-primary" onclick="createTicket()">Submit Ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal-overlay" id="add-user-modal">
+    <div class="modal">
+      <div class="modal-header"><h2>Add User</h2><button class="modal-close" onclick="closeModal('add-user-modal')">✕</button></div>
+      <div class="modal-body">
+        <div class="form-group"><label>Name</label><input type="text" class="input-field" id="new-user-name" placeholder="Full name" /></div>
+        <div class="form-group"><label>Email</label><input type="email" class="input-field" id="new-user-email" placeholder="email@nexus-it.com" /></div>
+        <div class="form-group">
+          <label>Role</label>
+          <select class="input-field" id="new-user-role">
+            <option value="user">User</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Department</label><input type="text" class="input-field" id="new-user-dept" placeholder="e.g. Cloud Services" /></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal('add-user-modal')">Cancel</button>
+        <button class="btn-primary" onclick="addUser()">Add User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Asset Modal -->
+  <div class="modal-overlay" id="add-asset-modal">
+    <div class="modal">
+      <div class="modal-header"><h2>Register Asset</h2><button class="modal-close" onclick="closeModal('add-asset-modal')">✕</button></div>
+      <div class="modal-body">
+        <div class="form-group"><label>Name</label><input type="text" class="input-field" id="new-asset-name" placeholder="Asset name" /></div>
+        <div class="form-group">
+          <label>Type</label>
+          <select class="input-field" id="new-asset-type">
+            <option value="server">Server</option>
+            <option value="network">Network</option>
+            <option value="endpoint">Endpoint</option>
+            <option value="storage">Storage</option>
+            <option value="security">Security</option>
+            <option value="firewall">Firewall</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Serial Number</label><input type="text" class="input-field" id="new-asset-serial" placeholder="SN-XXX-XXXX" /></div>
+        <div class="form-group"><label>Location</label><input type="text" class="input-field" id="new-asset-location" placeholder="DC-North-A01" /></div>
+        <div class="form-group"><label>Cost (USD)</label><input type="number" class="input-field" id="new-asset-cost" placeholder="0" /></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal('add-asset-modal')">Cancel</button>
+        <button class="btn-primary" onclick="addAsset()">Register</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

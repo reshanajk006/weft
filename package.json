@@ -1,0 +1,38 @@
+{
+  "name": "nexus-it-dummy-platform",
+  "version": "1.0.0",
+  "description": "NEXUS-IT Dummy Enterprise Platform - Client for WEFT resilience testing",
+  "scripts": {
+    "start": "concurrently --names \"JAEGER,GW,AUTH,USER,CAT,ORD,BILL,NOTIF,ANA,ASSET,SUPP,FRONT\" --prefix-colors \"bgBlue,cyan,green,yellow,blue,magenta,red,white,gray,brightCyan,brightGreen,brightMagenta\" \"node embedded-jaeger.js\" \"node services/gateway/index.js\" \"node services/auth/index.js\" \"node services/user/index.js\" \"node services/catalog/index.js\" \"node services/order/index.js\" \"node services/billing/index.js\" \"node services/notification/index.js\" \"node services/analytics/index.js\" \"node services/asset/index.js\" \"node services/support/index.js\" \"node frontend-server.js\"",
+    "services": "concurrently --names \"JAEGER,GW,AUTH,USER,CAT,ORD,BILL,NOTIF,ANA,ASSET,SUPP\" --prefix-colors \"bgBlue,cyan,green,yellow,blue,magenta,red,white,gray,brightCyan,brightGreen\" \"node embedded-jaeger.js\" \"node services/gateway/index.js\" \"node services/auth/index.js\" \"node services/user/index.js\" \"node services/catalog/index.js\" \"node services/order/index.js\" \"node services/billing/index.js\" \"node services/notification/index.js\" \"node services/analytics/index.js\" \"node services/asset/index.js\" \"node services/support/index.js\"",
+    "jaeger": "node embedded-jaeger.js",
+    "frontend": "node frontend-server.js",
+    "traffic": "node traffic-generator.js",
+    "export-traces": "node export-traces.js",
+    "export": "node export-traces.js",
+    "generate-traces": "node generate-weft-traces.js",
+    "generate-errors": "node generate-weft-traces.js --fail-service billing-service --error-rate 1.0 --output traces-with-errors.json",
+    "dev": "concurrently --names \"JAEGER,GW,AUTH,USER,CAT,ORD,BILL,NOTIF,ANA,ASSET,SUPP,FRONT\" --prefix-colors \"bgBlue,cyan,green,yellow,blue,magenta,red,white,gray,brightCyan,brightGreen,brightMagenta\" \"nodemon embedded-jaeger.js\" \"nodemon services/gateway/index.js\" \"nodemon services/auth/index.js\" \"nodemon services/user/index.js\" \"nodemon services/catalog/index.js\" \"nodemon services/order/index.js\" \"nodemon services/billing/index.js\" \"nodemon services/notification/index.js\" \"nodemon services/analytics/index.js\" \"nodemon services/asset/index.js\" \"nodemon services/support/index.js\" \"nodemon frontend-server.js\""
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.50.0",
+    "@opentelemetry/exporter-jaeger": "^1.26.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.55.0",
+    "@opentelemetry/resources": "^1.26.0",
+    "@opentelemetry/sdk-node": "^0.55.0",
+    "@opentelemetry/sdk-trace-node": "^1.26.0",
+    "@opentelemetry/semantic-conventions": "^1.27.0",
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "concurrently": "^9.1.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3",
+    "morgan": "^1.10.0",
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# System & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Generated trace JSON files
+traces-for-weft.json
+weft-jaeger-traces.json
+weft-traces-*.json
+weft-traces-export*.json
+order-traces.json
+jaeger-services.json
+
+# Keep configuration files
+!package.json
+!package-lock.json
+!services.json
