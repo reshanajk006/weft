@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WEFT Telemetry - Overview &amp; System Summary</title>
+<!-- Google Fonts: Space Mono & Courier Prime & Press Start 2P -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&amp;family=Press+Start+2P&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&amp;family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'monospace'],
+            mono: ['"Space Mono"', 'monospace'],
+            terminal: ['"Courier Prime"', 'monospace'],
+          },
+          colors: {
+            ice: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#0c4a6e',
+            },
+            slate: {
+              850: '#111827',
+              900: '#0f172a',
+              950: '#080e1a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- Retro Pixel & CRT Slate + Ice Blue Styles -->
+<style>
+    * {
+      border-radius: 0px !important;
+      image-rendering: pixelated;
+    }
+
+    /* Pixel Box borders with stepped 8-bit bevels */
+    .pixel-box {
+      background-color: #111827;
+      border: 1px solid #1f2937;
+      box-shadow: 
+        inset 1px 1px 0px rgba(255, 255, 255, 0.05),
+        inset -1px -1px 0px rgba(0, 0, 0, 0.4),
+        0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .pixel-box-sm {
+      background-color: #111827;
+      border: 1px solid #1f2937;
+      box-shadow: 
+        inset 1px 1px 0px rgba(255, 255, 255, 0.04),
+        inset -1px -1px 0px #0b0f14;
+    }
+
+    .pixel-input {
+      background: #0b0f14;
+      border: 1px solid #1f2937;
+      color: #e5e7eb;
+      box-shadow: inset 2px 2px 0px #06090e;
+      font-family: 'Space Mono', monospace;
+      outline: none;
+    }
+    .pixel-input:focus {
+      border-color: #9cafc4;
+      box-shadow: inset 2px 2px 0px #06090e, 0 0 0 1px #9cafc4;
+    }
+
+    .pixel-btn {
+      background-color: #111827;
+      border: 1px solid #1f2937;
+      box-shadow: 
+        inset 1px 1px 0px rgba(255, 255, 255, 0.08),
+        inset -1px -1px 0px rgba(0, 0, 0, 0.5),
+        0 2px 4px rgba(0,0,0,0.4);
+      transition: none;
+    }
+    .pixel-btn:hover {
+      background-color: #1a2234;
+      border-color: #9cafc4;
+    }
+
+    /* Chunky pixel muted steel blue button */
+    .pixel-box-ice {
+      background: #9cafc4;
+      color: #0b0f14;
+      border: 2px solid #b8c8db;
+      box-shadow: 
+        inset 2px 2px 0px #dbe5ee,
+        inset -2px -2px 0px #76889d,
+        0 4px 0px #4e5f73;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+    }
+    .pixel-box-ice:hover {
+      background: #adbed2;
+      transform: translateY(1px);
+      box-shadow: 
+        inset 2px 2px 0px #eef3f8,
+        inset -2px -2px 0px #76889d,
+        0 3px 0px #4e5f73;
+    }
+    .pixel-box-ice:active {
+      transform: translateY(4px);
+      box-shadow: 
+        inset 2px 2px 0px #76889d,
+        inset -2px -2px 0px #eef3f8,
+        0 0px 0px #4e5f73;
+    }
+
+    .pixel-blink {
+      animation: blink 1s steps(1) infinite;
+    }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* Segmented meter blocks */
+    .pixel-meter {
+      display: inline-flex;
+      gap: 3px;
+      padding: 3px 5px;
+      background: #0b0f14;
+      border: 1px solid #1f2937;
+    }
+    .pixel-meter-block {
+      width: 7px;
+      height: 12px;
+      background: #1f2937;
+    }
+    .pixel-meter-block.active-ice {
+      background: #9cafc4;
+      box-shadow: 0 0 4px rgba(156, 175, 196, 0.6);
+    }
+    .pixel-meter-block.active-rose {
+      background: #ef4444;
+      box-shadow: 0 0 4px rgba(239, 68, 68, 0.6);
+    }
+
+    /* Scanline retro effect overlay */
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(17, 24, 39, 0) 50%, rgba(11, 15, 20, 0.3) 50%);
+      background-size: 100% 4px;
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+  </style>
+<style id="editorial-typography-override">
+  :root {
+    --font-editorial: 'Newsreader', 'Cormorant Garamond', Georgia, serif;
+    --font-clean-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-clean-sans) !important;
+  }
+
+  /* Editorial serif elements */
+  a[data-purpose="brand-logo"] span,
+  section[data-purpose="page-title-banner"] h1,
+  [data-purpose="criticality-table"] h2,
+  [data-purpose="alert-panel"] p:first-child,
+  [data-purpose="summary-stats-grid"] span.font-pixel.text-2xl,
+  [data-purpose="summary-stats-grid"] span.font-pixel.text-3xl,
+  [data-purpose="summary-stats-grid"] .font-pixel.text-\[9px\],
+  [data-purpose="criticality-table"] .font-pixel.text-xs,
+  [data-purpose="criticality-table"] .font-pixel.text-sm,
+  [data-purpose="alert-panel"] span.font-pixel.text-sm,
+  [data-purpose="alert-panel"] span.font-pixel.text-base {
+    font-family: var(--font-editorial) !important;
+    letter-spacing: -0.02em !important;
+    font-weight: 500 !important;
+  }
+
+  /* High-contrast editorial styling for main title */
+  section[data-purpose="page-title-banner"] h1 {
+    font-family: var(--font-editorial) !important;
+    font-size: 2.75rem !important;
+    line-height: 1.15 !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.03em !important;
+    text-transform: none !important;
+  }
+
+  /* Clean sans-serif elements */
+  nav a,
+  input.pixel-input,
+  button.pixel-box-ice,
+  a.pixel-btn,
+  button.pixel-btn,
+  section[data-purpose="page-title-banner"] p,
+  [data-purpose="alert-panel"] p,
+  .font-terminal,
+  footer p {
+    font-family: var(--font-clean-sans) !important;
+  }
+
+  /* Refine button typography to clean modern feel */
+  button.pixel-box-ice {
+    letter-spacing: 0.06em !important;
+    font-weight: 600 !important;
+  }
+
+  a.pixel-btn {
+    letter-spacing: 0.02em !important;
+    font-weight: 500 !important;
+  }
+</style></head>
+<body class="min-h-screen selection:bg-[#9cafc4] selection:text-[#0b0f14] p-3 sm:p-6 md:p-8 text-base relative" style="background-color: #0b0f14; color: #e5e7eb;">
+<!-- BEGIN: Diagonal WebGL Shader Waves Background -->
+<!-- STITCH_SHADER_START:ANIMATION_39 class="fixed inset-0 w-full h-full pointer-events-none z-0" -->
+<div class="fixed inset-0 w-full h-full pointer-events-none z-0" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_39" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_39');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+varying vec2 v_texCoord;
+
+// React Bits Threads shader implementation with muted slate gray: #6B7280
+// #6B7280 in float rgb: [107/255, 114/255, 128/255] = [0.4196, 0.4471, 0.5020]
+// amplitude: 1.0, distance: 0.0, enableMouseInteraction: true
+// Diagonally oriented threads across deep charcoal canvas
+
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+void main() {
+    vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
+
+    // Diagonal angle across the screen (~35 deg slant)
+    float angle = -0.62;
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+    vec2 pRot = vec2(p.x * cosA - p.y * sinA, p.x * sinA + p.y * cosA);
+
+    // Mouse deflection interaction
+    vec2 mouseNorm = (u_mouse - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
+    vec2 mouseRot = vec2(mouseNorm.x * cosA - mouseNorm.y * sinA, mouseNorm.x * sinA + mouseNorm.y * cosA);
+    float mouseDist = length(pRot - mouseRot);
+    float mouseForce = smoothstep(0.65, 0.0, mouseDist) * 0.11;
+
+    // Requested wave lines color: #6B7280 (muted slate gray)
+    vec3 threadColor = vec3(0.419608, 0.447059, 0.501961);
+
+    float threadsSum = 0.0;
+    const float STRANDS = 22.0;
+
+    for (float i = 0.0; i < STRANDS; i += 1.0) {
+        float fi = i / (STRANDS - 1.0);
+        
+        float speed = 0.28 + fi * 0.18;
+        float freq = 1.75 + fi * 0.95;
+        float amp = 0.30 + 0.12 * sin(fi * 3.1415);
+
+        float wave = sin(pRot.x * freq + u_time * speed + fi * 3.3) * amp;
+        wave += cos(pRot.x * 1.2 - u_time * 0.14 + fi * 1.7) * 0.08;
+        wave += (noise(vec2(pRot.x * 2.2 + u_time * 0.08, fi * 5.5)) - 0.5) * 0.07;
+
+        wave += mouseForce * sin(pRot.x * 6.5 + u_time * 1.25);
+
+        float yOffset = (fi - 0.5) * 0.46;
+        float distToWave = abs(pRot.y - (wave + yOffset));
+
+        float lineIntensity = smoothstep(0.0036, 0.0006, distToWave);
+        float edgeFade = smoothstep(1.7, 0.2, abs(pRot.x));
+        float lineLuminance = 0.45 + 0.55 * sin(fi * 3.1415);
+
+        threadsSum += lineIntensity * lineLuminance * edgeFade;
+    }
+
+    float alpha = clamp(threadsSum, 0.0, 0.92);
+    gl_FragColor = vec4(threadColor, alpha);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_39 -->
+<!-- END: Diagonal WebGL Shader Waves Background -->
+<!-- BEGIN: TopHeader -->
+<header class="max-w-6xl mx-auto mb-8 relative z-10"><nav class="pixel-box px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.5);"><div class="flex items-center gap-6 md:gap-8"><a class="flex items-center gap-2.5 group" data-purpose="brand-logo" href="#"><div class="w-9 h-9 flex items-center justify-center font-pixel text-base font-bold" style="background-color: #9cafc4; color: #0b0f14; border: 1px solid #b8c8db; box-shadow: inset 1px 1px 0px #ffffff, inset -1px -1px 0px #6b7280;">W</div><span class="font-pixel text-lg tracking-wider transition-colors" style="color: #e5e7eb;">Weft</span></a><div class="hidden lg:flex items-center gap-2 font-pixel text-[10px]"><a class="font-bold px-3 py-2 flex items-center gap-1.5" href="#" style="background-color: #9cafc4; color: #0b0f14; border: 1px solid #b8c8db; box-shadow: inset 1px 1px 0px #ffffff, inset -1px -1px 0px #6b7280;"><span class="w-2 h-2 pixel-blink" style="background-color: #0b0f14;"></span>[ OVERVIEW ]</a><a class="px-3 py-2 border border-transparent transition-all" href="#" style="color: #94a3b8;">[ DEPENDENCY MAP ]</a><a class="px-3 py-2 border border-transparent transition-all" href="#" style="color: #94a3b8;">[ SIMULATIONS ]</a><a class="px-3 py-2 border border-transparent transition-all" href="#" style="color: #94a3b8;">[ INCIDENTS ]</a><a class="px-3 py-2 border border-transparent transition-all" href="#" style="color: #94a3b8;">[ REPORTS ]</a></div></div><div class="flex items-center gap-3 flex-1 sm:flex-initial justify-end"><div class="relative w-full sm:w-64" data-purpose="search-box"><span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none font-pixel text-[10px]" style="color: #9cafc4;">&gt;</span><input class="pixel-input w-full pl-8 pr-3 py-1.5 text-sm tracking-wider" placeholder="Search services..." style="background-color: #0b0f14; border: 1px solid #1f2937; color: #e5e7eb; box-shadow: inset 2px 2px 0px #06090e;" type="text"/></div><button aria-label="Settings" class="pixel-btn w-9 h-9 flex items-center justify-center flex-shrink-0 font-pixel text-xs hover:text-[#9cafc4]" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); color: #94a3b8;"><span class="font-pixel text-sm">⚙</span></button></div></nav></header>
+<!-- END: TopHeader -->
+<!-- BEGIN: MainContent -->
+<main class="max-w-6xl mx-auto space-y-6 relative z-10">
+<!-- Page Title & Navigation Banner -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2" data-purpose="page-title-banner"><div><p class="font-pixel text-[10px] mb-2 flex items-center gap-2 tracking-wider font-bold" style="color: #94a3b8;"><span class="w-2 h-2 inline-block pixel-blink" style="background-color: #9cafc4; box-shadow: 0 0 4px #9cafc4;"></span>SYSTEM SUMMARY // IMPORTED TELEMETRY</p><h1 class="font-pixel text-2xl sm:text-3xl font-bold tracking-tight mb-2" style="color: #e5e7eb;">Overview</h1><p class="font-terminal text-lg max-w-xl leading-snug" style="color: #94a3b8;">&gt; Investigation happens on the dependency map. This page only summarizes imported telemetry.</p></div><div><a class="pixel-btn font-pixel text-[10px] inline-flex items-center gap-2 px-4 py-3" href="#" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); color: #e5e7eb; box-shadow: inset 1px 1px 0px rgba(255,255,255,0.06), 0 2px 4px rgba(0,0,0,0.4);"><span class="" style="color: #9cafc4; font-size: 11px;">←</span> Back to Landing Page</a></div></section>
+<!-- BEGIN: TelemetryMetricsGrid -->
+<!-- Retro pixel stat tiles summarizing cluster telemetry -->
+<section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4" data-purpose="summary-stats-grid"><div class="p-4 flex flex-col justify-between transition-colors" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.04);"><div class="flex items-center justify-between"><span class="font-pixel text-[9px] tracking-wide font-bold" style="color: #94a3b8;">SERVICES</span><span class="w-2 h-2" style="background-color: #9cafc4; box-shadow: 0 0 4px #9cafc4;"></span></div><div class="mt-4 flex items-baseline justify-between"><span class="font-pixel text-2xl sm:text-3xl font-bold" style="color: #e5e7eb;">7</span><span class="font-terminal text-base" style="color: #94a3b8;">[NODE]</span></div></div><div class="p-4 flex flex-col justify-between transition-colors" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.04);"><div class="flex items-center justify-between"><span class="font-pixel text-[9px] tracking-wide font-bold" style="color: #94a3b8;">DEPENDENCIES</span><span class="w-2 h-2" style="background-color: #6b7280;"></span></div><div class="mt-4 flex items-baseline justify-between"><span class="font-pixel text-2xl sm:text-3xl font-bold" style="color: #e5e7eb;">6</span><span class="font-terminal text-base" style="color: #94a3b8;">[EDGES]</span></div></div><div class="p-4 flex flex-col justify-between transition-colors" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.04);"><div class="flex items-center justify-between"><span class="font-pixel text-[9px] tracking-wide font-bold" style="color: #22c55e;">HEALTHY</span><span class="w-2 h-2" style="background-color: #22c55e; box-shadow: 0 0 4px #22c55e;"></span></div><div class="mt-4 flex items-baseline justify-between"><span class="font-pixel text-2xl sm:text-3xl font-bold" style="color: #e5e7eb;">6</span><span class="font-pixel text-[9px] px-1.5 py-1 font-bold" style="background-color: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3);">85.7%</span></div></div><div class="p-4 flex flex-col justify-between transition-colors" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.04);"><div class="flex items-center justify-between"><span class="font-pixel text-[9px] tracking-wide font-bold" style="color: #f59e0b;">DEGRADED</span><span class="w-2 h-2" style="background-color: #f59e0b;"></span></div><div class="mt-4 flex items-baseline justify-between"><span class="font-pixel text-2xl sm:text-3xl font-bold" style="color: #e5e7eb;">0</span><span class="font-pixel text-[9px] px-1.5 py-1 font-bold" style="background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3);">0%</span></div></div><div class="p-4 flex flex-col justify-between col-span-2 sm:col-span-1 transition-colors" style="background-color: #111827; border: 1px solid #ef4444; box-shadow: inset 1px 1px 0px rgba(239, 68, 68, 0.2);"><div class="flex items-center justify-between"><span class="font-pixel text-[9px] tracking-wide font-bold" style="color: #f87171;">UNHEALTHY</span><span class="w-2 h-2 pixel-blink" style="background-color: #ef4444; box-shadow: 0 0 4px #ef4444;"></span></div><div class="mt-4 flex items-baseline justify-between"><span class="font-pixel text-2xl sm:text-3xl font-bold" style="color: #e5e7eb;">1</span><span class="font-pixel text-[9px] px-1.5 py-1 font-bold" style="background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);">14.3%</span></div></div></section>
+<!-- END: TelemetryMetricsGrid -->
+<!-- BEGIN: PrimaryMapCTA -->
+<!-- Chunky pixelated Muted Steel Blue button -->
+<section>
+<button class="pixel-box-ice w-full py-4 px-6 flex items-center justify-center gap-3 font-pixel text-xs sm:text-sm tracking-widest cursor-pointer uppercase font-bold" style="background: #9cafc4; color: #0b0f14; border: 2px solid #b8c8db; box-shadow: inset 2px 2px 0px #dbe5ee, inset -2px -2px 0px #76889d, 0 3px 0px #4e5f73;" type="button"><span class="" style="font-size: 0.85rem;">→</span><span class="">Open Dependency Map</span></button>
+</section>
+<!-- END: PrimaryMapCTA -->
+<!-- BEGIN: AttentionRequiredSection -->
+<!-- Alert Card with cool crystalline frost border & stark status -->
+<section class="pixel-box p-5 sm:p-6 border-l-4" data-purpose="alert-panel" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); border-left: 5px solid #ef4444; box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.5);"><div class="flex items-center justify-between gap-2 mb-3"><p class="font-pixel text-[10px] tracking-widest uppercase flex items-center gap-2 font-bold" style="color: #94a3b8;"><span class="w-2.5 h-2.5 inline-flex items-center justify-center font-pixel text-[8px] font-bold text-white" style="background-color: #dc2626;">!</span>ATTENTION REQUIRED // CRITICAL INCIDENT DETECTED</p></div><div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style="background-color: #0b0f14; border: 1px solid #ef4444; box-shadow: inset 1px 1px 0px rgba(239, 68, 68, 0.15);"><div class="flex items-center gap-4"><div class="w-10 h-10 flex items-center justify-center font-pixel text-base font-bold text-white" style="background-color: #dc2626; border: 1px solid #f87171; box-shadow: inset 1px 1px 0 #fca5a5, inset -1px -1px 0 #7f1d1d;">!</div><div><span class="font-pixel text-sm sm:text-base font-bold tracking-wide" style="color: #e5e7eb;">payment-gateway</span><p class="font-terminal text-base sm:text-lg mt-0.5" style="color: #94a3b8;">&gt; Higher error-rate exceeding 99.9th percentile SLA threshold</p></div></div><div><span class="inline-flex items-center gap-2 font-pixel text-xs py-2 px-3 font-bold text-white" style="background-color: #dc2626; border: 1px solid #f87171; box-shadow: inset 1px 1px 0 #fca5a5, inset -1px -1px 0 #7f1d1d;"><span class="w-2 h-2 bg-white pixel-blink"></span>UNHEALTHY</span></div></div></section>
+<!-- END: AttentionRequiredSection -->
+<!-- BEGIN: CriticalityRankingSection -->
+<!-- Ranked Critical Services with retro meters -->
+<section class="pixel-box p-5 sm:p-6" data-purpose="criticality-table" style="background-color: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.5);"><div class="flex items-center justify-between mb-4 border-b pb-3" style="border-bottom-color: #1f2937;"><h2 class="font-pixel text-[10px] tracking-wider uppercase flex items-center gap-2 font-bold" style="color: #94a3b8;"><span class="" style="color: #9cafc4;">▲</span>HIGHEST TECHNICAL CRITICALITY</h2><span class="font-pixel text-[9px] px-2.5 py-1 font-bold" style="background-color: #9cafc4; color: #0b0f14; box-shadow: inset 1px 1px 0 #dbe5ee, inset -1px -1px 0 #6b7280;">[ TOP 5 SERVICES ]</span></div><div class="space-y-2"><div class="flex items-center justify-between p-3" style="background-color: #0b0f14; border: 1px solid #ef4444; box-shadow: inset 1px 1px 0 rgba(239, 68, 68, 0.1);"><div class="flex items-center gap-3.5"><span class="font-pixel text-[10px] font-bold w-6" style="color: #f87171;">01.</span><span class="w-2.5 h-2.5 pixel-blink" style="background-color: #ef4444;"></span><span class="font-pixel text-xs sm:text-sm font-bold" style="color: #e5e7eb;">payment-gateway</span></div><div class="flex items-center gap-4"><div class="pixel-meter hidden sm:inline-flex" style="background: #111827; border-color: #1f2937;"><span class="pixel-meter-block" style="background: #ef4444;"></span><span class="pixel-meter-block" style="background: #ef4444;"></span><span class="pixel-meter-block" style="background: #ef4444;"></span><span class="pixel-meter-block" style="background: #ef4444;"></span><span class="pixel-meter-block" style="background: #ef4444;"></span><span class="pixel-meter-block" style="background: #ef4444;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span></div><span class="font-pixel text-[10px] font-bold px-2.5 py-1" style="color: #f87171; background-color: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);">60.6</span></div></div><div class="flex items-center justify-between p-3 transition-colors" style="background-color: #0b0f14; border: 1px solid #1f2937; box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.03);"><div class="flex items-center gap-3.5"><span class="font-pixel text-[10px] font-bold w-6" style="color: #6b7280;">02.</span><span class="w-2.5 h-2.5" style="background-color: #22c55e;"></span><span class="font-pixel text-xs sm:text-sm font-bold" style="color: #e5e7eb;">checkout-service</span></div><div class="flex items-center gap-4"><div class="pixel-meter hidden sm:inline-flex" style="background: #111827; border-color: #1f2937;"><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span></div><span class="font-pixel text-[10px] font-bold px-2.5 py-1" style="color: #e5e7eb; background-color: #1f2937; border: 1px solid rgba(255, 255, 255, 0.08);">55.0</span></div></div><div class="flex items-center justify-between p-3 transition-colors" style="background-color: #0b0f14; border: 1px solid #1f2937; box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.03);"><div class="flex items-center gap-3.5"><span class="font-pixel text-[10px] font-bold w-6" style="color: #6b7280;">03.</span><span class="w-2.5 h-2.5" style="background-color: #22c55e;"></span><span class="font-pixel text-xs sm:text-sm font-bold" style="color: #e5e7eb;">order-service</span></div><div class="flex items-center gap-4"><div class="pixel-meter hidden sm:inline-flex" style="background: #111827; border-color: #1f2937;"><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span></div><span class="font-pixel text-[10px] font-bold px-2.5 py-1" style="color: #e5e7eb; background-color: #1f2937; border: 1px solid rgba(255, 255, 255, 0.08);">49.2</span></div></div><div class="flex items-center justify-between p-3 transition-colors" style="background-color: #0b0f14; border: 1px solid #1f2937; box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.03);"><div class="flex items-center gap-3.5"><span class="font-pixel text-[10px] font-bold w-6" style="color: #6b7280;">04.</span><span class="w-2.5 h-2.5" style="background-color: #22c55e;"></span><span class="font-pixel text-xs sm:text-sm font-bold" style="color: #e5e7eb;">user-service</span></div><div class="flex items-center gap-4"><div class="pixel-meter hidden sm:inline-flex" style="background: #111827; border-color: #1f2937;"><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span></div><span class="font-pixel text-[10px] font-bold px-2.5 py-1" style="color: #e5e7eb; background-color: #1f2937; border: 1px solid rgba(255, 255, 255, 0.08);">36.2</span></div></div><div class="flex items-center justify-between p-3 transition-colors" style="background-color: #0b0f14; border: 1px solid #1f2937; box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.03);"><div class="flex items-center gap-3.5"><span class="font-pixel text-[10px] font-bold w-6" style="color: #6b7280;">05.</span><span class="w-2.5 h-2.5" style="background-color: #22c55e;"></span><span class="font-pixel text-xs sm:text-sm font-bold" style="color: #e5e7eb;">db-service</span></div><div class="flex items-center gap-4"><div class="pixel-meter hidden sm:inline-flex" style="background: #111827; border-color: #1f2937;"><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #9cafc4;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span><span class="pixel-meter-block" style="background: #1f2937;"></span></div><span class="font-pixel text-[10px] font-bold px-2.5 py-1" style="color: #e5e7eb; background-color: #1f2937; border: 1px solid rgba(255, 255, 255, 0.08);">32.8</span></div></div></div></section>
+<!-- END: CriticalityRankingSection -->
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: PageFooter -->
+<footer class="max-w-6xl mx-auto mt-10 pt-4 pb-6 text-center font-pixel text-[9px] tracking-wider relative z-10" style="color: #94a3b8;"><p class="">WEFT Telemetry Observability Suite • System Health Engine • 8-Bit Pixel Mode</p></footer>
+<!-- END: PageFooter -->
+</body></html>

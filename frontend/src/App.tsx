@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { GraphWorkspace } from "./pages/GraphWorkspace";
+import { LandingPage } from "./pages/LandingPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { ReportsPage } from "./pages/ReportsPage";
 import { SettingsPage } from "./pages/SettingsPage";
@@ -11,16 +12,17 @@ function ServiceRedirect() {
   const { id } = useParams();
   const { mode } = useWorkspace();
   if (mode === "LOADING") return null;
-  if (!id || mode === "NO_DATA" || mode === "ERROR") return <Navigate to="/" replace />;
-  return <Navigate to={`/?service=${id}`} replace />;
+  if (!id || mode === "NO_DATA" || mode === "ERROR") return <Navigate to="/graph" replace />;
+  return <Navigate to={`/graph?service=${id}`} replace />;
 }
 
 export default function App() {
   return (
     <WorkspaceProvider>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/landing" element={<LandingPage />} />
         <Route element={<AppShell />}>
-          <Route path="/" element={<GraphWorkspace />} />
           <Route path="/graph" element={<GraphWorkspace />} />
           <Route path="/overview" element={<OverviewPage />} />
           <Route path="/simulations" element={<SimulationsHistoryPage />} />

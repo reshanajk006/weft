@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-[#0d1014]" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Weft — Service Dependency Graph &amp; Blast Radius</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #0d1014;
+      color: #94a3b8;
+    }
+    .font-serif-editorial {
+      font-family: 'Instrument Serif', Georgia, serif;
+    }
+    @keyframes riseFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .anim-rise-1 {
+      animation: riseFadeIn 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .anim-rise-2 {
+      animation: riseFadeIn 380ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
+      opacity: 0;
+    }
+    .anim-rise-3 {
+      animation: riseFadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1) 220ms forwards;
+      opacity: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .anim-rise-1, .anim-rise-2, .anim-rise-3 {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="h-full w-full overflow-hidden select-none bg-[#0d1014] text-[#94a3b8]">
+<!-- Background WebGL Shader: React Bits Threads [0.58, 0.64, 0.72] -->
+<!-- STITCH_SHADER_START:ANIMATION_8 class="absolute inset-0 w-full h-full pointer-events-auto" -->
+<div class="absolute inset-0 w-full h-full pointer-events-auto" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_8" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_8');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+// React Bits Threads inspired procedural WebGL fragment shader
+// Exact color vector specified: [0.58, 0.64, 0.72] (steel/slate blue)
+// amplitude: 1, distance: 0, subtle mouse interaction
+
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
+
+    // Mouse influence (ShaderToy pixel coords convention)
+    vec2 mouseNorm = (u_mouse - 0.5 * u_resolution) / min(u_resolution.x, u_resolution.y);
+    float mouseDist = length(p - mouseNorm);
+    float mouseForce = smoothstep(0.6, 0.0, mouseDist) * 0.08;
+
+    // Deep matte charcoal/near-black background (not pure black #000)
+    vec3 bgColor = vec3(0.051, 0.063, 0.078); // #0d1014
+
+    // Threads wave parameters
+    vec3 threadColor = vec3(0.58, 0.64, 0.72); // Exact specified color
+    float threadsSum = 0.0;
+
+    // Multi-strand flowing thread curves (tight woven hairline strands)
+    for (float i = 0.0; i < 30.0; i += 1.0) {
+        float fi = i / 30.0;
+        float speed = 0.32 + fi * 0.22;
+        float freq = 2.1 + fi * 1.4;
+        float amp = 0.28 + 0.12 * sin(fi * 6.28); // amplitude = 1 scaling
+
+        // Sinusoidal wave curve with subtle organic turbulence
+        float wave = sin(p.x * freq + u_time * speed + fi * 3.6) * amp;
+        wave += cos(p.x * 1.4 - u_time * 0.18 + fi * 1.8) * 0.07;
+        wave += (noise(vec2(p.x * 2.2 + u_time * 0.09, fi * 9.0)) - 0.5) * 0.10;
+
+        // Subtle mouse deflection
+        wave += mouseForce * sin(p.x * 8.0 + u_time * 1.1);
+
+        // Distance = 0 -> centered bundle with subtle vertical offset
+        float distToWave = abs(p.y - wave + (fi - 0.5) * 0.55);
+        float lineIntensity = smoothstep(0.0035, 0.0006, distToWave);
+
+        // Subtle falloff at the lateral borders
+        float edgeFade = smoothstep(1.3, 0.1, abs(p.x));
+        threadsSum += lineIntensity * (0.24 + 0.36 * sin(fi * 3.1415)) * edgeFade;
+    }
+
+    vec3 finalColor = bgColor + threadColor * clamp(threadsSum, 0.0, 0.95);
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_8 -->
+<!-- Content Layer (Subtle, pure editorial single-focus landing hero) -->
+<div class="relative z-10 w-full h-full flex flex-col justify-between p-8 sm:p-12 lg:p-16 pointer-events-none">
+<!-- Top Bar: Understated wordmark top-left alone, zero clutter -->
+<header class="w-full flex items-center justify-between pointer-events-auto">
+<div class="flex items-center">
+<span class="text-[14px] font-normal tracking-[0.22em] uppercase text-[#cbd5e1]/90">
+          Weft
+        </span>
+</div>
+</header>
+<!-- Center Hero Stack: Occupies ~35-40% of viewport, generous negative space around it -->
+<main class="w-full max-w-2xl mx-auto text-center flex flex-col items-center justify-center my-auto px-4 pointer-events-auto">
+<!-- Headline: Plain-spoken, editorial, quiet confidence -->
+<h1 class="anim-rise-1 font-serif-editorial text-[48px] sm:text-[64px] lg:text-[76px] leading-[1.05] tracking-[-0.01em] text-[#eceff3] font-normal">
+        See where the weft breaks
+      </h1>
+<!-- Supporting line: Max 14 words as specified -->
+<p class="anim-rise-2 mt-6 text-[15px] sm:text-[17px] leading-[1.6] text-[#94a3b8] font-normal max-w-lg tracking-normal">
+        Map how your services depend on each other. Know the blast radius before it happens.
+      </p>
+<!-- Single Primary CTA Button: No drop shadows, no gradients, clean slate/steel aesthetic -->
+<div class="anim-rise-3 mt-10">
+<a class="inline-flex items-center justify-center px-6 py-2.5 rounded text-[13px] font-medium tracking-[0.04em] text-[#0d1014] bg-[#94a3b8] hover:bg-[#cbd5e1] active:bg-[#64748b] transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-[#94a3b8]" href="#demo">
+          See it in action
+        </a>
+</div>
+</main>
+<!-- Bottom Anchor: Extremely quiet metadata, subtle and unobtrusive -->
+<footer class="w-full flex items-center justify-between text-[11px] tracking-[0.16em] uppercase text-[#475569]/70 pointer-events-none">
+<span>Service dependency &amp; blast radius</span>
+<span>v0.4.1</span>
+</footer>
+</div>
+</body>
+</html>

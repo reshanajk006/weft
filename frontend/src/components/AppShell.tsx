@@ -5,9 +5,9 @@ import { ImportModal } from "./ImportModal";
 import { JaegerConnectModal } from "./JaegerConnectModal";
 import { useWorkspace } from "../state/workspace";
 
-const TABS = [
+const TABS: { to: string; label: string; end?: boolean }[] = [
   { to: "/overview", label: "Overview" },
-  { to: "/", label: "Dependency Map", end: true },
+  { to: "/graph", label: "Dependency Map" },
   { to: "/simulations", label: "Simulations" },
   { to: "/incidents", label: "Incidents" },
   { to: "/reports", label: "Reports" },
@@ -56,8 +56,9 @@ export function AppShell() {
   return (
     <div className="app-root">
       <header className="topbar">
-        <button className="brand" type="button" onClick={() => navigate("/")}>
-          WEFT
+        <button className="brand" type="button" onClick={() => navigate("/landing")}>
+          <span className="brand-icon">W</span>
+          <span>Weft</span>
         </button>
         <nav className="top-nav">
           {TABS.map((tab) => (
@@ -67,7 +68,12 @@ export function AppShell() {
               end={tab.end}
               className={({ isActive }) => `top-link${isActive ? " active" : ""}`}
             >
-              {tab.label}
+              {({ isActive }) => (
+                <>
+                  {isActive && <span className="w-1.5 h-1.5 bg-[#0b0f14] pixel-blink inline-block" />}
+                  <span>[ {tab.label.toUpperCase()} ]</span>
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -79,7 +85,7 @@ export function AppShell() {
             if (!query.trim()) return;
             void searchAndSelect(query).then((found) => {
               setMiss(!found);
-              if (found) navigate("/");
+              if (found) navigate("/graph");
             });
           }}
         >
