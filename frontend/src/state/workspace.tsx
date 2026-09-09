@@ -24,6 +24,7 @@ function liveFingerprint(status: JaegerStatus) {
     String(status.graph_service_count ?? 0),
     String(status.graph_dependency_count ?? 0),
     String(status.services_discovered.length),
+    status.lookback ?? "",
   ].join("|");
 }
 
@@ -39,9 +40,10 @@ const DISCONNECTED: JaegerStatus = {
   services_discovered: [],
   error_message: null,
   dataset_id: null,
-  poll_interval: 30,
+  poll_interval: 5,
   max_traces_per_poll: 50,
   service_filter: null,
+  lookback: "5m",
   poll_generation: 0,
   graph_service_count: 0,
   graph_dependency_count: 0,
@@ -84,6 +86,14 @@ type WorkspaceValue = {
     poll_interval: number;
     max_traces_per_poll: number;
     service_filter?: string | null;
+    lookback?: string;
+  }) => Promise<JaegerStatus>;
+  refreshLiveJaeger: (body: {
+    jaeger_url: string;
+    poll_interval: number;
+    max_traces_per_poll: number;
+    service_filter?: string | null;
+    lookback?: string;
   }) => Promise<JaegerStatus>;
   disconnectJaeger: () => Promise<void>;
   reconnectJaeger: () => Promise<void>;
@@ -115,6 +125,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [focusId, setFocusId] = useState("");
   const [ingestResult, setIngestResult] = useState<IngestionResult | null>(null);
   const lastPollRef = useRef<string | null>(null);
+  const refreshSeq = useRef(0);
 
   const applySystem = useCallback((nextOverview: Overview, nextGraph: GraphResponse, nextValidation: GraphValidation) => {
     setOverview(nextOverview);
@@ -132,11 +143,13 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refresh = useCallback(async (highlight?: string) => {
+    const seq = ++refreshSeq.current;
     const [nextOverview, nextGraph, nextValidation] = await Promise.all([
       api.overview(),
       api.graph(highlight),
       api.graphValidation(),
     ]);
+    if (seq !== refreshSeq.current) return nextOverview;
     applySystem(nextOverview, nextGraph, nextValidation);
     return nextOverview;
   }, [applySystem]);
@@ -375,6 +388,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       poll_interval: number;
       max_traces_per_poll: number;
       service_filter?: string | null;
+      lookback?: string;
     }) => {
       let status;
       try {
@@ -391,6 +405,24 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       const next = await refresh();
       setMode(next.active_dataset || status.is_running ? "READY" : "NO_DATA");
       setJaegerOpen(false);
+      return status;
+    },
+    [refresh],
+  );
+
+  const refreshLiveJaeger = useCallback(
+    async (body: {
+      jaeger_url: string;
+      poll_interval: number;
+      max_traces_per_poll: number;
+      service_filter?: string | null;
+      lookback?: string;
+    }) => {
+      const status = await api.jaegerRefresh(body);
+      setJaeger(status);
+      lastPollRef.current = liveFingerprint(status);
+      const next = await refresh();
+      setMode(next.active_dataset || status.is_running ? "READY" : "NO_DATA");
       return status;
     },
     [refresh],
@@ -490,6 +522,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     ingestFile,
     ingestSample,
     connectJaeger,
+    refreshLiveJaeger,
     disconnectJaeger,
     reconnectJaeger,
     resetDatabase,

@@ -32,7 +32,7 @@ def get_engine() -> Engine:
         url = settings.sqlalchemy_database_url
         kwargs: dict = {"future": True}
         if url.startswith("sqlite"):
-            kwargs["connect_args"] = {"check_same_thread": False}
+            kwargs["connect_args"] = {"check_same_thread": False, "timeout": 30}
             if ":memory:" in url:
                 kwargs["poolclass"] = StaticPool
         _engine = create_engine(url, **kwargs)

@@ -58,7 +58,8 @@ export function SettingsPage() {
           {jaeger.jaeger_url ? ` · ${jaeger.jaeger_url}` : ""}
         </p>
         <p className="muted">
-          Poll interval: {jaeger.poll_interval}s · Max traces: {jaeger.max_traces_per_poll}
+          Poll interval: {jaeger.poll_interval}s · Lookback: {jaeger.lookback || "5m"} · Max traces:{" "}
+          {jaeger.max_traces_per_poll}
           {jaeger.service_filter ? ` · Filter: ${jaeger.service_filter}` : " · Filter: all services"}
         </p>
         <div className="row">

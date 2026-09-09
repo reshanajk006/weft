@@ -69,7 +69,27 @@ def test_connect_creates_one_live_dataset(client):
 
 
 @respx.mock
-def test_duplicate_connect_reuses_running_session(client):
+def test_refresh_reuses_dataset_and_does_not_500(client):
+    _services_ok(["checkout-service"])
+    trace = jaeger_trace("r1", [jaeger_span(trace_id="r1", span_id="s1", service="checkout-service")])
+    respx.get(f"{JAEGER}/api/traces").mock(return_value=httpx.Response(200, json={"data": [trace]}))
+    connected = client.post("/api/jaeger/connect", json={"jaeger_url": JAEGER, "poll_interval": 5, "lookback": "5m"})
+    assert connected.status_code == 201
+    dataset_id = connected.json()["dataset_id"]
+    refreshed = client.post(
+        "/api/jaeger/refresh",
+        json={"jaeger_url": JAEGER, "poll_interval": 5, "lookback": "5m", "max_traces_per_poll": 50},
+    )
+    assert refreshed.status_code == 200, refreshed.text
+    assert refreshed.json()["is_running"] is True
+    assert refreshed.json()["dataset_id"] == dataset_id
+    assert {node["name"] for node in client.get("/api/graph").json()["nodes"]} == {"checkout-service"}
+
+
+@respx.mock
+def test_refresh_when_disconnected_is_422(client):
+    response = client.post("/api/jaeger/refresh", json={"jaeger_url": JAEGER})
+    assert response.status_code == 422
     _services_ok(["alpha"])
     _traces_for("alpha", [])
     first = client.post("/api/jaeger/connect", json={"jaeger_url": JAEGER, "poll_interval": 5})
@@ -151,7 +171,28 @@ def test_live_poll_drops_service_missing_from_window(client):
 
 
 @respx.mock
-def test_empty_poll_does_not_wipe_graph(client):
+def test_live_poll_adds_service_from_jaeger_catalog(client):
+    _services_ok(["checkout-service"])
+    checkout = jaeger_trace(
+        "only-checkout",
+        [jaeger_span(trace_id="live-checkout", span_id="root", service="checkout-service")],
+    )
+    respx.get(f"{JAEGER}/api/traces").mock(return_value=httpx.Response(200, json={"data": [checkout]}))
+    connected = client.post("/api/jaeger/connect", json={"jaeger_url": JAEGER, "poll_interval": 5})
+    assert connected.status_code == 201
+    assert {node["name"] for node in client.get("/api/graph").json()["nodes"]} == {"checkout-service"}
+
+    _services_ok(["checkout-service", "auth-service"])
+    from app.db.database import get_session_factory
+
+    session = get_session_factory()()
+    try:
+        get_live_manager().poll_once(session)
+        session.commit()
+    finally:
+        session.close()
+    names = {node["name"] for node in client.get("/api/graph").json()["nodes"]}
+    assert names == {"checkout-service", "auth-service"}
     _services_ok(["checkout-service"])
     trace = jaeger_trace("keep-1", [jaeger_span(trace_id="keep-1", span_id="s1", service="checkout-service")])
     respx.get(f"{JAEGER}/api/traces").mock(return_value=httpx.Response(200, json={"data": [trace]}))

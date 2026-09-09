@@ -51,6 +51,7 @@ def ingest_jaeger_payload(
     filename: str | None = None,
     dataset_id: str | None = None,
     replace: bool = False,
+    keep_service_names: list[str] | None = None,
 ) -> IngestionResult:
     """Validate and ingest Jaeger JSON.
 
@@ -89,9 +90,10 @@ def ingest_jaeger_payload(
         if replace:
             _replace_dataset_spans(db, dataset.id)
         result = _process_traces(db, traces, ingestion, dataset.id)
+        if keep_service_names:
+            _ensure_named_services(db, dataset.id, keep_service_names)
         if replace:
-            _recompute_metrics(db, dataset.id)
-            _prune_stale_topology(db, dataset.id)
+            _prune_stale_topology(db, dataset.id, keep_names=keep_service_names)
             result["service_count"] = len(
                 list(db.execute(select(Service).where(Service.dataset_id == dataset.id)).scalars().all())
             )
@@ -193,6 +195,7 @@ def _process_traces(
         span_count += processed["spans"]
         error_count += processed["errors"]
 
+    _recompute_metrics(db, dataset_id)
     service_count = len(
         list(db.execute(select(Service).where(Service.dataset_id == dataset_id)).scalars().all())
     )
@@ -279,8 +282,7 @@ def _process_single_trace(
         if item["is_error"]:
             errors += 1
 
-    db.flush()
-    _recompute_metrics(db, dataset_id)
+        db.flush()
     return {"spans": len(parsed), "errors": errors}
 
 
@@ -289,7 +291,11 @@ def _replace_dataset_spans(db: Session, dataset_id: str) -> None:
     db.flush()
 
 
-def _prune_stale_topology(db: Session, dataset_id: str) -> None:
+def _prune_stale_topology(
+    db: Session,
+    dataset_id: str,
+    keep_names: list[str] | None = None,
+) -> None:
     """Drop trace-only services and edges that are no longer in the live window."""
 
     protected = {
@@ -297,26 +303,37 @@ def _prune_stale_topology(db: Session, dataset_id: str) -> None:
         for row in db.execute(select(SimulationRun.failed_service_id).where(SimulationRun.dataset_id == dataset_id))
         if row[0]
     }
+    keep = {normalize_name(name) for name in keep_names or [] if str(name).strip()}
     for dependency in list(db.execute(select(Dependency).where(Dependency.dataset_id == dataset_id)).scalars().all()):
         if dependency.call_count > 0:
             continue
         if normalized_source(dependency.source) == SOURCE_CONFIG:
             continue
-        breakers = list(
-            db.execute(select(CircuitBreakerState).where(CircuitBreakerState.dependency_id == dependency.id)).scalars().all()
-        )
-        for breaker in breakers:
-            db.execute(delete(CircuitBreakerTransition).where(CircuitBreakerTransition.circuit_breaker_id == breaker.id))
-            db.delete(breaker)
-        db.delete(dependency)
+        _delete_dependency(db, dependency)
     db.flush()
     for service in list(db.execute(select(Service).where(Service.dataset_id == dataset_id)).scalars().all()):
-        if service.total_spans > 0:
+        if service.id in protected:
             continue
         if normalized_source(service.source) == SOURCE_CONFIG:
             continue
-        if service.id in protected:
+        if keep and normalize_name(service.name) in keep:
             continue
+        if service.total_spans > 0 and not keep:
+            continue
+        leftover = list(
+            db.execute(
+                select(Dependency).where(
+                    Dependency.dataset_id == dataset_id,
+                    (Dependency.source_service_id == service.id) | (Dependency.target_service_id == service.id),
+                )
+            ).scalars().all()
+        )
+        if leftover and not keep:
+            continue
+        for dependency in leftover:
+            if normalized_source(dependency.source) == SOURCE_CONFIG:
+                continue
+            _delete_dependency(db, dependency)
         leftover = list(
             db.execute(
                 select(Dependency).where(
@@ -333,6 +350,36 @@ def _prune_stale_topology(db: Session, dataset_id: str) -> None:
         db.execute(delete(IncidentSimulation).where(IncidentSimulation.service_id == service.id))
         db.delete(service)
     db.flush()
+
+
+def _delete_dependency(db: Session, dependency: Dependency) -> None:
+    breakers = list(
+        db.execute(select(CircuitBreakerState).where(CircuitBreakerState.dependency_id == dependency.id)).scalars().all()
+    )
+    for breaker in breakers:
+        db.execute(delete(IncidentSimulation).where(IncidentSimulation.circuit_breaker_id == breaker.id))
+        db.execute(delete(CircuitBreakerTransition).where(CircuitBreakerTransition.circuit_breaker_id == breaker.id))
+        db.delete(breaker)
+    db.delete(dependency)
+
+
+def _ensure_named_services(db: Session, dataset_id: str, names: list[str]) -> None:
+    for name in names:
+        cleaned = str(name).strip()
+        if cleaned:
+            _get_or_create_service(db, cleaned, dataset_id)
+    db.flush()
+
+
+def sync_live_catalog(db: Session, dataset_id: str, names: list[str]) -> None:
+    """Keep the live graph aligned with Jaeger's service catalog, even without traces."""
+
+    invalidate_graph_cache()
+    _ensure_named_services(db, dataset_id, names)
+    _prune_stale_topology(db, dataset_id, keep_names=names)
+    recompute_all_health(db, dataset_id=dataset_id)
+    recompute_all_criticality(db, dataset_id=dataset_id)
+    invalidate_graph_cache()
 
 
 def _extract_span(span: dict[str, Any], processes: dict[str, Any], fallback_trace_id: str) -> dict[str, Any] | None:
@@ -516,8 +563,17 @@ def _get_or_create_dependency(db: Session, source: Service, target: Service, dat
 
 def _recompute_metrics(db: Session, dataset_id: str) -> None:
     services = list(db.execute(select(Service).where(Service.dataset_id == dataset_id)).scalars().all())
+    dependencies = list(db.execute(select(Dependency).where(Dependency.dataset_id == dataset_id)).scalars().all())
+    all_spans = list(db.execute(select(SpanRecord).where(SpanRecord.dataset_id == dataset_id)).scalars().all())
+    by_service: dict[str, list[SpanRecord]] = {service.id: [] for service in services}
+    by_dependency: dict[str, list[SpanRecord]] = {dependency.id: [] for dependency in dependencies}
+    for span in all_spans:
+        by_service.setdefault(span.service_id, []).append(span)
+        if span.dependency_id:
+            by_dependency.setdefault(span.dependency_id, []).append(span)
+
     for service in services:
-        spans = list(db.execute(select(SpanRecord).where(SpanRecord.service_id == service.id)).scalars().all())
+        spans = by_service.get(service.id, [])
         durations = [span.duration_ms for span in spans]
         errors = sum(1 for span in spans if span.is_error)
         service.total_spans = len(spans)
@@ -534,11 +590,8 @@ def _recompute_metrics(db: Session, dataset_id: str) -> None:
             service.last_seen_at = _start_time_to_datetime(latest)
         service.updated_at = utc_now()
 
-    dependencies = list(db.execute(select(Dependency).where(Dependency.dataset_id == dataset_id)).scalars().all())
     for dependency in dependencies:
-        spans = list(
-            db.execute(select(SpanRecord).where(SpanRecord.dependency_id == dependency.id)).scalars().all()
-        )
+        spans = by_dependency.get(dependency.id, [])
         durations = [span.duration_ms for span in spans]
         errors = sum(1 for span in spans if span.is_error)
         dependency.call_count = len(spans)

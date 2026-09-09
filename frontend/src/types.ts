@@ -275,6 +275,7 @@ export interface JaegerStatus {
   poll_interval: number;
   max_traces_per_poll: number;
   service_filter: string | null;
+  lookback?: string;
   poll_generation?: number;
   graph_service_count?: number;
   graph_dependency_count?: number;

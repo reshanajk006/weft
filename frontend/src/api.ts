@@ -116,9 +116,22 @@ export const api = {
     poll_interval: number;
     max_traces_per_poll: number;
     service_filter?: string | null;
+    lookback?: string;
     resume?: boolean;
   }) =>
     request<JaegerStatus>("/api/jaeger/connect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  jaegerRefresh: (body: {
+    jaeger_url: string;
+    poll_interval: number;
+    max_traces_per_poll: number;
+    service_filter?: string | null;
+    lookback?: string;
+  }) =>
+    request<JaegerStatus>("/api/jaeger/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

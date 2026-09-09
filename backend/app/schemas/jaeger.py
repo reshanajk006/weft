@@ -20,10 +20,10 @@ class JaegerTestResponse(APIModel):
 
 class JaegerConnectRequest(APIModel):
     jaeger_url: str | None = None
-    poll_interval: int = Field(default=30, ge=5, le=3600)
+    poll_interval: int = Field(default=5, ge=5, le=3600)
     max_traces_per_poll: int = Field(default=50, ge=1, le=500)
     service_filter: str | None = None
-    lookback: str = "1h"
+    lookback: str = "5m"
     resume: bool = False
 
 
@@ -37,9 +37,10 @@ class JaegerStatusResponse(APIModel):
     services_discovered: list[str] = Field(default_factory=list)
     error_message: str | None = None
     dataset_id: str | None = None
-    poll_interval: int = 30
+    poll_interval: int = 5
     max_traces_per_poll: int = 50
     service_filter: str | None = None
+    lookback: str = "5m"
     poll_generation: int = 0
     graph_service_count: int = 0
     graph_dependency_count: int = 0

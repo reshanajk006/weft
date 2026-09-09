@@ -56,6 +56,18 @@ def jaeger_status() -> JaegerStatusResponse:
 
 
 @router.post(
+    "/refresh",
+    response_model=JaegerStatusResponse,
+    summary="Poll Jaeger now without creating a new dataset",
+)
+async def refresh_jaeger(
+    payload: JaegerConnectRequest = JaegerConnectRequest(),
+    db: Session = Depends(get_db),
+) -> JaegerStatusResponse:
+    return await get_live_manager().refresh(db, payload)
+
+
+@router.post(
     "/disconnect",
     response_model=JaegerStatusResponse,
     summary="Stop live ingestion without deleting the dataset",

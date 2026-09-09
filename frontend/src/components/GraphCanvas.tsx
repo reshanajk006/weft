@@ -142,6 +142,7 @@ function GraphInner({
       edges={flowEdges}
       nodeTypes={nodeTypes}
       fitView
+      style={{ width: "100%", height: "100%" }}
       onInit={(instance) => {
         void instance.fitView({ padding: 0.24 });
       }}
@@ -187,7 +188,7 @@ export function GraphCanvas({
   onSelect: (id: string) => void;
 }) {
   return (
-    <div className="graph-wrap">
+    <div className="graph-wrap" style={{ width: "100%", height: "100%" }}>
       <ReactFlowProvider>
         <GraphInner
           graph={graph}
