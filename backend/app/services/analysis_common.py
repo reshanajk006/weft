@@ -80,13 +80,14 @@ def selected_target_from_service(service: Service) -> SelectedTarget:
 
 
 def hypothetical_scenario(service: Service, dataset: TelemetryDataset | None) -> ScenarioClassification:
+    is_observed_error = service.error_rate > 0 or service.health_status in ("UNHEALTHY", "DEGRADED")
     return ScenarioClassification(
         type=HYPOTHETICAL_TYPE,
         input_source=input_source_label(dataset),
         selected_failure_target=service.name,
         current_observed_status=service.health_status,
         current_health_score=service.health_score,
-        observed_production_incident=False,
+        observed_production_incident=is_observed_error,
         live_service_health_modified=False,
     )
 

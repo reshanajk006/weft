@@ -114,6 +114,21 @@ def ingest_jaeger_payload(
         _refresh_dependency_critical_weights(db, dataset_id=dataset.id)
         invalidate_graph_cache()
 
+        # Auto-record incident simulation run for observed errors if dataset has errors or unhealthy services
+        try:
+            unhealthy_services = [
+                s
+                for s in db.execute(select(Service).where(Service.dataset_id == dataset.id)).scalars().all()
+                if s.health_status in ("UNHEALTHY", "DEGRADED") or s.error_rate > 0
+            ]
+            if unhealthy_services:
+                unhealthy_services.sort(key=lambda s: (-s.error_rate, s.name))
+                from app.services.simulation_service import simulate_failure
+                for svc in unhealthy_services[:3]:
+                    simulate_failure(db, svc.id)
+        except Exception as exc:
+            logger.warning("Failed to auto-record observed incident simulation: %s", exc)
+
         logger.info(
             "Ingestion %s completed: traces=%s spans=%s services=%s dependencies=%s errors=%s",
             ingestion.id,

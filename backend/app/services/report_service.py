@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.exceptions import BadRequestError
@@ -40,6 +41,27 @@ def generate_report(db: Session, simulation_id: str, fmt: str) -> ReportResponse
     root = analyze_root_cause(db, simulation_id)
     failed = db.get(Service, result.failed_service.id)
     dataset = active_dataset_or_none(db)
+    dataset_id = failed.dataset_id if failed else (dataset.id if dataset else None)
+
+    total_spans = 0
+    observed_error_spans = 0
+    if dataset_id:
+        from app.db.models import SpanRecord
+        total_spans = db.scalar(select(func.count(SpanRecord.id)).where(SpanRecord.dataset_id == dataset_id)) or 0
+        observed_error_spans = db.scalar(
+            select(func.count(SpanRecord.id)).where(
+                SpanRecord.dataset_id == dataset_id,
+                SpanRecord.is_error == True,
+            )
+        ) or 0
+
+    has_observed_errors = (
+        observed_error_spans > 0
+        or (failed and (failed.error_rate > 0 or failed.health_status in ("UNHEALTHY", "DEGRADED")))
+    )
+    if has_observed_errors and root.scenario and not root.scenario.observed_production_incident:
+        root.scenario.observed_production_incident = True
+
     window_start, window_end = observed_time_window(db, failed.dataset_id if failed else None)
     graph = build_graph(db)
     thresholds = get_thresholds()
@@ -80,6 +102,14 @@ def generate_report(db: Session, simulation_id: str, fmt: str) -> ReportResponse
             "p99_latency_ms": failed.p99_latency_ms if failed else None,
             "business_tier": display_business_tier(failed.tier) if failed else None,
             "computed_criticality": failed.effective_criticality_score() if failed else None,
+        },
+        "observed_telemetry_errors": {
+            "has_observed_errors": has_observed_errors,
+            "total_spans": total_spans,
+            "error_spans": observed_error_spans,
+            "error_rate": round((observed_error_spans / total_spans * 100), 2) if total_spans > 0 else 0.0,
+            "target_error_rate": failed.error_rate if failed else 0.0,
+            "target_health_status": failed.health_status if failed else "UNKNOWN",
         },
         "input_window": {
             "input_source": root.scenario.input_source if root.scenario else (dataset.source if dataset else "Jaeger JSON"),
@@ -182,6 +212,8 @@ def _markdown(payload: dict, timeline: list[TimelineEvent], recs, root, mitigati
     window = payload.get("input_window") or {}
     cb = payload.get("circuit_breaker_thresholds") or {}
     name = failed["name"]
+    obs_err = payload.get("observed_telemetry_errors") or {}
+    has_obs_err = bool(obs_err.get("has_observed_errors")) or bool(scenario.get("observed_production_incident"))
     lines: list[str] = [
         "# WEFT Incident Impact Report",
         "",
@@ -191,7 +223,7 @@ def _markdown(payload: dict, timeline: list[TimelineEvent], recs, root, mitigati
         f"Selected failure target: {scenario.get('selected_failure_target') or name}",
         f"Current observed status: {scenario.get('current_observed_status') or health.get('health_status')}",
         f"Current health score: {scenario.get('current_health_score', health.get('health_score'))}",
-        "Observed production incident: No",
+        f"Observed production incident: {'Yes' if has_obs_err else 'No'}",
         "Live service health modified: No",
         "",
         "## 2. Executive Summary",
@@ -214,6 +246,9 @@ def _markdown(payload: dict, timeline: list[TimelineEvent], recs, root, mitigati
         f"- Health status: {health.get('health_status')}",
         f"- Health score: {health.get('health_score')}",
         f"- Error rate: {_pct(health.get('error_rate'))}",
+        f"- Recorded trace errors: {obs_err.get('error_spans', 0)} error span(s) out of {obs_err.get('total_spans', 0)} total spans in JSON telemetry"
+        if has_obs_err
+        else "- Recorded trace errors: None observed",
         f"- Call count: {health.get('call_count')}",
         f"- Average latency: {health.get('avg_latency_ms')} ms",
         f"- P95 latency: {health.get('p95_latency_ms')}",

@@ -28,7 +28,7 @@ function validateJaeger(text: string): { ok: boolean; message: string } {
 }
 
 export function ImportModal() {
-  const { importOpen, closeImport, ingestFile, ingestSample, overview } = useWorkspace();
+  const { importOpen, closeImport, ingestFile, ingestSample, overview, ingestResult } = useWorkspace();
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState("No file selected");
   const [valid, setValid] = useState(false);
@@ -145,7 +145,16 @@ export function ImportModal() {
             ))}
           </ol>
         ) : null}
-        {done ? <p>System reconstructed.</p> : null}
+        {done ? (
+          <div className="p-2.5 bg-slate-900 border border-slate-700 text-xs font-mono text-slate-200 space-y-1">
+            <div>System reconstructed successfully.</div>
+            {ingestResult?.errors_detected ? (
+              <div className="text-amber-400 font-semibold">
+                [!] {ingestResult.errors_detected} trace error(s) recorded from JSON. Incident report generated.
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         {error ? <div className="error-banner">{error}</div> : null}
         <div className="row">
           <button className="btn" type="button" disabled={!valid || busy} onClick={() => void analyze()}>
