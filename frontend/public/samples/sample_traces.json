@@ -1,0 +1,3949 @@
+{
+  "data": [
+    {
+      "traceID": "checkout-000",
+      "spans": [
+        {
+          "traceID": "checkout-000",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000000000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-000",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000000001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-000"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-000",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000000002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-000"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-000",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000000003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-000"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-000",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000000005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-000"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-000",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000000006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-000"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-000",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000000007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-000"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-000",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000000008000,
+          "duration": 160000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-000"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-000",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000000009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-000"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-001",
+      "spans": [
+        {
+          "traceID": "checkout-001",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000002000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-001",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000002001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-001"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-001",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000002002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-001"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-001",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000002003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-001"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-001",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000002005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-001"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-001",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000002006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-001"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-001",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000002007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-001"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-001",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000002008000,
+          "duration": 165000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-001"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-001",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000002009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-001"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-002",
+      "spans": [
+        {
+          "traceID": "checkout-002",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000004000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-002",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000004001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-002"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-002",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000004002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-002"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-002",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000004003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-002"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-002",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000004005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-002"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-002",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000004006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-002"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-002",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000004007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-002"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-002",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000004008000,
+          "duration": 170000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-002"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-002",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000004009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-002"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-003",
+      "spans": [
+        {
+          "traceID": "checkout-003",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000006000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-003",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000006001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-003"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-003",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000006002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-003"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-003",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000006003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-003"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-003",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000006005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-003"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-003",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000006006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-003"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-003",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000006007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-003"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-003",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000006008000,
+          "duration": 175000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-003"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-003",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000006009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-003"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-004",
+      "spans": [
+        {
+          "traceID": "checkout-004",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000008000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-004",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000008001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-004"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-004",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000008002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-004"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-004",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000008003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-004"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-004",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000008005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-004"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-004",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000008006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-004"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-004",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000008007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-004"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-004",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000008008000,
+          "duration": 180000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-004"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-004",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000008009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-004"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-005",
+      "spans": [
+        {
+          "traceID": "checkout-005",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000010000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-005",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000010001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-005"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-005",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000010002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-005"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-005",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000010003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-005"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-005",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000010005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-005"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-005",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000010006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-005"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-005",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000010007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-005"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-005",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000010008000,
+          "duration": 185000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-005"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-005",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000010009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-005"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-006",
+      "spans": [
+        {
+          "traceID": "checkout-006",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000012000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-006",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000012001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-006"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-006",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000012002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-006"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-006",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000012003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-006"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-006",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000012005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-006"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-006",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000012006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-006"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-006",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000012007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-006"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-006",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000012008000,
+          "duration": 190000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-006"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-006",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000012009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-006"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-007",
+      "spans": [
+        {
+          "traceID": "checkout-007",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000014000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-007",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000014001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-007"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-007",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000014002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-007"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-007",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000014003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-007"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-007",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000014005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-007"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-007",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000014006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-007"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-007",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000014007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-007"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-007",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000014008000,
+          "duration": 195000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-007"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-007",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000014009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-007"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-4xx",
+      "spans": [
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000020000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000020001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-4xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000020002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-4xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000020003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-4xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000020005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-4xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000020006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-4xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000020007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-4xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000020008000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "404"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-4xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-4xx",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000020009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-4xx"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "checkout-5xx",
+      "spans": [
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000022000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000022001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-5xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000022002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "checkout-5xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000022003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "checkout-5xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000022005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-5xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000022006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-5xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000022007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "checkout-5xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000022008000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "checkout-5xx"
+            }
+          ]
+        },
+        {
+          "traceID": "checkout-5xx",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000022009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "checkout-5xx"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "rec-000",
+      "spans": [
+        {
+          "traceID": "rec-000",
+          "spanID": "rec",
+          "operationName": "GET /recommend",
+          "startTime": 1700000030000000,
+          "duration": 45000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "recommendation-engine"
+            }
+          ],
+          "process": {
+            "serviceName": "recommendation-engine"
+          },
+          "references": []
+        },
+        {
+          "traceID": "rec-000",
+          "spanID": "cache",
+          "operationName": "GET /cache",
+          "startTime": 1700000030000500,
+          "duration": 4000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "cache-service"
+            }
+          ],
+          "process": {
+            "serviceName": "cache-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-000"
+            }
+          ]
+        },
+        {
+          "traceID": "rec-000",
+          "spanID": "user",
+          "operationName": "GET /users/{id}/prefs",
+          "startTime": 1700000030000800,
+          "duration": 22000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-000"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "rec-001",
+      "spans": [
+        {
+          "traceID": "rec-001",
+          "spanID": "rec",
+          "operationName": "GET /recommend",
+          "startTime": 1700000031000000,
+          "duration": 45000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "recommendation-engine"
+            }
+          ],
+          "process": {
+            "serviceName": "recommendation-engine"
+          },
+          "references": []
+        },
+        {
+          "traceID": "rec-001",
+          "spanID": "cache",
+          "operationName": "GET /cache",
+          "startTime": 1700000031000500,
+          "duration": 4000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "cache-service"
+            }
+          ],
+          "process": {
+            "serviceName": "cache-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-001"
+            }
+          ]
+        },
+        {
+          "traceID": "rec-001",
+          "spanID": "user",
+          "operationName": "GET /users/{id}/prefs",
+          "startTime": 1700000031000800,
+          "duration": 22000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-001"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "rec-002",
+      "spans": [
+        {
+          "traceID": "rec-002",
+          "spanID": "rec",
+          "operationName": "GET /recommend",
+          "startTime": 1700000032000000,
+          "duration": 45000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "recommendation-engine"
+            }
+          ],
+          "process": {
+            "serviceName": "recommendation-engine"
+          },
+          "references": []
+        },
+        {
+          "traceID": "rec-002",
+          "spanID": "cache",
+          "operationName": "GET /cache",
+          "startTime": 1700000032000500,
+          "duration": 4000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "cache-service"
+            }
+          ],
+          "process": {
+            "serviceName": "cache-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-002"
+            }
+          ]
+        },
+        {
+          "traceID": "rec-002",
+          "spanID": "user",
+          "operationName": "GET /users/{id}/prefs",
+          "startTime": 1700000032000800,
+          "duration": 22000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-002"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "rec-003",
+      "spans": [
+        {
+          "traceID": "rec-003",
+          "spanID": "rec",
+          "operationName": "GET /recommend",
+          "startTime": 1700000033000000,
+          "duration": 45000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "recommendation-engine"
+            }
+          ],
+          "process": {
+            "serviceName": "recommendation-engine"
+          },
+          "references": []
+        },
+        {
+          "traceID": "rec-003",
+          "spanID": "cache",
+          "operationName": "GET /cache",
+          "startTime": 1700000033000500,
+          "duration": 4000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "cache-service"
+            }
+          ],
+          "process": {
+            "serviceName": "cache-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-003"
+            }
+          ]
+        },
+        {
+          "traceID": "rec-003",
+          "spanID": "user",
+          "operationName": "GET /users/{id}/prefs",
+          "startTime": 1700000033000800,
+          "duration": 22000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-003"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "rec-004",
+      "spans": [
+        {
+          "traceID": "rec-004",
+          "spanID": "rec",
+          "operationName": "GET /recommend",
+          "startTime": 1700000034000000,
+          "duration": 45000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "recommendation-engine"
+            }
+          ],
+          "process": {
+            "serviceName": "recommendation-engine"
+          },
+          "references": []
+        },
+        {
+          "traceID": "rec-004",
+          "spanID": "cache",
+          "operationName": "GET /cache",
+          "startTime": 1700000034000500,
+          "duration": 4000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "cache-service"
+            }
+          ],
+          "process": {
+            "serviceName": "cache-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-004"
+            }
+          ]
+        },
+        {
+          "traceID": "rec-004",
+          "spanID": "user",
+          "operationName": "GET /users/{id}/prefs",
+          "startTime": 1700000034000800,
+          "duration": 22000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "rec",
+              "traceID": "rec-004"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "notify-000",
+      "spans": [
+        {
+          "traceID": "notify-000",
+          "spanID": "n1",
+          "operationName": "POST /notify",
+          "startTime": 1700000040000000,
+          "duration": 30000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "notification-service"
+            }
+          ],
+          "process": {
+            "serviceName": "notification-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "notify-000",
+          "spanID": "n2",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000040000200,
+          "duration": 15000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "n1",
+              "traceID": "notify-000"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "notify-001",
+      "spans": [
+        {
+          "traceID": "notify-001",
+          "spanID": "n1",
+          "operationName": "POST /notify",
+          "startTime": 1700000041000000,
+          "duration": 30000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "notification-service"
+            }
+          ],
+          "process": {
+            "serviceName": "notification-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "notify-001",
+          "spanID": "n2",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000041000200,
+          "duration": 15000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "n1",
+              "traceID": "notify-001"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "notify-002",
+      "spans": [
+        {
+          "traceID": "notify-002",
+          "spanID": "n1",
+          "operationName": "POST /notify",
+          "startTime": 1700000042000000,
+          "duration": 30000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "notification-service"
+            }
+          ],
+          "process": {
+            "serviceName": "notification-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "notify-002",
+          "spanID": "n2",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000042000200,
+          "duration": 15000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "n1",
+              "traceID": "notify-002"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "notify-003",
+      "spans": [
+        {
+          "traceID": "notify-003",
+          "spanID": "n1",
+          "operationName": "POST /notify",
+          "startTime": 1700000043000000,
+          "duration": 30000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "503"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "notification-service"
+            }
+          ],
+          "process": {
+            "serviceName": "notification-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "notify-003",
+          "spanID": "n2",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000043000200,
+          "duration": 15000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "n1",
+              "traceID": "notify-003"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "login-000",
+      "spans": [
+        {
+          "traceID": "login-000",
+          "spanID": "l1",
+          "operationName": "POST /login",
+          "startTime": 1700000050000000,
+          "duration": 60000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "login-000",
+          "spanID": "l2",
+          "operationName": "GET /users/by-email",
+          "startTime": 1700000050000300,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "l1",
+              "traceID": "login-000"
+            }
+          ]
+        },
+        {
+          "traceID": "login-000",
+          "spanID": "l3",
+          "operationName": "SELECT users",
+          "startTime": 1700000050000400,
+          "duration": 8000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "l2",
+              "traceID": "login-000"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "login-001",
+      "spans": [
+        {
+          "traceID": "login-001",
+          "spanID": "l1",
+          "operationName": "POST /login",
+          "startTime": 1700000051000000,
+          "duration": 60000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "login-001",
+          "spanID": "l2",
+          "operationName": "GET /users/by-email",
+          "startTime": 1700000051000300,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "l1",
+              "traceID": "login-001"
+            }
+          ]
+        },
+        {
+          "traceID": "login-001",
+          "spanID": "l3",
+          "operationName": "SELECT users",
+          "startTime": 1700000051000400,
+          "duration": 8000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "l2",
+              "traceID": "login-001"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "login-002",
+      "spans": [
+        {
+          "traceID": "login-002",
+          "spanID": "l1",
+          "operationName": "POST /login",
+          "startTime": 1700000052000000,
+          "duration": 60000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "login-002",
+          "spanID": "l2",
+          "operationName": "GET /users/by-email",
+          "startTime": 1700000052000300,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "l1",
+              "traceID": "login-002"
+            }
+          ]
+        },
+        {
+          "traceID": "login-002",
+          "spanID": "l3",
+          "operationName": "SELECT users",
+          "startTime": 1700000052000400,
+          "duration": 8000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "l2",
+              "traceID": "login-002"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    },
+    {
+      "traceID": "login-003",
+      "spans": [
+        {
+          "traceID": "login-003",
+          "spanID": "l1",
+          "operationName": "POST /login",
+          "startTime": 1700000053000000,
+          "duration": 60000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "login-003",
+          "spanID": "l2",
+          "operationName": "GET /users/by-email",
+          "startTime": 1700000053000300,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "l1",
+              "traceID": "login-003"
+            }
+          ]
+        },
+        {
+          "traceID": "login-003",
+          "spanID": "l3",
+          "operationName": "SELECT users",
+          "startTime": 1700000053000400,
+          "duration": 8000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "l2",
+              "traceID": "login-003"
+            }
+          ]
+        }
+      ],
+      "processes": {}
+    }
+  ]
+}

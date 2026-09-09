@@ -1,0 +1,5724 @@
+{
+  "data": [
+    {
+      "traceID": "incident-000",
+      "spans": [
+        {
+          "traceID": "incident-000",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000080000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-000",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000080001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-000"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-000",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000080002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-000"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-000",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000080003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-000"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-000",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000080005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-000"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-000",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000080006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-000"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-000",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000080007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-000"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-000",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000080008000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-000"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-000",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000080009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-000"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-001",
+      "spans": [
+        {
+          "traceID": "incident-001",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000080500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-001",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000080501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-001"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-001",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000080502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-001"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-001",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000080503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-001"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-001",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000080505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-001"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-001",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000080506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-001"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-001",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000080507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-001"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-001",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000080508000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-001"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-001",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000080509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-001"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-002",
+      "spans": [
+        {
+          "traceID": "incident-002",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000081000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-002",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000081001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-002"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-002",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000081002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-002"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-002",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000081003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-002"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-002",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000081005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-002"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-002",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000081006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-002"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-002",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000081007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-002"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-002",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000081008000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-002"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-002",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000081009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-002"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-003",
+      "spans": [
+        {
+          "traceID": "incident-003",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000081500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-003",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000081501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-003"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-003",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000081502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-003"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-003",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000081503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-003"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-003",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000081505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-003"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-003",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000081506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-003"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-003",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000081507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-003"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-003",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000081508000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-003"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-003",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000081509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-003"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-004",
+      "spans": [
+        {
+          "traceID": "incident-004",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000082000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-004",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000082001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-004"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-004",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000082002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-004"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-004",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000082003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-004"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-004",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000082005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-004"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-004",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000082006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-004"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-004",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000082007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-004"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-004",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000082008000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-004"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-004",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000082009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-004"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-005",
+      "spans": [
+        {
+          "traceID": "incident-005",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000082500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-005",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000082501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-005"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-005",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000082502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-005"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-005",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000082503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-005"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-005",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000082505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-005"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-005",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000082506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-005"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-005",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000082507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-005"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-005",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000082508000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-005"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-005",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000082509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-005"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-006",
+      "spans": [
+        {
+          "traceID": "incident-006",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000083000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-006",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000083001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-006"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-006",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000083002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-006"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-006",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000083003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-006"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-006",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000083005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-006"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-006",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000083006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-006"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-006",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000083007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-006"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-006",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000083008000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-006"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-006",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000083009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-006"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-007",
+      "spans": [
+        {
+          "traceID": "incident-007",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000083500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-007",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000083501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-007"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-007",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000083502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-007"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-007",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000083503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-007"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-007",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000083505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-007"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-007",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000083506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-007"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-007",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000083507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-007"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-007",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000083508000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-007"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-007",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000083509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-007"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-008",
+      "spans": [
+        {
+          "traceID": "incident-008",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000084000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-008",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000084001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-008"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-008",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000084002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-008"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-008",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000084003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-008"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-008",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000084005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-008"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-008",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000084006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-008"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-008",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000084007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-008"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-008",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000084008000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-008"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-008",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000084009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-008"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-009",
+      "spans": [
+        {
+          "traceID": "incident-009",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000084500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-009",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000084501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-009"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-009",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000084502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-009"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-009",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000084503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-009"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-009",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000084505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-009"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-009",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000084506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-009"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-009",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000084507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-009"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-009",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000084508000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-009"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-009",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000084509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-009"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-010",
+      "spans": [
+        {
+          "traceID": "incident-010",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000085000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-010",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000085001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-010"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-010",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000085002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-010"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-010",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000085003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-010"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-010",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000085005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-010"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-010",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000085006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-010"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-010",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000085007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-010"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-010",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000085008000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-010"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-010",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000085009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-010"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-011",
+      "spans": [
+        {
+          "traceID": "incident-011",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000085500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-011",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000085501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-011"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-011",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000085502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-011"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-011",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000085503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-011"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-011",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000085505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-011"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-011",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000085506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-011"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-011",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000085507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-011"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-011",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000085508000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-011"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-011",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000085509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-011"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-012",
+      "spans": [
+        {
+          "traceID": "incident-012",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000086000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-012",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000086001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-012"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-012",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000086002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-012"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-012",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000086003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-012"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-012",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000086005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-012"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-012",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000086006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-012"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-012",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000086007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-012"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-012",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000086008000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-012"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-012",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000086009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-012"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-013",
+      "spans": [
+        {
+          "traceID": "incident-013",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000086500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-013",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000086501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-013"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-013",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000086502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-013"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-013",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000086503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-013"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-013",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000086505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-013"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-013",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000086506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-013"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-013",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000086507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-013"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-013",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000086508000,
+          "duration": 1200000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "500"
+            },
+            {
+              "key": "error",
+              "value": true
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-013"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-013",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000086509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-013"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-014",
+      "spans": [
+        {
+          "traceID": "incident-014",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000087000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-014",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000087001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-014"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-014",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000087002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-014"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-014",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000087003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-014"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-014",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000087005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-014"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-014",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000087006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-014"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-014",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000087007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-014"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-014",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000087008000,
+          "duration": 170000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-014"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-014",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000087009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-014"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-015",
+      "spans": [
+        {
+          "traceID": "incident-015",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000087500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-015",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000087501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-015"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-015",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000087502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-015"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-015",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000087503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-015"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-015",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000087505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-015"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-015",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000087506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-015"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-015",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000087507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-015"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-015",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000087508000,
+          "duration": 170000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-015"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-015",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000087509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-015"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-016",
+      "spans": [
+        {
+          "traceID": "incident-016",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000088000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-016",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000088001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-016"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-016",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000088002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-016"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-016",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000088003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-016"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-016",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000088005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-016"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-016",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000088006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-016"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-016",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000088007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-016"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-016",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000088008000,
+          "duration": 170000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-016"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-016",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000088009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-016"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-017",
+      "spans": [
+        {
+          "traceID": "incident-017",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000088500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-017",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000088501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-017"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-017",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000088502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-017"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-017",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000088503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-017"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-017",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000088505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-017"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-017",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000088506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-017"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-017",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000088507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-017"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-017",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000088508000,
+          "duration": 170000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-017"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-017",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000088509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-017"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-018",
+      "spans": [
+        {
+          "traceID": "incident-018",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000089000000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-018",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000089001000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-018"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-018",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000089002000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-018"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-018",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000089003000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-018"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-018",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000089005000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-018"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-018",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000089006000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-018"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-018",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000089007000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-018"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-018",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000089008000,
+          "duration": 170000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-018"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-018",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000089009000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-018"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    },
+    {
+      "traceID": "incident-019",
+      "spans": [
+        {
+          "traceID": "incident-019",
+          "spanID": "root",
+          "operationName": "POST /checkout",
+          "startTime": 1700000089500000,
+          "duration": 820000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "checkout-service"
+            }
+          ],
+          "process": {
+            "serviceName": "checkout-service"
+          },
+          "references": []
+        },
+        {
+          "traceID": "incident-019",
+          "spanID": "auth",
+          "operationName": "POST /auth/verify",
+          "startTime": 1700000089501000,
+          "duration": 40000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "auth-service"
+            }
+          ],
+          "process": {
+            "serviceName": "auth-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-019"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-019",
+          "spanID": "user",
+          "operationName": "GET /users/{id}",
+          "startTime": 1700000089502000,
+          "duration": 35000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "user-service"
+            }
+          ],
+          "process": {
+            "serviceName": "user-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "auth",
+              "traceID": "incident-019"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-019",
+          "spanID": "user-db",
+          "operationName": "SELECT users",
+          "startTime": 1700000089503000,
+          "duration": 12000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "user",
+              "traceID": "incident-019"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-019",
+          "spanID": "order",
+          "operationName": "POST /orders",
+          "startTime": 1700000089505000,
+          "duration": 220000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "order-service"
+            }
+          ],
+          "process": {
+            "serviceName": "order-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-019"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-019",
+          "spanID": "inv",
+          "operationName": "POST /reserve",
+          "startTime": 1700000089506000,
+          "duration": 90000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "inventory-service"
+            }
+          ],
+          "process": {
+            "serviceName": "inventory-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-019"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-019",
+          "spanID": "order-db",
+          "operationName": "INSERT orders",
+          "startTime": 1700000089507000,
+          "duration": 18000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "order",
+              "traceID": "incident-019"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-019",
+          "spanID": "pay",
+          "operationName": "POST /charge",
+          "startTime": 1700000089508000,
+          "duration": 170000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "payment-gateway"
+            }
+          ],
+          "process": {
+            "serviceName": "payment-gateway"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "root",
+              "traceID": "incident-019"
+            }
+          ]
+        },
+        {
+          "traceID": "incident-019",
+          "spanID": "pay-db",
+          "operationName": "INSERT payments",
+          "startTime": 1700000089509000,
+          "duration": 20000,
+          "tags": [
+            {
+              "key": "http.status_code",
+              "value": "200"
+            },
+            {
+              "key": "error",
+              "value": false
+            },
+            {
+              "key": "service.name",
+              "value": "db-service"
+            }
+          ],
+          "process": {
+            "serviceName": "db-service"
+          },
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "spanID": "pay",
+              "traceID": "incident-019"
+            }
+          ]
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "checkout-service"
+        },
+        "p2": {
+          "serviceName": "payment-gateway"
+        }
+      }
+    }
+  ]
+}

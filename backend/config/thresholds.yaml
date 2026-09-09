@@ -1,0 +1,37 @@
+health:
+  degraded_error_rate: 0.1
+  critical_error_rate: 0.5
+  healthy_above: 80.0
+  sliding_window_seconds: 10.0
+blast_radius:
+  critical_edge_weight: 0.9
+  non_critical_edge_weight: 0.5
+  min_impact_probability: 0.1
+blast_radius_score:
+  affected_ratio_weight: 0.4
+  weighted_impact_weight: 0.35
+  critical_service_factor_weight: 0.25
+criticality:
+  call_volume_weight: 0.3
+  error_weight: 0.25
+  latency_weight: 0.25
+  dependency_weight: 0.2
+circuit_breaker:
+  error_threshold: 0.5
+  cooldown_seconds: 30.0
+  recovery_health_threshold: 80.0
+severity:
+  low_max: 25.0
+  medium_max: 50.0
+  high_max: 75.0
+impact_level:
+  critical_min: 0.75
+  high_min: 0.5
+  medium_min: 0.25
+critical_service:
+  min_criticality_score: 70.0
+critical_edge:
+  call_count_percentile: 0.75
+latency:
+  high_latency_ms: 200.0
+  very_high_latency_ms: 500.0
