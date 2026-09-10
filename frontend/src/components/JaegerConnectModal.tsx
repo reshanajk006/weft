@@ -112,11 +112,12 @@ export function JaegerConnectModal() {
         </p>
         <div className="field">
           <label>Jaeger Query URL</label>
-          <input value={url} onChange={(event) => setUrl(event.target.value)} disabled={connecting} />
+          <input style={{ color: "#111" }} value={url} onChange={(event) => setUrl(event.target.value)} disabled={connecting} />
         </div>
         <div className="field">
           <label>Poll interval (seconds)</label>
           <input
+            style={{ color: "#111" }}
             type="number"
             min={5}
             value={pollInterval}
