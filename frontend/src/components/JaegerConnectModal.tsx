@@ -4,7 +4,7 @@ import { useWorkspace } from "../state/workspace";
 
 const LOOKBACKS = ["1m", "5m", "15m", "1h"];
 
-export function JaegerConnectModal() {
+export function JaegerConnectModal() i
   const { jaegerOpen, closeJaeger, connectJaeger, refreshLiveJaeger, disconnectJaeger, jaeger } = useWorkspace();
   const [url, setUrl] = useState(jaeger.jaeger_url || "http://localhost:16686");
   const [pollInterval, setPollInterval] = useState(jaeger.poll_interval || 5);
@@ -127,7 +127,7 @@ export function JaegerConnectModal() {
         </div>
         <div className="field">
           <label>Trace lookback</label>
-          <select value={lookback} onChange={(event) => setLookback(event.target.value)} disabled={connecting}>
+          <select style={{ color: "#111" }} value={lookback} onChange={(event) => setLookback(event.target.value)} disabled={connecting}>
             {LOOKBACKS.map((item) => (
               <option key={item} value={item}>
                 Last {item}
