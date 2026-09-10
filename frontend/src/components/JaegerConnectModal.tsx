@@ -138,6 +138,7 @@ export function JaegerConnectModal() {
         <div className="field">
           <label>Maximum traces per poll</label>
           <input
+            color= "#111"
             type="number"
             min={1}
             value={maxTraces}
@@ -148,6 +149,7 @@ export function JaegerConnectModal() {
         <div className="field">
           <label>Service filter</label>
           <input
+            color= "#111"
             value={serviceFilter}
             onChange={(event) => setServiceFilter(event.target.value)}
             placeholder="All services"
