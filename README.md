@@ -1,6 +1,6 @@
 # WEFT
 
-WEFT is a **deterministic service-dependency blast-radius analyzer**. Import Jaeger JSON (or OTLP JSON), optionally connect to a Jaeger Query API, and WEFT reconstructs the call graph, scores health and technical criticality, and lets you **simulate** a service failure.
+WEFT is a **deterministic service-dependency blast-radius analyzer**. Import Jaeger JSON (or OTLP JSON), optionally connect to a Jaeger Query API, and WEFT reconstructs the call graph, scores health and technical criticality, and lets you **simulate** a service failure. Aavishkar 2026 - Soundarya Institute of Management and Science Winning Project
 
 It does **not** talk to Kubernetes, Prometheus, or production traffic. Simulated failures never stop real services and never mutate live health. Live Jaeger is **user-initiated only**: startup never seeds data and never opens a Jaeger connection, even if `JAEGER_QUERY_URL` is set.
 
