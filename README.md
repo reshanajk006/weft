@@ -1,14 +1,105 @@
-# WEFT
+<div align="center">
 
-WEFT is a **deterministic service-dependency blast-radius analyzer**. Import Jaeger JSON (or OTLP JSON), optionally connect to a Jaeger Query API, and WEFT reconstructs the call graph, scores health and technical criticality, and lets you **simulate** a service failure. **Aavishkar 2026 - Soundarya Institute of Management and Science Winning Project**
+# 🕸️ WEFT
 
-It does **not** talk to Kubernetes, Prometheus, or production traffic. Simulated failures never stop real services and never mutate live health. Live Jaeger is **user-initiated only**: startup never seeds data and never opens a Jaeger connection, even if `JAEGER_QUERY_URL` is set.
+### Deterministic Service-Dependency Blast-Radius Analyzer
 
-**Graph rule:** edge `A → B` means A **calls** B. If B fails, A is in the blast radius (`nx.ancestors`). Callees of B are not affected just because they are called.
+<img src="https://img.shields.io/badge/🏆%20Hackathon%20Winner-Aavishkar%202026-F5B301?style=for-the-badge" alt="Hackathon winner — Aavishkar 2026"/>
+<img src="https://img.shields.io/badge/Soundarya%20Institute-of%20Management%20%26%20Science-8B5CF6?style=for-the-badge" alt="Soundarya Institute of Management and Science"/>
+<a href="https://weft-phi.vercel.app/"><img src="https://img.shields.io/badge/▶%20Live%20App-weft--phi.vercel.app-22C55E?style=for-the-badge&logo=vercel&logoColor=white" alt="Live app"/></a>
+
+<br/><br/>
+
+**🏆 Hackathon winning project at Aavishkar 2026 · Soundarya Institute of Management and Science**
+
+### [▶ Try the live app](https://weft-phi.vercel.app/)
+
+<br/>
+
+<img src="frontend/hero_landing_page.png" width="90%" alt="WEFT landing page"/>
+
+</div>
 
 ---
 
-## Repository layout
+## 📖 Overview
+
+**WEFT** answers one question for a microservice system: ***"If this service fails, what else breaks?"***
+
+Import **Jaeger JSON** or **OTLP JSON** traces, or connect to a Jaeger Query API. WEFT then rebuilds the service call graph, scores each service's health and technical criticality, and lets you **simulate a service failure** to see its blast radius, the likely root causes and recommended mitigations.
+
+> 🛡️ **Safe by design.** WEFT does **not** talk to Kubernetes, Prometheus or production traffic. Simulated failures never stop real services or change live health. A live Jaeger connection is **user-initiated only**: startup never seeds data or opens a Jaeger connection, even if `JAEGER_QUERY_URL` is set.
+
+**Graph rule:** an edge `A → B` means A **calls** B. If B fails, A is in the blast radius (`nx.ancestors`). Services that B calls are not affected just because B called them.
+
+---
+
+## 🧠 How It Works
+
+```mermaid
+flowchart LR
+    T[📥 Jaeger / OTLP traces<br/>or live Jaeger API] --> I[Ingest & normalize]
+    I --> G[🕸️ Call graph<br/>NetworkX]
+    G --> H[🩺 Health scoring<br/>error-rate windows]
+    G --> C[⚖️ Criticality<br/>5 weighted factors]
+    H --> S[💥 Failure simulation]
+    C --> S
+    S --> B[Blast radius<br/>structural + probabilistic]
+    S --> CB[Circuit-breaker<br/>state machine]
+    B --> R[🔎 RCA ranking]
+    R --> M[🛠️ Recommendations<br/>& virtual mitigation]
+    M --> P[📄 Markdown / JSON report]
+```
+
+---
+
+## ✨ What It Does
+
+| | Capability | Notes |
+| --- | --- | --- |
+| 📥 | Jaeger JSON ingest | New dataset per manual import; replaces the on-screen graph |
+| 📥 | OTLP JSON ingest | Mapped into the same ingest path |
+| 🔌 | Live Jaeger Query API | Connect / poll / refresh / disconnect; one live dataset |
+| 🩺 | Health | Error-rate windows → HEALTHY / DEGRADED / UNHEALTHY |
+| ⚖️ | Technical criticality | Five weighted factors + optional override |
+| 💥 | Blast radius | Structural ancestors + probabilistic walk along callers |
+| 🧪 | Failure simulation | Single (UI) or multi-service (API); restores live health |
+| 🔁 | Circuit-breaker simulation | Predicted or persisted state machine per dependency |
+| 🔎 | Hypothetical RCA | Simulation target is **not** a confirmed root cause |
+| 📊 | Observed RCA | Five-factor ranking from stored telemetry |
+| 🛠️ | Recommendations | CONTAINMENT / FALLBACK / RECOVERY / PREVENTION; never auto-executed |
+| 🧭 | Virtual mitigation | FALLBACK what-if on a graph **copy**; not persisted |
+| 📄 | Reports | Markdown or JSON from a stored simulation |
+
+---
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+<img src="https://skillicons.dev/icons?i=python,fastapi,sqlite,react,ts,vite,docker,githubactions,vercel&theme=dark" alt="tech stack"/>
+
+<br/>
+
+<img src="https://img.shields.io/badge/NetworkX-Graph%20Analysis-2C5BB4?style=flat-square"/>
+<img src="https://img.shields.io/badge/Jaeger-Tracing-60D0E4?style=flat-square"/>
+<img src="https://img.shields.io/badge/OpenTelemetry-OTLP%20JSON-425CC7?style=flat-square&logo=opentelemetry&logoColor=white"/>
+<img src="https://img.shields.io/badge/xyflow-Graph%20UI-FF0072?style=flat-square"/>
+<img src="https://img.shields.io/badge/Render-Backend-46E3B7?style=flat-square&logo=render&logoColor=black"/>
+
+</div>
+
+| Layer | Technology |
+| --- | --- |
+| **Backend** | FastAPI, SQLite, NetworkX, Server-Sent Events |
+| **Frontend** | React 18, TypeScript, Vite, xyflow |
+| **Telemetry** | Jaeger JSON, OTLP JSON, Jaeger Query API |
+| **Deploy** | Vercel (UI) · Render (API) · Docker Compose (backend) |
+| **Quality** | pytest, ruff, GitHub Actions CI on Python 3.12 |
+
+---
+
+## 📁 Repository Layout
 
 ```
 weft/
@@ -17,32 +108,12 @@ weft/
 │   ├── config/thresholds.yaml
 │   ├── samples/             # Jaeger and OTLP sample traces
 │   ├── tests/
-│   ├── IMPLEMENTATION.md   # Algorithms, endpoints, and behavior
+│   ├── IMPLEMENTATION.md    # Algorithms, endpoints, and behavior
 │   └── README.md
 ├── frontend/                # React 18 + Vite + xyflow
 ├── docker-compose.yml       # Backend container on port 8000
 └── .github/workflows/ci.yml
 ```
-
----
-
-## What it does
-
-| Capability | Notes |
-| --- | --- |
-| Jaeger JSON ingest | New dataset per manual import; replaces the on-screen graph |
-| OTLP JSON ingest | Mapped into the same ingest path |
-| Live Jaeger Query API | Connect / poll / refresh / disconnect; one live dataset |
-| Health | Error-rate windows → HEALTHY / DEGRADED / UNHEALTHY |
-| Technical criticality | Five weighted factors + optional override |
-| Blast radius | Structural ancestors + probabilistic walk along callers |
-| Failure simulation | Single (UI) or multi-service (API); restores live health |
-| Circuit-breaker simulation | Predicted or persisted state machine per dependency |
-| Hypothetical RCA | Simulation target is **not** a confirmed root cause |
-| Observed RCA | Five-factor ranking from stored telemetry |
-| Recommendations | CONTAINMENT / FALLBACK / RECOVERY / PREVENTION; never auto-executed |
-| Virtual mitigation | FALLBACK what-if on a graph **copy**; not persisted |
-| Reports | Markdown or JSON from a stored simulation |
 
 ---
 
@@ -239,3 +310,13 @@ Recommendations and virtual mitigation never change production, SQLite topology,
 - [backend/IMPLEMENTATION.md](backend/IMPLEMENTATION.md) — how ingest, health, blast radius, RCA, and live Jaeger work
 - [backend/README.md](backend/README.md) — backend setup
 - [frontend/README.md](frontend/README.md) — UI screens and proxy
+
+---
+
+<div align="center">
+
+**🏆 Aavishkar 2026 — Winner · Soundarya Institute of Management and Science**
+
+[▶ Live App](https://weft-phi.vercel.app/) · [Implementation details](backend/IMPLEMENTATION.md)
+
+</div>
